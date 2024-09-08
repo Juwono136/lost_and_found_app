@@ -1,5 +1,5 @@
 import React from "react";
-import ItemCardComponent from "./ItemCardComponent";
+import ItemCardComponent from "./ItemsCardComponent";
 
 const AllItemsFound = ({ items }) => {
   return (

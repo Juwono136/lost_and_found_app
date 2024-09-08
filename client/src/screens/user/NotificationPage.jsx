@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ProgressBar from "../../components/ProgressBarComponent"; // Importing the reusable ProgressBar component
+import ProgressBar from "../../components/ProgressBarComponent";
 import NavigationBar from "../../components/NavigationBar";
-import ChevronDownIcon from "../../assets/chevron-down-icon.svg"; // Import your down arrow SVG
-import ChevronUpIcon from "../../assets/chevron-up-icon.svg"; // Import your up arrow SVG
+import ChevronDownIcon from "../../assets/chevron-down-icon.svg";
+import ChevronUpIcon from "../../assets/chevron-up-icon.svg";
+import VerifyItemModal from "../../components/VerifyItemModal"; // Import the VerifyItemModal
 
 const NotificationPage = () => {
-  const [expandedNotification, setExpandedNotification] = useState(null); // Track expanded notification
+  const [expandedNotification, setExpandedNotification] = useState(null);
+  const [isVerifyModalVisible, setIsVerifyModalVisible] = useState(false); // Track modal visibility
+  const [selectedItemId, setSelectedItemId] = useState(null); // Track selected item for verification
+  const navigate = useNavigate();
 
   const notifications = [
     {
       id: 1,
+      type: "claim",
       title: "Claim Submitted",
       message: "Your claim has been submitted.",
       date: "12/12/2023",
@@ -18,15 +23,34 @@ const NotificationPage = () => {
     },
     {
       id: 2,
+      type: "claim",
       title: "Under Review",
       message: "Your claim is under review.",
       date: "12/13/2023",
       status: 1,
     },
+    {
+      id: 3,
+      type: "founder",
+      title: "Found Item Pending Approval",
+      message: "Please confirm and verify the item you found.",
+      date: "12/14/2023",
+      itemId: 101,
+    },
   ];
 
   const toggleExpand = (id) => {
     setExpandedNotification(expandedNotification === id ? null : id);
+  };
+
+  const handleApproveItem = (itemId) => {
+    setSelectedItemId(itemId);
+    setIsVerifyModalVisible(true); // Show the modal when the button is clicked
+  };
+
+  const handleModalClose = () => {
+    setIsVerifyModalVisible(false); // Close modal
+    setSelectedItemId(null);
   };
 
   return (
@@ -40,7 +64,6 @@ const NotificationPage = () => {
               className="flex flex-col p-4"
               onClick={() => toggleExpand(notification.id)}
             >
-              {/* Notification Title with Chevron */}
               <div className="flex justify-between items-center">
                 <h3 className="text-md font-bold">{notification.title}</h3>
                 <img
@@ -54,16 +77,28 @@ const NotificationPage = () => {
                 />
               </div>
 
-              {/* Notification Message */}
               <p className="text-sm text-gray-700">{notification.message}</p>
-
-              {/* Notification Date */}
               <p className="text-xs text-gray-400">{notification.date}</p>
 
-              {/* Expandable Progress Bar */}
               {expandedNotification === notification.id && (
-                <div className="mt-4 flex justify-center">
-                  <ProgressBar currentStatus={notification.status} />
+                <div className="mt-4">
+                  {notification.type === "claim" ? (
+                    <div className="flex justify-center">
+                      <ProgressBar currentStatus={notification.status} />
+                    </div>
+                  ) : (
+                    <div className="flex justify-center">
+                      <button
+                        className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleApproveItem(notification.itemId);
+                        }}
+                      >
+                        Verify and Approve
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -71,8 +106,15 @@ const NotificationPage = () => {
         ))}
       </ul>
 
-      {/* Bottom Navigation */}
       <NavigationBar activeTab="notifications" />
+
+      {isVerifyModalVisible && (
+        <VerifyItemModal
+          isVisible={isVerifyModalVisible}
+          onClose={handleModalClose}
+          itemId={selectedItemId}
+        />
+      )}
     </div>
   );
 };

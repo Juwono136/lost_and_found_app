@@ -8,14 +8,18 @@ const ProfilePage = () => {
 
   // Function to handle logout
   const handleLogout = () => {
-    // Logic for logout (e.g., clearing user data, tokens, etc.)
     console.log("User logged out");
     navigate("/login"); // Redirect to login page
   };
 
-  // Function to handle checking status
-  const handleCheckStatus = () => {
-    navigate("/status"); // Redirect to the status page
+  // Function to handle navigating to the Claimed Items Screen
+  const handleViewClaimedItems = () => {
+    navigate("/claimed-items"); // Redirect to the claimed items page
+  };
+
+  // Function to handle navigating to the Found Items Screen
+  const handleFoundItems = () => {
+    navigate("/found-items"); // Redirect to the FoundItemsScreen
   };
 
   return (
@@ -51,12 +55,20 @@ const ProfilePage = () => {
           Edit Profile
         </button>
 
-        {/* Check Status Button */}
+        {/* View Claimed Items Button */}
         <button
-          onClick={handleCheckStatus}
+          onClick={handleViewClaimedItems}
           className="w-full border border-blue-500 text-blue-500 py-3 rounded-lg mb-4"
         >
-          Check Status
+          View Claimed Items
+        </button>
+
+        {/* View Found Items Button */}
+        <button
+          onClick={handleFoundItems}
+          className="w-full border border-blue-500 text-blue-500 py-3 rounded-lg mb-4"
+        >
+          View Found Items
         </button>
 
         {/* Logout Button */}
