@@ -20,14 +20,14 @@ const ClaimItemModal = ({ item, isVisible, onClose }) => {
     setStep(2);
   };
 
-  // Handle verification confirmation (move to meeting step)
-  const handleVerifyClick = () => {
-    setStep(3);
-  };
+  // // Handle verification confirmation (move to meeting step)
+  // const handleVerifyClick = () => {
+  //   setStep(3);
+  // };
 
   // Handle meeting confirmation (move to success step)
   const handleConfirmMeeting = () => {
-    setStep(4);
+    setStep(3);
   };
 
   return createPortal(
@@ -102,18 +102,15 @@ const ClaimItemModal = ({ item, isVisible, onClose }) => {
           </>
         )}
 
-        {step === 2 && (
+        {/* {step === 2 && (
           <>
-            {/* Verification Step */}
             <h2 className="text-lg font-bold mb-4">Verification</h2>
             <p className="mb-4 text-gray-600">
               Describe your lost items as detailed as possible. This is to help
               the finder verify if it is truly yours.
             </p>
 
-            {/* Description Input */}
             <div className="mb-4">
-              {/* <label className="block text-gray-500 mb-1">Description</label> */}
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -122,7 +119,6 @@ const ClaimItemModal = ({ item, isVisible, onClose }) => {
               />
             </div>
 
-            {/* Cancel and Confirm Buttons */}
             <div className="flex justify-between">
               <button onClick={onClose}>Cancel</button>
               <button
@@ -133,9 +129,9 @@ const ClaimItemModal = ({ item, isVisible, onClose }) => {
               </button>
             </div>
           </>
-        )}
+        )} */}
 
-        {step === 3 && (
+        {step === 2 && (
           <>
             {/* Set a meeting modal */}
             <h2 className="text-lg font-bold mb-4">Set a meeting</h2>
@@ -183,7 +179,7 @@ const ClaimItemModal = ({ item, isVisible, onClose }) => {
           </>
         )}
 
-        {step === 4 && (
+        {step === 3 && (
           <>
             {/* Success message */}
             <div className="flex justify-center items-center mb-6">

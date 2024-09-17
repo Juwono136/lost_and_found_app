@@ -1,7 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ItemsCardComponent from "../../components/ItemsCardComponent";
+import BackArrowIcon from "../../assets/back-arrow-icon.svg";
 
 const FoundItemsScreen = () => {
+  const navigate = useNavigate();
+
   const dummyItems = [
     {
       id: 1,
@@ -32,7 +36,17 @@ const FoundItemsScreen = () => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Found Items</h2>
+      {/* Back Arrow and Title */}
+      <div className="flex items-center mb-6">
+        <img
+          src={BackArrowIcon}
+          alt="Back"
+          className="w-6 h-6 cursor-pointer mr-4"
+          onClick={() => navigate(-1)} // Go back to the previous page
+        />
+        <h1 className="text-2xl font-bold">Found Items</h1>
+      </div>
+
       <div className="space-y-4">
         {dummyItems.map((item) => (
           <ItemsCardComponent

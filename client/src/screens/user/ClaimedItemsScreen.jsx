@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ItemsCardComponent from "../../components/ItemsCardComponent";
+import BackArrowIcon from "../../assets/back-arrow-icon.svg";
 
 const ClaimedItemsScreen = () => {
   const navigate = useNavigate();
@@ -30,15 +31,18 @@ const ClaimedItemsScreen = () => {
     // Add more claimed items as needed
   ];
 
-  // Function to handle navigation to the status page for the claimed item
-  const handleItemClick = (itemId) => {
-    navigate(`/status/${itemId}`);
-  };
-
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      {/* Title */}
-      <h1 className="text-2xl font-bold mb-6">Claimed Items</h1>
+      {/* Back Arrow and Title */}
+      <div className="flex items-center mb-6">
+        <img
+          src={BackArrowIcon}
+          alt="Back"
+          className="w-6 h-6 cursor-pointer mr-4"
+          onClick={() => navigate(-1)} // Go back to the previous page
+        />
+        <h1 className="text-2xl font-bold">Claimed Items</h1>
+      </div>
 
       {/* Claimed Items */}
       <div className="grid grid-cols-1 gap-4">
@@ -47,7 +51,7 @@ const ClaimedItemsScreen = () => {
             <ItemsCardComponent
               key={item.id}
               item={item}
-              onClick={() => handleItemClick(item.id)}
+              showDetailButton={true} // Pass true to show the Detail button
             />
           ))
         ) : (

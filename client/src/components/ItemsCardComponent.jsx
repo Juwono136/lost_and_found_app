@@ -5,7 +5,7 @@ import LocationIcon from "../assets/location-icon.svg";
 import ClaimItemModal from "./ClaimItemModal";
 import VerifyItemModal from "./VerifyItemModal";
 
-const ItemsCardComponent = ({ item }) => {
+const ItemsCardComponent = ({ item, showDetailButton }) => {
   const [isClaimModalVisible, setIsClaimModalVisible] = useState(false);
   const [isVerifyModalVisible, setIsVerifyModalVisible] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate
@@ -92,13 +92,15 @@ const ItemsCardComponent = ({ item }) => {
           </div>
         </div>
 
-        {/* Detail Button */}
-        <button
-          onClick={() => handleDetailClick(item.id)}
-          className="text-xs font-bold px-4 py-2 bg-gray-500 text-white text-base rounded-full"
-        >
-          Detail
-        </button>
+        {/* Detail Button (only appears if showDetailButton is true) */}
+        {showDetailButton && (
+          <button
+            onClick={() => handleDetailClick(item.id)}
+            className="text-xs font-bold px-4 py-2 bg-gray-500 text-white text-base rounded-full"
+          >
+            Detail
+          </button>
+        )}
       </div>
 
       {/* Claim Item Modal */}
