@@ -17,7 +17,7 @@ async def create_request(meeting: Meeting):
         raise HTTPException(status_code=400, detail="Invalid item_id format")
 
     # Update the item status to 'On Hold'
-    updated_item = await ItemsCrud.set_item_status(meeting.item_id, "On Hold")
+    updated_item = await ItemsCrud.set_item_status(meeting.item_id, "on hold")
     
     if not updated_item:
         raise HTTPException(status_code=500, detail="Failed to update item status to 'On Hold'")
