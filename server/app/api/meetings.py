@@ -46,9 +46,6 @@ async def list_meetings():
     try:
         # Fetch all meetings
         meetings = await meetingsCollection.find().to_list(1000)
-
-        ItemsCrud.add_item_details(meetings)
-
         return {"meetings": meetings}
     
     except Exception as e:
@@ -64,7 +61,6 @@ async def get_user_meetings(user_id: int):
         cursor = meetingsCollection.find({"user_id": user_id})
         meetings = await cursor.to_list(length=1000)
 
-        ItemsCrud.add_item_details(meetings)
 
         if not meetings:
             raise HTTPException(status_code=404, detail=f"No meetings found for user {user_id}")
@@ -88,8 +84,7 @@ async def list_requests():
 
         if not meetings:
             raise HTTPException(status_code=404, detail="No unapproved meetings found")
-
-        ItemsCrud.add_item_details(meetings)
+        
         return {"meetings": meetings}
     
     except Exception as e:
