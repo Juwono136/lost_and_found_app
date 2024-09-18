@@ -16,7 +16,7 @@ app.add_middleware(
 
 app.include_router(items.items_router, prefix="/items", tags=["items"])
 app.include_router(meetings.meetings_router, prefix="/meeting", tags=["meetings"])
-app.include_router(user_service.user_router, prefix="/user", tags=["user"])
+# app.include_router(user_service.user_router, prefix="/user", tags=["user"])
 
 
 @app.get("/")
