@@ -7,6 +7,7 @@ from crud.items_crud import ItemsCrud
 meetings_router = APIRouter()
 
 
+@meetings_router.post("/request", response_description="Request a meeting", response_model=MeetingResponse)
 async def create_request(meeting: Meeting):
 
     # Convert the `item_id` to ObjectId if necessary
@@ -44,6 +45,7 @@ async def create_request(meeting: Meeting):
         raise HTTPException(status_code=500, detail="Failed to retrieve inserted meeting")
     else:
         raise HTTPException(status_code=500, detail="Failed to post meeting")
+
 
     
 @meetings_router.get("/", response_description="List all meetings with item details", response_model=MeetingsCollection)
