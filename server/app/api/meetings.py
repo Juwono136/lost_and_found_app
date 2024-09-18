@@ -166,12 +166,12 @@ async def reject_meeting(meeting_id: str):
         {"$set": {"status": "rejected"}}
     )
 
-               # Notify the seeker about the approved meeting
+             
     notification = Notifications(
         user_id=updated_meeting.get("user_id"),
         item_id= updated_meeting.get("item_id"),
-        message="Your meeting has been approved. Please be on time.",
-        type="meeting_approved",
+        message="Your meeting request has been rejected.",
+        type="meeting_rejected",
         read=False
     )
     await notifsCollection.insert_one(notification.dict())

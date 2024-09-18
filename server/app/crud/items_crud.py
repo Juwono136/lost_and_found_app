@@ -60,7 +60,12 @@ class ItemsCrud:
             
             # Fetch the updated item
             updated_item = await itemsCollection.find_one({"_id": object_id})
+            
+            if updated_item:
+                updated_item["_id"] = str(updated_item["_id"])
+
             return updated_item
+        
         
         except Exception as e:
             print(f"Error: {e}")

@@ -101,21 +101,17 @@ async def update_item(update: ItemResponse):
 
 @items_router.put("/approve/{item_id}", response_description="Founder approve item")
 async def approve_item(item_id):
-     # Validate item_id format
     try:
-        ObjectId(item_id)  # Check if it's a valid ObjectId
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid item_id format")
-
-    # Call the CRUD function to approve the item
-    updated_item = await ItemsCrud.approve_item(item_id)
+        # Call the CRUD function to approve the item
+        updated_item = await ItemsCrud.approve_item(item_id)
+        
+        if updated_item:
+            return {"message": "Item approved successfully", "item": updated_item}
+        else:
+            raise HTTPException(status_code=404, detail="Item not found")
     
-    if updated_item:
-        return {"message": "Item approved successfully", "item": updated_item}
-    else:
-        raise HTTPException(status_code=404, detail="Item not found")
-    
-    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 
 
