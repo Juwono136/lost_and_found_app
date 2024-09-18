@@ -16,7 +16,13 @@ async def create_request(meeting: Meeting):
     except:
         raise HTTPException(status_code=400, detail="Invalid item_id format")
 
-    # Retrieve the Item from the itemsCollection
+    # Update the item status to 'On Hold'
+    updated_item = await ItemsCrud.set_item_status(meeting.item_id, "On Hold")
+    
+    if not updated_item:
+        raise HTTPException(status_code=500, detail="Failed to update item status to 'On Hold'")
+    
+    # Retrieve the updated Item from the itemsCollection
     item = await itemsCollection.find_one({"_id": item_id})
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
@@ -29,12 +35,6 @@ async def create_request(meeting: Meeting):
     result = await meetingsCollection.insert_one(meeting_data)
     
     if result.inserted_id:
-        # Set the item status to 'On Hold'
-        updated_item = await ItemsCrud.set_item_status(meeting.item_id, "on hold")
-        
-        if not updated_item:
-            raise HTTPException(status_code=500, detail="Failed to update item status to 'On Hold'")
-        
         # Fetch the newly inserted meeting to return it
         inserted_meeting = await meetingsCollection.find_one({"_id": result.inserted_id})
         if inserted_meeting:
@@ -45,7 +45,6 @@ async def create_request(meeting: Meeting):
         raise HTTPException(status_code=500, detail="Failed to retrieve inserted meeting")
     else:
         raise HTTPException(status_code=500, detail="Failed to post meeting")
-
 
     
 @meetings_router.get("/", response_description="List all meetings with item details", response_model=MeetingsCollection)
