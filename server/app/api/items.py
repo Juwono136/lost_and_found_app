@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from db import itemsCollection, meetingsCollection
-from models import Item, ItemsCollection, ItemResponse
+from models import Item, ItemsCollection, ItemResponse, ClaimItem
 from bson import ObjectId
 from crud.items_crud import ItemsCrud
 
@@ -50,19 +50,19 @@ async def delete_item(id: str):
 
 
 
-# @items_router.put("/claim/{id}", response_description="Claim an item", response_model=ItemResponse)
-# async def claim_item(id: str, claim: ClaimItem):
-#     # Define the updated fields
-#     update_fields = {
-#         "status": "claimed",
-#         "claimed_by": claim.claimed_by,
-#         "claim_date": claim.claim_date
-#     }
+@items_router.put("/claim/{id}", response_description="Claim an item", response_model=ItemResponse)
+async def claim_item(id: str, claim: ClaimItem):
+    # Define the updated fields
+    update_fields = {
+        "status": "claimed",
+        "claimed_by": claim.claimed_by,
+        "claim_date": claim.claim_date
+    }
 
-#     # Call the CRUD function to update the item
-#     updated_item = await ItemsCrud.update_item_status(itemsCollection, id, update_fields)
+    # Call the CRUD function to update the item
+    updated_item = await ItemsCrud.update_item_status(itemsCollection, id, update_fields)
 
-#     return ItemResponse(**updated_item)
+    return ItemResponse(**updated_item)
     
 
 
@@ -115,6 +115,7 @@ async def approve_item(item_id):
         raise HTTPException(status_code=404, detail="Item not found")
     
     
+
 
 
 

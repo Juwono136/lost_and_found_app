@@ -70,9 +70,9 @@ class ItemsCollection(BaseModel):
     items: List[ItemResponse]
 
 
-# class ClaimItem(BaseModel):
-#     claimed_by: int
-#     claim_date: str
+class ClaimItem(BaseModel):
+    claimed_by: int
+    claim_date: str
 
 class MeetingCompletion(BaseModel):
     meeting_id: PyObjectId
@@ -136,4 +136,21 @@ class UserSignIn(BaseModel):
     email:str
     password:str
 
-# class Update
+
+class NotifStatus(str, Enum):
+    claim_initiated = "claim_initiated"
+    claim_under_review = "claim_under_review"
+    meeting_approved = "meeting_approved"
+    meeting_rejected = "meeting_rejected"
+    item_claimed = "item_claimed"
+    verification_request = " verification_request"
+    
+
+class Notifications(BaseModel):
+    user_id:PyObjectId
+    item_id:PyObjectId
+    message: str
+    read : bool
+    type: NotifStatus
+    created_at: str = datetime.now()
+  

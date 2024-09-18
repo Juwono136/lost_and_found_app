@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException
 # from models import Item, ItemResponse, ItemPostResponse
-from db import meetingsCollection, itemsCollection
+from db import meetingsCollection, itemsCollection, notifsCollection
 from bson import ObjectId
-from models import Meeting, MeetingResponse, MeetingsCollection, UpdateMeeting, MeetingCompletion 
+from models import Meeting, MeetingResponse, MeetingsCollection, UpdateMeeting, MeetingCompletion, Notifications
+
 from crud.items_crud import ItemsCrud
 from datetime import datetime
 meetings_router = APIRouter()
@@ -86,7 +87,7 @@ async def get_user_meetings(user_id: int):
 async def list_requests():
     try:
         # Fetch all meetings with status "Not Approved"
-        cursor = meetingsCollection.find({"status": "Not Approved"})
+        cursor = meetingsCollection.find({"status": "submitted"})
         meetings = await cursor.to_list(length=1000)
 
         if not meetings:
@@ -123,27 +124,93 @@ async def update_meeting(id: str, update: UpdateMeeting ):
     else:
         raise HTTPException(status_code=404, detail="Meeting not found")
     
+@meetings_router.put("/approve/{meeting_id}", response_description="Approve a meeting request", response_model=MeetingResponse)
+async def approve_meeting(meeting_id: str):
+    object_id = ObjectId(meeting_id)
 
-@meetings_router.put("/update_status/{meeting_id}", response_description="Update if request approved or not", response_model=Meeting)
-async def update_meeting_status(id: str, status: str):
-    object_id = ObjectId(id)
-
-    # update
+    # Update status to "approved"
     result = await meetingsCollection.update_one(
         {"_id": object_id},
-        {"$set": {"status": status}}
+        {"$set": {"status": "approved"}}
     )
 
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Meeting not found")
 
-    # Fetch the updated item
-    updated_item = await meetingsCollection.find_one({"_id": object_id})
+    # Fetch the updated meeting
+    updated_meeting = await meetingsCollection.find_one({"_id": object_id})
 
-    if updated_item:
-        return MeetingResponse(**updated_item)
+           # Notify the seeker about the approved meeting
+    notification = Notifications(
+        user_id=updated_meeting.get("user_id"),
+        item_id= updated_meeting.get("item_id"),
+        message="Your meeting has been approved. Please be on time.",
+        type="meeting_approved",
+        read=False
+    )
+    await notifsCollection.insert_one(notification.dict())
+
+
+    if updated_meeting:
+        return MeetingResponse(**updated_meeting)
     else:
         raise HTTPException(status_code=404, detail="Meeting not found")
+    
+@meetings_router.put("/reject/{meeting_id}", response_description="Reject a meeting request", response_model=MeetingResponse)
+async def reject_meeting(meeting_id: str):
+    object_id = ObjectId(meeting_id)
+
+    # Update status to "rejected"
+    result = await meetingsCollection.update_one(
+        {"_id": object_id},
+        {"$set": {"status": "rejected"}}
+    )
+
+               # Notify the seeker about the approved meeting
+    notification = Notifications(
+        user_id=updated_meeting.get("user_id"),
+        item_id= updated_meeting.get("item_id"),
+        message="Your meeting has been approved. Please be on time.",
+        type="meeting_approved",
+        read=False
+    )
+    await notifsCollection.insert_one(notification.dict())
+
+
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+
+    # Fetch the updated meeting
+    updated_meeting = await meetingsCollection.find_one({"_id": object_id})
+
+
+    if updated_meeting:
+        return MeetingResponse(**updated_meeting)
+    else:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+
+
+
+# @meetings_router.put("/update_status/{meeting_id}", response_description="Update if request approved or not", response_model=Meeting)
+# async def update_meeting_status(id: str, status: str):
+#     object_id = ObjectId(id)
+
+#     # update
+#     result = await meetingsCollection.update_one(
+#         {"_id": object_id},
+#         {"$set": {"status": status}}
+#     )
+
+#     if result.matched_count == 0:
+#         raise HTTPException(status_code=404, detail="Meeting not found")
+
+#     # Fetch the updated item
+#     updated_item = await meetingsCollection.find_one({"_id": object_id})
+
+#     if updated_item:
+#         return MeetingResponse(**updated_item)
+#     else:
+#         raise HTTPException(status_code=404, detail="Meeting not found")
     
 
 @meetings_router.delete("/cancel/{meeting_id}", response_description="Cancel/delete a meeting")
@@ -170,10 +237,6 @@ async def complete_meeting(meeting_completion: MeetingCompletion):
     if not meeting:
         raise HTTPException(status_code=404, detail="Meeting not found")
 
-    user_id = meeting.get("user_id")
-    if not user_id:
-        raise HTTPException(status_code=404, detail="User not found in the meeting")
-
     # Update the meeting status to "completed"
     result = await meetingsCollection.update_one(
         {"_id": ObjectId(meeting_id)},
@@ -182,17 +245,4 @@ async def complete_meeting(meeting_completion: MeetingCompletion):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Meeting not found")
 
-    # Update the item status to "claimed"
-    item_id = meeting.get("item_id")
-    if item_id:
-        update_fields = {
-            "status": "claimed",
-            "claimed_by": user_id,
-            "claim_date": datetime.now()
-        }
-        updated_item = await ItemsCrud.update_item_status(itemsCollection, item_id, update_fields)
-
-        if not updated_item:
-            raise HTTPException(status_code=404, detail="Item not found")
-
-    return {"message": "Meeting completed and item claimed successfully"}
+    return {"message": "Meeting completed successfully"}
