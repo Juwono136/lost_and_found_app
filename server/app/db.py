@@ -15,6 +15,20 @@ itemsCollection = db.get_collection("items")
 meetingsCollection = db.get_collection('meetings')
 
 
+async def listen_to_changes():
+    async with itemsCollection.watch() as stream:
+        async for change in stream:
+            if change['operationType'] == 'update':
+                item_id = change['documentKey']['_id']
+                updated_fields = change['updateDescription']['updatedFields']
+
+                # Update meetings with the updated item details
+                await meetingsCollection.update_many(
+                    {"item._id": item_id},
+                    {"$set": {"item.$[elem]": updated_fields}},
+                    array_filters=[{"elem._id": item_id}]
+                )
+
 
 # try:
 #     client.admin.command('ping')
