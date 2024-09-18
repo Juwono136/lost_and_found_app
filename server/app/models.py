@@ -79,9 +79,10 @@ class ItemUpdate(BaseModel):
     
 
 class MeetingStatus(str, Enum):
-    not_approved = "Not Approved"
-    approved = "Approved"
-    declined = "Declined"
+    submitted = "submitted"
+    approved= "approved"
+    rejected = "rejected"
+    completed = "completed"
 
 
 class Meeting(BaseModel):
@@ -89,7 +90,7 @@ class Meeting(BaseModel):
     item_id: PyObjectId
     meeting_date: str
     location: str
-    status: Optional[MeetingStatus]= MeetingStatus.not_approved
+    status: Optional[MeetingStatus]= MeetingStatus.submitted
 
     class Config:
         orm_mode = True
@@ -99,7 +100,7 @@ class Meeting(BaseModel):
                 "item_id": "66e3265dd3279cd0f30238f4",
                 "meeting_date": "2024-09-13T11:00:00Z",
                 "location": "Pos security di lobby Binus FX",
-                "status": "Not Approved"
+                "status": "submitted"
             }
         }
 

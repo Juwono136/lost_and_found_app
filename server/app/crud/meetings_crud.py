@@ -3,7 +3,7 @@ from typing import Optional, List
 from datetime import datetime
 from bson import DBRef
 
-from server.app.models.models import ItemsCollection
+from server.app.models import ItemsCollection
 from db import meetingsCollection
 
 class MeetingsCrud:
@@ -13,8 +13,8 @@ class MeetingsCrud:
     #     tracker = Tracker(**data.dict(), owner=user)
     #     return await tracker.insert()
 
-    # get all data
-    async def 
+    # # get all data
+    # async def 
    
     # @staticmethod
     # async def get_trackers_between_dates(user: User, past_week: datetime, today: datetime) -> List[Tracker]:
