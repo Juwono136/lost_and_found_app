@@ -127,3 +127,7 @@ class UserSignUp(BaseModel):
     program:str
     password:str
     confirmPassword:str
+
+class UserSignIn(BaseModel):
+    email:str
+    password:str

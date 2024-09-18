@@ -24,10 +24,31 @@ class UserCrud:
             except httpx.HTTPStatusError as exc:
                 raise HTTPException(status_code=response.status_code, detail=f"Error signing up user: {exc}")
             except httpx.RequestError as exc:
-                raise HTTPException(status_code=500, detail=f"Error communicating with user service: {exc}")
+                raise HTTPException(status_code=500, detail=f"Error communicating with user service api: {exc}")
             
     
+    async def signin(input):
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(f"{api}/signin", json=input)
+                response.raise_for_status()
+                return response.json()
+            except httpx.HTTPStatusError as exc:
+                raise HTTPException(status_code=response.status_code, detail=f"Error signing in: {exc}")
+            except httpx.RequestError as exc:
+                raise HTTPException(status_code=500, detail=f"Error communicating with user service api {exc}")
             
+
+    async def logout():
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.get(f"{api}/logout")
+                response.raise_for_status()
+                return response.json()
+            except httpx.HTTPStatusError as exc:
+                raise HTTPException(status_code=response.status_code, detail=f"Error logging out: {exc}")
+            except httpx.RequestError as exc:
+                raise HTTPException(status_code=500, detail=f"Error communicating with user service api {exc}")
     
     # async def get_user(user_id: str):
     #     """Fetch user details from an external API."""
