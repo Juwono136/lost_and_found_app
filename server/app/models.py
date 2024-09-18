@@ -70,10 +70,12 @@ class ItemsCollection(BaseModel):
     items: List[ItemResponse]
 
 
-class ClaimItem(BaseModel):
-    claimed_by: int
-    claim_date: str
+# class ClaimItem(BaseModel):
+#     claimed_by: int
+#     claim_date: str
 
+class MeetingCompletion(BaseModel):
+    meeting_id: PyObjectId
 
 class ItemUpdate(BaseModel):
     name : str

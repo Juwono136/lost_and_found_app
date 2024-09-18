@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from db import itemsCollection, meetingsCollection
-from models import Item, ItemsCollection, ItemResponse, ClaimItem
+from models import Item, ItemsCollection, ItemResponse
 from bson import ObjectId
 from crud.items_crud import ItemsCrud
 
@@ -50,19 +50,19 @@ async def delete_item(id: str):
 
 
 
-@items_router.put("/claim/{id}", response_description="Claim an item", response_model=ItemResponse)
-async def claim_item(id: str, claim: ClaimItem):
-    # Define the updated fields
-    update_fields = {
-        "status": "Claimed",
-        "claimed_by": claim.claimed_by,
-        "claim_date": claim.claim_date
-    }
+# @items_router.put("/claim/{id}", response_description="Claim an item", response_model=ItemResponse)
+# async def claim_item(id: str, claim: ClaimItem):
+#     # Define the updated fields
+#     update_fields = {
+#         "status": "claimed",
+#         "claimed_by": claim.claimed_by,
+#         "claim_date": claim.claim_date
+#     }
 
-    # Call the CRUD function to update the item
-    updated_item = await ItemsCrud.update_item_status(itemsCollection, id, update_fields)
+#     # Call the CRUD function to update the item
+#     updated_item = await ItemsCrud.update_item_status(itemsCollection, id, update_fields)
 
-    return ItemResponse(**updated_item)
+#     return ItemResponse(**updated_item)
     
 
 
@@ -114,21 +114,8 @@ async def approve_item(item_id):
     else:
         raise HTTPException(status_code=404, detail="Item not found")
     
-@items_router.get("/on_hold/{item_id}", response_description="Change item status to on hold when user sets up a meeting")
-async def onhold_item(item_id):
-     # Validate item_id format
-    try:
-        ObjectId(item_id)  # Check if it's a valid ObjectId
-    except Exception:
-        raise HTTPException(status_code=400, detail="Invalid item_id format")
-
-    # Call the CRUD function to approve the item
-    updated_item = await ItemsCrud.approve_item(item_id)
     
-    if updated_item:
-        return {"message": "Item approved successfully", "item": updated_item}
-    else:
-        raise HTTPException(status_code=404, detail="Item not found")
+
 
 
 # waitiing for approval 

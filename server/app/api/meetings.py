@@ -2,8 +2,9 @@ from fastapi import APIRouter, HTTPException
 # from models import Item, ItemResponse, ItemPostResponse
 from db import meetingsCollection, itemsCollection
 from bson import ObjectId
-from models import Meeting, MeetingResponse, MeetingsCollection, UpdateMeeting, MeetingStatus, Item
+from models import Meeting, MeetingResponse, MeetingsCollection, UpdateMeeting, MeetingCompletion 
 from crud.items_crud import ItemsCrud
+from datetime import datetime
 meetings_router = APIRouter()
 
 
@@ -160,4 +161,38 @@ async def delete_meeting(meeting_id: str):
         raise HTTPException(status_code=500, detail=str(e))
     
 
+@meetings_router.put("/complete/", response_description="Complete a meeting and claim the item")
+async def complete_meeting(meeting_completion: MeetingCompletion):
+    meeting_id = meeting_completion.meeting_id
 
+    # Fetch the meeting details
+    meeting = await meetingsCollection.find_one({"_id": ObjectId(meeting_id)})
+    if not meeting:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+
+    user_id = meeting.get("user_id")
+    if not user_id:
+        raise HTTPException(status_code=404, detail="User not found in the meeting")
+
+    # Update the meeting status to "completed"
+    result = await meetingsCollection.update_one(
+        {"_id": ObjectId(meeting_id)},
+        {"$set": {"status": "completed"}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+
+    # Update the item status to "claimed"
+    item_id = meeting.get("item_id")
+    if item_id:
+        update_fields = {
+            "status": "claimed",
+            "claimed_by": user_id,
+            "claim_date": datetime.now()
+        }
+        updated_item = await ItemsCrud.update_item_status(itemsCollection, item_id, update_fields)
+
+        if not updated_item:
+            raise HTTPException(status_code=404, detail="Item not found")
+
+    return {"message": "Meeting completed and item claimed successfully"}
