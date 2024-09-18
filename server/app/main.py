@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api import items, meetings, user_service
+from api import items, meetings,notifications
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 from db import itemsCollection, meetingsCollection, client
@@ -21,6 +21,7 @@ app.add_middleware(
 
 app.include_router(items.items_router, prefix="/items", tags=["items"])
 app.include_router(meetings.meetings_router, prefix="/meeting", tags=["meetings"])
+app.include_router(notifications.notifs_router, prefix="/notification", tags=["notifications"])
 # app.include_router(user_service.user_router, prefix="/user", tags=["user"])
 
 

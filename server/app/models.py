@@ -142,14 +142,15 @@ class NotifStatus(str, Enum):
     meeting_approved = "meeting_approved"
     meeting_rejected = "meeting_rejected"
     item_claimed = "item_claimed"
-    verification_request = " verification_request"
+    verification_request = "verification_request"
     
 
 class Notifications(BaseModel):
-    user_id:PyObjectId
+    user_id:int
     item_id:PyObjectId
+    title: str
     message: str
     read : bool
     type: NotifStatus
-    created_at: str = datetime.now()
+    created_at: datetime = datetime.now()
   
