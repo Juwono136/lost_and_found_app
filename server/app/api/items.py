@@ -3,6 +3,7 @@ from db import itemsCollection, meetingsCollection
 from models import Item, ItemsCollection, ItemResponse, ClaimItem
 from bson import ObjectId
 from crud.items_crud import ItemsCrud
+from datetime import datetime
 
 
 
@@ -56,7 +57,7 @@ async def claim_item(id: str, claim: ClaimItem):
     update_fields = {
         "status": "claimed",
         "claimed_by": claim.claimed_by,
-        "claim_date": claim.claim_date
+        "claim_date": datetime.now()
     }
 
     # Call the CRUD function to update the item

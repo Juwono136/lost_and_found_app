@@ -72,7 +72,6 @@ class ItemsCollection(BaseModel):
 
 class ClaimItem(BaseModel):
     claimed_by: int
-    claim_date: str
 
 class MeetingCompletion(BaseModel):
     meeting_id: PyObjectId
