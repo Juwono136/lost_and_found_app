@@ -11,8 +11,9 @@ PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
 class ItemStatus(str, Enum):
-    not_approved = "Not Approved"
-    found = "Found"
+    waiting_for_approval = "waiting for approval"
+    active = "active"
+    onhold = "on hold"
     claimed = "Claimed"
 
 class Item(BaseModel):
@@ -24,7 +25,7 @@ class Item(BaseModel):
     found_at: str
     storing_location: str
     date_reported: Optional[str] = datetime.now()
-    status: Optional[ItemStatus] = ItemStatus.not_approved
+    status: Optional[ItemStatus] = ItemStatus.waiting_for_approval
     PIC: int #person in charge
     founded_by: Optional[int] = None  # ID of the user who found the item
     claimed_by: Optional[int] = None  # ID of the user who claimed the item
