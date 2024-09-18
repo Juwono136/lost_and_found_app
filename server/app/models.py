@@ -9,6 +9,12 @@ from datetime import datetime
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
 
+
+class ItemStatus(str, Enum):
+    not_approved = "Not Approved"
+    found = "Found"
+    claimed = "Claimed"
+
 class Item(BaseModel):
     name: str
     category: str
@@ -17,13 +23,13 @@ class Item(BaseModel):
     campus: str
     found_at: str
     storing_location: str
-    date_reported: str
-    status: Optional[str] = "Found" 
-    PIC: str #person in charge
+    date_reported: Optional[str] = None
+    status: Optional[str] = ItemStatus.not_approved
+    PIC: int #person in charge
     founded_by: Optional[int] = None  # ID of the user who found the item
     claimed_by: Optional[int] = None  # ID of the user who claimed the item
     claim_date: Optional[str] = None
-    published_at: Optional[str] = datetime.now().isoformat()     
+    published_at: Optional[str] = None    
 
     class Config:
         orm_mode = True,
@@ -68,6 +74,9 @@ class ClaimItem(BaseModel):
     claim_date: str
 
 
+class ItemUpdate(BaseModel):
+    name : str
+    
 
 class MeetingStatus(str, Enum):
     not_approved = "Not Approved"
@@ -111,3 +120,10 @@ class UpdateMeeting(BaseModel):
     location: str
 
 
+class UserSignUp(BaseModel):
+    binusian_id:str
+    name:str
+    email:str
+    program:str
+    password:str
+    confirmPassword:str

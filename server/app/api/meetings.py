@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from db import meetingsCollection, itemsCollection
 from bson import ObjectId
 from models import Meeting, MeetingResponse, MeetingsCollection, UpdateMeeting, MeetingStatus, Item
-
+from crud.items_crud import ItemsCrud
 meetings_router = APIRouter()
 
 
@@ -25,22 +25,7 @@ async def list_meetings():
         # Fetch all meetings
         meetings = await meetingsCollection.find().to_list(1000)
 
-        # Fetch item details for each meeting
-        for meeting in meetings:
-            item_id = meeting.get('item_id')
-            if item_id:
-                try:
-                    # Convert item_id to ObjectId and fetch item details
-                    item = await itemsCollection.find_one({"_id": ObjectId(item_id)})
-                    if item:
-                        # Add item details to meeting
-                        meeting['item'] = Item(**item).dict()
-                    else:
-                        meeting['item'] = None  # If item not found
-                except Exception as e:
-                    meeting['item'] = None  # Handle invalid ObjectId or other issues
-            else:
-                meeting['item'] = None  # Handle missing item_id
+        ItemsCrud.add_item_details(meetings)
 
         return {"meetings": meetings}
     
@@ -57,25 +42,13 @@ async def get_user_meetings(user_id: int):
         cursor = meetingsCollection.find({"user_id": user_id})
         meetings = await cursor.to_list(length=1000)
 
+        ItemsCrud.add_item_details(meetings)
+
         if not meetings:
             raise HTTPException(status_code=404, detail=f"No meetings found for user {user_id}")
 
         # Fetch item details for each meeting
-        for meeting in meetings:
-            item_id = meeting.get('item_id')
-            if item_id:
-                try:
-                    # Convert item_id to ObjectId and fetch item details
-                    item = await itemsCollection.find_one({"_id": ObjectId(item_id)})
-                    if item:
-                        # Add item details to meeting
-                        meeting['item'] = dict(Item(**item))
-                    else:
-                        meeting['item'] = None  # If item not found
-                except Exception as e:
-                    meeting['item'] = None  # Handle invalid ObjectId or other issues
-            else:
-                meeting['item'] = None  # Handle missing item_id
+        
 
         return {"meetings": meetings}
     
@@ -94,22 +67,7 @@ async def list_requests():
         if not meetings:
             raise HTTPException(status_code=404, detail="No unapproved meetings found")
 
-        # Fetch item details for each meeting
-        for meeting in meetings:
-            item_id = meeting.get('item_id')
-            if item_id:
-                try:
-                    item = await itemsCollection.find_one({"_id": ObjectId(item_id)})
-                    if item:
-                        # Convert item to a dict and add it to meeting
-                        meeting['item'] = dict(Item(**item))
-                    else:
-                        meeting['item'] = None  # If item not found
-                except Exception as e:
-                    meeting['item'] = None  # Handle invalid ObjectId or other issues
-            else:
-                meeting['item'] = None  # Handle missing item_id
-
+        ItemsCrud.add_item_details(meetings)
         return {"meetings": meetings}
     
     except Exception as e:
