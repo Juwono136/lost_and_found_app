@@ -23,8 +23,8 @@ class Item(BaseModel):
     campus: str
     found_at: str
     storing_location: str
-    date_reported: Optional[str] = None
-    status: Optional[str] = ItemStatus.not_approved
+    date_reported: Optional[str] = datetime.now()
+    status: Optional[ItemStatus] = ItemStatus.not_approved
     PIC: int #person in charge
     founded_by: Optional[int] = None  # ID of the user who found the item
     claimed_by: Optional[int] = None  # ID of the user who claimed the item
@@ -90,7 +90,6 @@ class Meeting(BaseModel):
     meeting_date: str
     location: str
     status: Optional[MeetingStatus]= MeetingStatus.not_approved
-    item: Optional[Dict] = None 
 
     class Config:
         orm_mode = True
@@ -107,6 +106,7 @@ class Meeting(BaseModel):
 
 class MeetingResponse(Meeting):
     id: PyObjectId = Field(alias="_id")
+    item: Item
 
 class MeetingsCollection(BaseModel):
     """
@@ -131,3 +131,5 @@ class UserSignUp(BaseModel):
 class UserSignIn(BaseModel):
     email:str
     password:str
+
+# class Update

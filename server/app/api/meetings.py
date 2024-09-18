@@ -7,26 +7,45 @@ from crud.items_crud import ItemsCrud
 meetings_router = APIRouter()
 
 
-@meetings_router.post("/request", response_description="Request a meeting")
+@meetings_router.post("/request", response_description="Request a meeting", response_model=MeetingResponse)
 async def create_request(meeting: Meeting):
-    
 
-    result = await meetingsCollection.insert_one(dict(meeting))
+    # Convert the `item_id` to ObjectId if necessary
+    try:
+        item_id = ObjectId(meeting.item_id)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid item_id format")
+
+    # Retrieve the Item from the itemsCollection
+    item = await itemsCollection.find_one({"_id": item_id})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    # Add the retrieved Item document to the meeting document
+    meeting_data = dict(meeting)
+    meeting_data["item"] = item  # Insert the Item document in the Meeting
+
+    # Insert the Meeting document into the meetingsCollection
+    result = await meetingsCollection.insert_one(meeting_data)
+    
     if result.inserted_id:
-        return {"message": "Meeting posted successfully"}
-    
+        # Fetch the newly inserted meeting to return it
+        inserted_meeting = await meetingsCollection.find_one({"_id": result.inserted_id})
+        if inserted_meeting:
+            # Convert `_id` to string for the response
+            inserted_meeting["_id"] = str(inserted_meeting["_id"])
+            return MeetingResponse(**inserted_meeting)
+        
+        raise HTTPException(status_code=500, detail="Failed to retrieve inserted meeting")
     else:
-        raise HTTPException(status_code=500, detail="Failed to post item")
-    
+        raise HTTPException(status_code=500, detail="Failed to post meeting")
+
     
 @meetings_router.get("/", response_description="List all meetings with item details", response_model=MeetingsCollection)
 async def list_meetings():
     try:
         # Fetch all meetings
         meetings = await meetingsCollection.find().to_list(1000)
-
-        ItemsCrud.add_item_details(meetings)
-
         return {"meetings": meetings}
     
     except Exception as e:
@@ -42,7 +61,6 @@ async def get_user_meetings(user_id: int):
         cursor = meetingsCollection.find({"user_id": user_id})
         meetings = await cursor.to_list(length=1000)
 
-        ItemsCrud.add_item_details(meetings)
 
         if not meetings:
             raise HTTPException(status_code=404, detail=f"No meetings found for user {user_id}")
@@ -66,8 +84,7 @@ async def list_requests():
 
         if not meetings:
             raise HTTPException(status_code=404, detail="No unapproved meetings found")
-
-        ItemsCrud.add_item_details(meetings)
+        
         return {"meetings": meetings}
     
     except Exception as e:

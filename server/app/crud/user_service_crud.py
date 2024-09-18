@@ -64,6 +64,19 @@ class UserCrud:
     #         except httpx.RequestError as exc:
     #             raise HTTPException(status_code=500, detail=f"Error communicating with user service: {exc}")
 
+    async def get_current_user():
+        """Fetch current users from an external API."""
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.get(f"{api}/user_infor")
+                response.raise_for_status()
+                users_data = response.json()
+                return users_data
+            except httpx.HTTPStatusError:
+                raise HTTPException(status_code=404, detail="User not found")
+            except httpx.RequestError as exc:
+                raise HTTPException(status_code=500, detail=f"Error communicating with user service: {exc}")
+            
     async def get_all_users():
         """Fetch a list of all users from an external API."""
         async with httpx.AsyncClient() as client:
@@ -76,4 +89,30 @@ class UserCrud:
                 raise HTTPException(status_code=404, detail="Users not found")
             except httpx.RequestError as exc:
                 raise HTTPException(status_code=500, detail=f"Error communicating with user service: {exc}")
+ 
+
+    async def refresh_token():
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(f"{api}/refresh_token")
+                response.raise_for_status()
+                users_data = response.json()
+                return users_data
+            except httpx.HTTPStatusError:
+                raise HTTPException(status_code=404, detail="Error refreshing token")
+            except httpx.RequestError as exc:
+                raise HTTPException(status_code=500, detail=f"Error communicating with user service: {exc}")
+            
+    async def forget_password():
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(f"{api}/forgot")
+                response.raise_for_status()
+                users_data = response.json()
+                return users_data
+            except httpx.HTTPStatusError:
+                raise HTTPException(status_code=404, detail="Error requesting password reset")
+            except httpx.RequestError as exc:
+                raise HTTPException(status_code=500, detail=f"Error communicating with user service: {exc}")
+
 
