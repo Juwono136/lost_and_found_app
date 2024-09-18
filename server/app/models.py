@@ -14,7 +14,7 @@ class ItemStatus(str, Enum):
     waiting_for_approval = "waiting for approval"
     active = "active"
     onhold = "on hold"
-    claimed = "Claimed"
+    claimed = "claimed"
 
 class Item(BaseModel):
     name: str

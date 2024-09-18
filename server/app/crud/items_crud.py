@@ -51,7 +51,8 @@ class ItemsCrud:
             # Update the status to 'Approved'
             result = await itemsCollection.update_one(
                 {"_id": object_id},
-                {"$set": {"status": "Approved"}}
+                {"$set": {"status": "active"}}
+                
             )
             
             if result.matched_count == 0:
@@ -66,6 +67,31 @@ class ItemsCrud:
             return None
     
     # async def activate_item()
+
+
+
+    async def set_item_status(item_id: str, status: str):
+        try:
+            # Convert item_id to ObjectId
+            object_id = ObjectId(item_id)
+            
+            # Update the status
+            result = await itemsCollection.update_one(
+                {"_id": object_id},
+                {"$set": {"status": status}}
+            )
+            
+            if result.matched_count == 0:
+                return None  # No item found with this id
+            
+            # Fetch the updated item
+            updated_item = await itemsCollection.find_one({"_id": object_id})
+            return updated_item
+        
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
+
 
 
 

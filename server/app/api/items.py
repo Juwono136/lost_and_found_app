@@ -98,21 +98,37 @@ async def update_item(update: ItemResponse):
         raise HTTPException(status_code=500, detail=str(e))
     
 
-# @items_router.get("/approve/{item_id}")
-# async def approve_item():
-#      # Validate item_id format
-#     try:
-#         ObjectId(item_id)  # Check if it's a valid ObjectId
-#     except Exception:
-#         raise HTTPException(status_code=400, detail="Invalid item_id format")
+@items_router.get("/approve/{item_id}", response_description="Founder approve item")
+async def approve_item(item_id):
+     # Validate item_id format
+    try:
+        ObjectId(item_id)  # Check if it's a valid ObjectId
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid item_id format")
 
-#     # Call the CRUD function to approve the item
-#     updated_item = await ItemsCrud.approve_item(item_id)
+    # Call the CRUD function to approve the item
+    updated_item = await ItemsCrud.approve_item(item_id)
     
-#     if updated_item:
-#         return {"message": "Item approved successfully", "item": updated_item}
-#     else:
-#         raise HTTPException(status_code=404, detail="Item not found")
+    if updated_item:
+        return {"message": "Item approved successfully", "item": updated_item}
+    else:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+@items_router.get("/on_hold/{item_id}", response_description="Change item status to on hold when user sets up a meeting")
+async def onhold_item(item_id):
+     # Validate item_id format
+    try:
+        ObjectId(item_id)  # Check if it's a valid ObjectId
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid item_id format")
+
+    # Call the CRUD function to approve the item
+    updated_item = await ItemsCrud.approve_item(item_id)
+    
+    if updated_item:
+        return {"message": "Item approved successfully", "item": updated_item}
+    else:
+        raise HTTPException(status_code=404, detail="Item not found")
 
 
 # waitiing for approval 

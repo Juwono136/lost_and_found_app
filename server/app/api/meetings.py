@@ -7,7 +7,6 @@ from crud.items_crud import ItemsCrud
 meetings_router = APIRouter()
 
 
-@meetings_router.post("/request", response_description="Request a meeting", response_model=MeetingResponse)
 async def create_request(meeting: Meeting):
 
     # Convert the `item_id` to ObjectId if necessary
@@ -29,6 +28,12 @@ async def create_request(meeting: Meeting):
     result = await meetingsCollection.insert_one(meeting_data)
     
     if result.inserted_id:
+        # Set the item status to 'On Hold'
+        updated_item = await ItemsCrud.set_item_status(meeting.item_id, "on hold")
+        
+        if not updated_item:
+            raise HTTPException(status_code=500, detail="Failed to update item status to 'On Hold'")
+        
         # Fetch the newly inserted meeting to return it
         inserted_meeting = await meetingsCollection.find_one({"_id": result.inserted_id})
         if inserted_meeting:
