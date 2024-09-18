@@ -5,10 +5,15 @@ import LocationIcon from "../assets/location-icon.svg";
 import ClaimItemModal from "./ClaimItemModal";
 import VerifyItemModal from "./VerifyItemModal";
 
-const ItemsCardComponent = ({ item, showDetailButton }) => {
+const ItemsCardComponent = ({
+  item,
+  showDetailButton,
+  showClaimButton = true,
+  loggedInUserId,
+}) => {
   const [isClaimModalVisible, setIsClaimModalVisible] = useState(false);
   const [isVerifyModalVisible, setIsVerifyModalVisible] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const openClaimModal = () => {
     setIsClaimModalVisible(true);
@@ -40,7 +45,7 @@ const ItemsCardComponent = ({ item, showDetailButton }) => {
         </div>
 
         {/* Claim Button for Claimable Items */}
-        {item.status === "waiting" && (
+        {showClaimButton && item.status === "active" && (
           <button
             onClick={openClaimModal}
             className="text-xs font-bold px-4 py-2 bg-blue-500 text-white text-base rounded-full"
@@ -49,15 +54,16 @@ const ItemsCardComponent = ({ item, showDetailButton }) => {
           </button>
         )}
 
-        {/* Verify Button for Founders */}
-        {item.status === "waiting for approval" && (
-          <button
-            onClick={openVerifyModal}
-            className="text-xs font-bold px-4 py-2 bg-blue-500 text-white text-base rounded-full"
-          >
-            Verify
-          </button>
-        )}
+        {/* Verify Button for Founders (Only show if logged in user matches foundedBy field) */}
+        {item.status === "waiting for approval" &&
+          item.foundedBy === loggedInUserId && (
+            <button
+              onClick={openVerifyModal}
+              className="text-xs font-bold px-4 py-2 bg-blue-500 text-white text-base rounded-full"
+            >
+              Verify
+            </button>
+          )}
       </div>
 
       {/* Location, Date, and Time */}
@@ -80,15 +86,19 @@ const ItemsCardComponent = ({ item, showDetailButton }) => {
           <div className="px-3 py-1 bg-[#F1EDED] text-xs text-[#858585] rounded-full">
             {item.category}
           </div>
-          <div
-            className={`px-3 py-1 text-[12px] flex items-center justify-center rounded-full border ${
-              item.status === "waiting" ||
-              item.status === "waiting for approval"
-                ? "border-blue-500 text-blue-500"
-                : "border-red-500 text-red-500"
-            }`}
-          >
-            {item.status === "waiting" ? "Waiting" : "Claimed"}
+
+          <div>
+            {item.status === "active" || item.status === "claimed" ? (
+              <div
+                className={`px-3 py-1 text-[12px] flex items-center justify-center rounded-full border ${
+                  item.status === "active"
+                    ? "border-blue-500 text-blue-500"
+                    : "border-red-500 text-red-500"
+                }`}
+              >
+                {item.status === "active" ? "Active" : "Claimed"}
+              </div>
+            ) : null}
           </div>
         </div>
 
