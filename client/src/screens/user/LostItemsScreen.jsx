@@ -13,7 +13,7 @@ const LostMainScreen = ({ items, mostRecentItems, onSearchFocus }) => {
 
   return (
     <div
-      className={`bg-[#4880EE] pb-16 min-h-screen transition-opacity ${
+      className={`bg-[#4880EE] pb-16 min-h-screen flex flex-col transition-opacity ${
         fadeOut ? "opacity-0" : "opacity-100"
       }`}
     >
@@ -21,7 +21,7 @@ const LostMainScreen = ({ items, mostRecentItems, onSearchFocus }) => {
       <Header userName="John" onSearchFocus={handleSearchFocus} />
 
       {/* Main content */}
-      <div className="bg-[#F8F8F8] rounded-lg mt-6 max-w-4xl px-4 py-6">
+      <div className="bg-[#F8F8F8] rounded-lg mt-6 max-w-4xl px-4 py-6 flex-grow">
         {/* Most Recent Section */}
         <h2 className="text-xl font-bold pb-4">Most Recent</h2>
         <div className="-mx-4">

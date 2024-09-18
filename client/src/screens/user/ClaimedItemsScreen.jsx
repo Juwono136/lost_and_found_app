@@ -87,7 +87,7 @@ const ClaimedItemsScreen = () => {
             <ItemsCardComponent
               key={item.id}
               item={item}
-              showDetailButton={true} // Pass true to show the Detail button
+              showDetailButton={true}
             />
           ))
         ) : (

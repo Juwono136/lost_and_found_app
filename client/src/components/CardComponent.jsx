@@ -44,12 +44,12 @@ const CardComponent = ({ items }) => {
             </div>
             <div
               className={`px-2 py-1 text-xxs flex items-center justify-center rounded-full border ${
-                item.status === "waiting"
+                item.status === "active"
                   ? "border-blue-500 text-blue-500"
                   : "border-red-500 text-red-500"
               }`}
             >
-              {item.status === "waiting" ? "Waiting" : "Claimed"}
+              {item.status === "active" ? "Active" : "Claimed"}
             </div>
           </div>
         </div>

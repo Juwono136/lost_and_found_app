@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CompletedStepIcon from "../../assets/completed-step-icon.svg";
+import RejectedStepIcon from "../../assets/rejected-step-icon.svg"; // Add RejectedStepIcon import
 import BackArrowIcon from "../../assets/back-arrow-icon.svg";
 
 const StatusPage = () => {
   const navigate = useNavigate();
-  const [currentStatus, setCurrentStatus] = useState(2); // Example status: "Under Review"
+  const [currentStatus, setCurrentStatus] = useState(2);
+  const [meetingRejected, setMeetingRejected] = useState(true); // New state to track rejection
 
   const statusSteps = [
     { label: "Claim Submitted", completed: currentStatus >= 0 },
@@ -45,7 +47,9 @@ const StatusPage = () => {
 
             {/* Icons */}
             <div className="relative z-10 w-8 h-8">
-              {step.completed ? (
+              {index === 2 && meetingRejected ? ( // Condition for rejected meeting
+                <img src={RejectedStepIcon} alt="Rejected Step" />
+              ) : step.completed ? (
                 <img src={CompletedStepIcon} alt="Completed Step" />
               ) : (
                 <div className="w-full h-full border-2 border-gray-400 rounded-full bg-white"></div>
@@ -78,15 +82,24 @@ const StatusPage = () => {
               12/13/2023, 11:15 AM
             </span>
           </li>
-          <li>
-            <span>
-              Request for meeting approval has been sent. Please wait for
-              confirmation.
-            </span>
-            <span className="block text-xs text-gray-400">
-              12/14/2023, 09:00 AM
-            </span>
-          </li>
+          {meetingRejected ? (
+            <li>
+              <span>Your meeting request was rejected.</span>
+              <span className="block text-xs text-gray-400">
+                12/14/2023, 09:00 AM
+              </span>
+            </li>
+          ) : (
+            <li>
+              <span>
+                Request for meeting approval has been sent. Please wait for
+                confirmation.
+              </span>
+              <span className="block text-xs text-gray-400">
+                12/14/2023, 09:00 AM
+              </span>
+            </li>
+          )}
         </ul>
       </div>
     </div>

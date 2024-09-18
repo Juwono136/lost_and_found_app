@@ -68,6 +68,7 @@ const FoundItemsScreen = () => {
             <ItemsCardComponent
               key={item.id}
               item={item}
+              showClaimButton={false}
               onClick={() => handleVerification(item.id)}
               buttonLabel={
                 item.status === "waiting for approval" ? "Verify" : ""
