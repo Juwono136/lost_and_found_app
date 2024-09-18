@@ -51,8 +51,8 @@ async def delete_item(id: str):
 
 
 
-@items_router.put("/claim/{id}", response_description="Claim an item", response_model=ItemResponse)
-async def claim_item(id: str, claim: ClaimItem):
+@items_router.put("/claim/{item_id}", response_description="Claim an item", response_model=ItemResponse)
+async def claim_item(item_id: str, claim: ClaimItem):
     # Define the updated fields
     update_fields = {
         "status": "claimed",
@@ -61,7 +61,7 @@ async def claim_item(id: str, claim: ClaimItem):
     }
 
     # Call the CRUD function to update the item
-    updated_item = await ItemsCrud.update_item_status(itemsCollection, id, update_fields)
+    updated_item = await ItemsCrud.update_item_status(itemsCollection, item_id, update_fields)
 
     return ItemResponse(**updated_item)
     
@@ -99,7 +99,7 @@ async def update_item(update: ItemResponse):
         raise HTTPException(status_code=500, detail=str(e))
     
 
-@items_router.get("/approve/{item_id}", response_description="Founder approve item")
+@items_router.put("/approve/{item_id}", response_description="Founder approve item")
 async def approve_item(item_id):
      # Validate item_id format
     try:
