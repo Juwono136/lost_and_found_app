@@ -10,7 +10,7 @@ from datetime import datetime
 notifs_router = APIRouter()
 
 
-@notifs_router.get("/notifications/{user_id}", response_description="Fetch notifications by user", response_model=List[NotificationResponse])
+@notifs_router.get("/notifications/{user_id}", response_description="Fetch notifications by user", response_model=List[Notifications])
 async def fetch_notifications_by_user(user_id: str):
     try:
         # Convert user_id to ObjectId
@@ -23,6 +23,6 @@ async def fetch_notifications_by_user(user_id: str):
     notifications = await notifications_cursor.to_list(length=100)  # Limit the number of notifications, adjust as needed
 
     if notifications:
-        return [Notification(**notif) for notif in notifications]
+        return [Notifications(**notif) for notif in notifications]
     else:
         raise HTTPException(status_code=404, detail="No notifications found for this user")
