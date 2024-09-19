@@ -9,48 +9,22 @@ const ClaimedItemsScreen = () => {
 
   const [claimedItems, setClaimedItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const userId = 1;
-
-  // Dummy data for claimed items
-  // const claimedItems = [
-  //   {
-  //     id: 1,
-  //     title: "iPhone",
-  //     description: "Black, 128GB, New Condition",
-  //     location: "Lobby",
-  //     date: "2023-12-12",
-  //     time: "10:00 AM",
-  //     category: "Tech",
-  //     status: "claimed",
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "MacBook Pro",
-  //     description: "Silver, 256GB, Like New",
-  //     location: "Library",
-  //     date: "2023-12-10",
-  //     time: "2:00 PM",
-  //     category: "Tech",
-  //     status: "claimed",
-  //   },
-  //   // Add more claimed items as needed
-  // ];
+  const userId = 1; // Simulating logged-in user
 
   const fetchClaimedItems = async () => {
     try {
-      const response = await axiosInstance.get("/items");
-      const fetchedItems = response.data.items
-        .filter((item) => item.claimed_by === userId) // Filter items claimed by the logged-in user
-        .map((item) => ({
-          id: item.id,
-          title: item.name,
-          description: item.item_desc,
-          location: `${item.campus}, ${item.found_at}`,
-          date: new Date(item.claim_date).toLocaleDateString(),
-          time: new Date(item.claim_date).toLocaleTimeString(),
-          category: item.category,
-          status: item.status.toLowerCase(),
-        }));
+      const response = await axiosInstance.get(`/meeting/meetings/${userId}`);
+      const fetchedItems = response.data.meetings.map((meeting) => ({
+        id: meeting._id,
+        title: meeting.item.name,
+        description: meeting.item.item_desc,
+        location: `${meeting.item.campus}, ${meeting.item.found_at}`,
+        date: new Date(meeting.meeting_date).toLocaleDateString(),
+        time: new Date(meeting.meeting_date).toLocaleTimeString(),
+        category: meeting.item.category,
+        status: meeting.item.status.toLowerCase(),
+        meetingStatus: meeting.status,
+      }));
       setClaimedItems(fetchedItems);
       setLoading(false);
     } catch (error) {
@@ -88,6 +62,8 @@ const ClaimedItemsScreen = () => {
               key={item.id}
               item={item}
               showDetailButton={true}
+              loggedInUserId={userId}
+              // onDetailClick={() => navigate("/status", { state: { item } })}
             />
           ))
         ) : (

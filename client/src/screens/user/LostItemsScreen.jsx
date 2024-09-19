@@ -3,7 +3,7 @@ import { Header } from "../../components/HeaderComponent";
 import CardComponent from "../../components/CardComponent";
 import AllItemsFound from "../../components/ItemCardList";
 
-const LostMainScreen = ({ items, mostRecentItems, onSearchFocus }) => {
+const LostMainScreen = ({ items, mostRecentItems, userId, onSearchFocus }) => {
   const [fadeOut, setFadeOut] = useState(false);
 
   const handleSearchFocus = () => {
@@ -30,7 +30,7 @@ const LostMainScreen = ({ items, mostRecentItems, onSearchFocus }) => {
 
         {/* All Items Found Section */}
         <h2 className="text-xl font-bold pb-4">All Items Found</h2>
-        <AllItemsFound items={items} />
+        <AllItemsFound items={items} userId={userId} />
       </div>
     </div>
   );

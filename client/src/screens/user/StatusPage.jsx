@@ -1,13 +1,43 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import CompletedStepIcon from "../../assets/completed-step-icon.svg";
-import RejectedStepIcon from "../../assets/rejected-step-icon.svg"; // Add RejectedStepIcon import
+import RejectedStepIcon from "../../assets/rejected-step-icon.svg";
 import BackArrowIcon from "../../assets/back-arrow-icon.svg";
 
 const StatusPage = () => {
   const navigate = useNavigate();
-  const [currentStatus, setCurrentStatus] = useState(2);
-  const [meetingRejected, setMeetingRejected] = useState(true); // New state to track rejection
+  const location = useLocation();
+
+  const { item } = location.state || {};
+
+  useEffect(() => {
+    if (!item) {
+      navigate("/claimed-items");
+    }
+  }, [item, navigate]);
+
+  const [currentStatus, setCurrentStatus] = useState(0);
+  const [meetingRejected, setMeetingRejected] = useState(false);
+
+  useEffect(() => {
+    switch (item?.meetingStatus) {
+      case "submitted":
+        setCurrentStatus(1); // Under Review
+        break;
+      case "approved":
+        setCurrentStatus(2); // Meeting Approved
+        break;
+      case "completed":
+        setCurrentStatus(3); // Item Claimed
+        break;
+      default:
+        setCurrentStatus(0); // Claim Submitted
+    }
+
+    if (item?.meetingStatus === "rejected") {
+      setMeetingRejected(true);
+    }
+  }, [item]);
 
   const statusSteps = [
     { label: "Claim Submitted", completed: currentStatus >= 0 },
@@ -47,7 +77,7 @@ const StatusPage = () => {
 
             {/* Icons */}
             <div className="relative z-10 w-8 h-8">
-              {index === 2 && meetingRejected ? ( // Condition for rejected meeting
+              {index === currentStatus + 1 && meetingRejected ? (
                 <img src={RejectedStepIcon} alt="Rejected Step" />
               ) : step.completed ? (
                 <img src={CompletedStepIcon} alt="Completed Step" />
@@ -71,7 +101,7 @@ const StatusPage = () => {
               Your claim has been submitted. Our team is reviewing it.
             </span>
             <span className="block text-xs text-gray-400">
-              12/12/2023, 10:30 AM
+              {item?.date}, {item?.time}
             </span>
           </li>
           <li>
@@ -79,14 +109,14 @@ const StatusPage = () => {
               Your claim is under review. We are verifying the details.
             </span>
             <span className="block text-xs text-gray-400">
-              12/13/2023, 11:15 AM
+              {item?.date}, {item?.time}
             </span>
           </li>
           {meetingRejected ? (
             <li>
               <span>Your meeting request was rejected.</span>
               <span className="block text-xs text-gray-400">
-                12/14/2023, 09:00 AM
+                {item?.date}, {item?.time}
               </span>
             </li>
           ) : (
@@ -96,7 +126,7 @@ const StatusPage = () => {
                 confirmation.
               </span>
               <span className="block text-xs text-gray-400">
-                12/14/2023, 09:00 AM
+                {item?.date}, {item?.time}
               </span>
             </li>
           )}

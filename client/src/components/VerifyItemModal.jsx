@@ -1,13 +1,40 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
+import axiosInstance from "../service/axios"; // Ensure axios is configured
 
-const VerifyItemModal = ({ item, isVisible, onClose }) => {
+const VerifyItemModal = ({ item, isVisible, onClose, onStatusChange }) => {
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isVisible) return null;
 
+  // Debug: Check if the item and its id are correct
+  console.log("Item passed to modal:", item);
+
   const handleCheckboxChange = (e) => {
     setIsConfirmed(e.target.checked);
+  };
+
+  const handleConfirm = async () => {
+    if (!item || !item.id) {
+      console.error("Item ID is missing");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Make the API call to approve the item
+      const response = await axiosInstance.put(`/items/approve/${item.id}`);
+      console.log("Item approved response:", response.data);
+
+      // Notify parent component that the status has changed
+      onStatusChange("active");
+      onClose(); // Close the modal after success
+    } catch (error) {
+      console.error("Failed to verify item:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return createPortal(
@@ -38,13 +65,15 @@ const VerifyItemModal = ({ item, isVisible, onClose }) => {
         {/* Confirm Button */}
         <div className="flex justify-end mt-6">
           <button
-            onClick={onClose}
+            onClick={handleConfirm}
             className={`px-4 py-2 bg-blue-500 text-white rounded-lg ${
-              !isConfirmed && "opacity-50 cursor-not-allowed"
+              !isConfirmed || isSubmitting
+                ? "opacity-50 cursor-not-allowed"
+                : ""
             }`}
-            disabled={!isConfirmed}
+            disabled={!isConfirmed || isSubmitting}
           >
-            Confirm
+            {isSubmitting ? "Submitting..." : "Confirm"}
           </button>
         </div>
       </div>

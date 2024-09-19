@@ -11,49 +11,6 @@ export default function Lost() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // const items = [
-  //   {
-  //     title: "iPhone",
-  //     description: "Black, 128GB, New Condition",
-  //     location: "alam-sutera",
-  //     date: "12 Dec 2023",
-  //     time: "10:00 AM",
-  //     category: "Tech",
-  //     status: "waiting",
-  //     receivedBy: "Samsudin",
-  //   },
-  //   {
-  //     title: "MacBook Pro",
-  //     description: "Silver, 256GB, Excellent Condition",
-  //     location: "senayan",
-  //     date: "10 Dec 2023",
-  //     time: "2:00 PM",
-  //     category: "Tech",
-  //     status: "claimed",
-  //     receivedBy: "Cahya",
-  //   },
-  //   {
-  //     title: "Samsung Galaxy",
-  //     description: "Blue, 64GB, Like New",
-  //     location: "senayan",
-  //     date: "8 Dec 2023",
-  //     time: "4:00 PM",
-  //     category: "Tech",
-  //     status: "waiting",
-  //     receivedBy: "Samsudin",
-  //   },
-  //   {
-  //     title: "Pixel",
-  //     description: "Black, used Condition",
-  //     location: "kemanggisan",
-  //     date: "6 Dec 2023",
-  //     time: "9:00 AM",
-  //     category: "Tech",
-  //     status: "waiting",
-  //     receivedBy: "Samsudin",
-  //   },
-  // ];
-
   const userId = 1; // Assume the logged-in user has an ID of 1
 
   const fetchItems = async () => {
@@ -72,6 +29,7 @@ export default function Lost() {
           );
         })
         .map((item) => ({
+          id: item._id,
           title: item.name,
           description: item.item_desc,
           location: `${item.campus}, ${item.found_at}`,
@@ -114,12 +72,14 @@ export default function Lost() {
       {!isSearching ? (
         <LostMainScreen
           items={items}
+          userId={userId}
           mostRecentItems={mostRecentItems}
           onSearchFocus={() => setIsSearching(true)} // Function to switch to search screen
         />
       ) : (
         <SearchScreen
           items={items}
+          userId={userId}
           recentSearches={recentSearches}
           onSearch={addRecentSearch}
           onDeleteSearch={handleDeleteSearch}

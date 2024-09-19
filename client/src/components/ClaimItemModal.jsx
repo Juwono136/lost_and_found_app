@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
+import axiosInstance from "../service/axios"; // Import axios instance
 
 import CalendarIcon from "../assets/calendar-icon.svg";
 import LocationIcon from "../assets/location-icon.svg";
@@ -7,27 +8,41 @@ import ClockIcon from "../assets/clock-icon.svg";
 import DefaultImg from "../assets/default-profile.png";
 import SuccessIcon from "../assets/success-icon.svg";
 
-const ClaimItemModal = ({ item, isVisible, onClose }) => {
-  const [step, setStep] = useState(1); // Steps: 1. Item details, 2. Verification, 3. Meeting, 4. Success
+const ClaimItemModal = ({ item, isVisible, onClose, userId }) => {
+  const [step, setStep] = useState(1); // Steps: 1. Item details, 2. Meeting, 3. Success
   const [meetingDate, setMeetingDate] = useState("");
   const [meetingTime, setMeetingTime] = useState("");
-  const [description, setDescription] = useState(""); // For verification step
+  const [loading, setLoading] = useState(false);
 
   if (!isVisible) return null;
 
-  // Move to the verification step
-  const handleClaimClick = () => {
-    setStep(2);
-  };
+  // Handle meeting confirmation (submit claim request)
+  const handleConfirmMeeting = async () => {
+    if (!meetingDate || !meetingTime) {
+      alert("Please set a meeting date and time.");
+      return;
+    }
 
-  // // Handle verification confirmation (move to meeting step)
-  // const handleVerifyClick = () => {
-  //   setStep(3);
-  // };
+    setLoading(true);
 
-  // Handle meeting confirmation (move to success step)
-  const handleConfirmMeeting = () => {
-    setStep(3);
+    const claimPayload = {
+      user_id: userId,
+      item_id: item.id, // Assuming item.id is available from parent
+      meeting_date: `${meetingDate} ${meetingTime}`,
+      location: "pos security", // Default location
+      status: "submitted", // Default status
+    };
+
+    try {
+      await axiosInstance.post("/meeting/request", claimPayload);
+      setStep(3);
+      onClaimSuccess();
+    } catch (error) {
+      console.error("Failed to submit claim request:", error);
+      alert("Failed to submit the claim request.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return createPortal(
@@ -93,7 +108,7 @@ const ClaimItemModal = ({ item, isVisible, onClose }) => {
             <div className="flex justify-between mt-6">
               <button onClick={onClose}>Cancel</button>
               <button
-                onClick={handleClaimClick}
+                onClick={() => setStep(2)}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg"
               >
                 Claim
@@ -101,35 +116,6 @@ const ClaimItemModal = ({ item, isVisible, onClose }) => {
             </div>
           </>
         )}
-
-        {/* {step === 2 && (
-          <>
-            <h2 className="text-lg font-bold mb-4">Verification</h2>
-            <p className="mb-4 text-gray-600">
-              Describe your lost items as detailed as possible. This is to help
-              the finder verify if it is truly yours.
-            </p>
-
-            <div className="mb-4">
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Enter a description..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg h-24"
-              />
-            </div>
-
-            <div className="flex justify-between">
-              <button onClick={onClose}>Cancel</button>
-              <button
-                onClick={handleVerifyClick}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-              >
-                Confirm
-              </button>
-            </div>
-          </>
-        )} */}
 
         {step === 2 && (
           <>
@@ -172,8 +158,9 @@ const ClaimItemModal = ({ item, isVisible, onClose }) => {
               <button
                 onClick={handleConfirmMeeting}
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+                disabled={loading} // Disable button when loading
               >
-                Confirm
+                {loading ? "Submitting..." : "Confirm"}
               </button>
             </div>
           </>

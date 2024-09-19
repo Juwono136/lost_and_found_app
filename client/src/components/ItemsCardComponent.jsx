@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import CalendarIcon from "../assets/calendar-icon.svg";
 import LocationIcon from "../assets/location-icon.svg";
 import ClaimItemModal from "./ClaimItemModal";
@@ -12,7 +12,12 @@ const ItemsCardComponent = ({
   loggedInUserId,
 }) => {
   const [isClaimModalVisible, setIsClaimModalVisible] = useState(false);
+  const [isClaimed, setIsClaimed] = useState(
+    item.status === "claimed" || item.status === "on hold"
+  );
+
   const [isVerifyModalVisible, setIsVerifyModalVisible] = useState(false);
+  const [itemStatus, setItemStatus] = useState(item.status); // Use state to track item status
   const navigate = useNavigate();
 
   const openClaimModal = () => {
@@ -31,8 +36,17 @@ const ItemsCardComponent = ({
     setIsVerifyModalVisible(false);
   };
 
-  const handleDetailClick = (itemId) => {
-    navigate(`/status/${itemId}`);
+  const handleDetailClick = (item) => {
+    navigate(`/status/${item.id}`, { state: { item } });
+  };
+
+  const handleStatusChange = (newStatus) => {
+    setItemStatus(newStatus);
+  };
+
+  const handleClaimSuccess = () => {
+    setIsClaimed(true);
+    closeClaimModal();
   };
 
   return (
@@ -45,7 +59,7 @@ const ItemsCardComponent = ({
         </div>
 
         {/* Claim Button for Claimable Items */}
-        {showClaimButton && item.status === "active" && (
+        {showClaimButton && itemStatus === "active" && (
           <button
             onClick={openClaimModal}
             className="text-xs font-bold px-4 py-2 bg-blue-500 text-white text-base rounded-full"
@@ -54,8 +68,8 @@ const ItemsCardComponent = ({
           </button>
         )}
 
-        {/* Verify Button for Founders (Only show if logged in user matches foundedBy field) */}
-        {item.status === "waiting for approval" &&
+        {/* Verify Button for Founders */}
+        {itemStatus === "waiting for approval" &&
           item.foundedBy === loggedInUserId && (
             <button
               onClick={openVerifyModal}
@@ -88,15 +102,24 @@ const ItemsCardComponent = ({
           </div>
 
           <div>
-            {item.status === "active" || item.status === "claimed" ? (
+            {/* Check for active, claimed, and on hold status */}
+            {itemStatus === "active" ||
+            itemStatus === "claimed" ||
+            itemStatus === "on hold" ? (
               <div
                 className={`px-3 py-1 text-[12px] flex items-center justify-center rounded-full border ${
-                  item.status === "active"
+                  itemStatus === "active"
                     ? "border-blue-500 text-blue-500"
-                    : "border-red-500 text-red-500"
+                    : itemStatus === "claimed"
+                    ? "border-red-500 text-red-500"
+                    : "border-yellow-500 text-yellow-500" // Style for "on hold"
                 }`}
               >
-                {item.status === "active" ? "Active" : "Claimed"}
+                {itemStatus === "active"
+                  ? "Active"
+                  : itemStatus === "claimed"
+                  ? "Claimed"
+                  : "On Hold"}
               </div>
             ) : null}
           </div>
@@ -105,7 +128,7 @@ const ItemsCardComponent = ({
         {/* Detail Button (only appears if showDetailButton is true) */}
         {showDetailButton && (
           <button
-            onClick={() => handleDetailClick(item.id)}
+            onClick={() => handleDetailClick(item)}
             className="text-xs font-bold px-4 py-2 bg-gray-500 text-white text-base rounded-full"
           >
             Detail
@@ -117,8 +140,10 @@ const ItemsCardComponent = ({
       {isClaimModalVisible && (
         <ClaimItemModal
           item={item}
+          userId={loggedInUserId}
           isVisible={isClaimModalVisible}
           onClose={closeClaimModal}
+          onClaimSuccess={handleClaimSuccess}
         />
       )}
 
@@ -128,6 +153,7 @@ const ItemsCardComponent = ({
           item={item}
           isVisible={isVerifyModalVisible}
           onClose={closeVerifyModal}
+          onStatusChange={handleStatusChange}
         />
       )}
     </div>

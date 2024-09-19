@@ -10,6 +10,7 @@ import FilterModal from "../../components/FilterModal"; // Import the FilterModa
 
 const SearchScreen = ({
   items,
+  userId,
   recentSearches,
   onSearch,
   onDeleteSearch,
@@ -138,6 +139,7 @@ const SearchScreen = ({
               <ItemCardComponent
                 key={index}
                 item={item}
+                loggedInUserId={userId}
                 onClick={() => handleSearchSelect(item.title)}
               />
             ))}
