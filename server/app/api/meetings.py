@@ -37,6 +37,16 @@ async def create_request(meeting: Meeting):
     result = await meetingsCollection.insert_one(meeting_data)
     
     if result.inserted_id:
+          # Notify the founder for verification
+        notification = Notifications(
+        user_id=meeting_data.get("user_id"),
+        item_id= meeting_data.get("item_id"),
+        title= "Claim Submitted",
+        message = f"Your claim for the {meeting_data["item"]["name"]} has been submitted.",
+        type="claim_initiated",
+        read=False
+        )
+        await notifsCollection.insert_one(notification.dict())
         # Fetch the newly inserted meeting to return it
         inserted_meeting = await meetingsCollection.find_one({"_id": result.inserted_id})
         if inserted_meeting:
@@ -140,10 +150,11 @@ async def approve_meeting(meeting_id: str):
     # Fetch the updated meeting
     updated_meeting = await meetingsCollection.find_one({"_id": object_id})
 
-           # Notify the seeker about the approved meeting
+    
     notification = Notifications(
         user_id=updated_meeting.get("user_id"),
         item_id= updated_meeting.get("item_id"),
+        title= "Meeting Approved",
         message="Your meeting has been approved. Please be on time.",
         type="meeting_approved",
         read=False
@@ -166,10 +177,13 @@ async def reject_meeting(meeting_id: str):
         {"$set": {"status": "rejected"}}
     )
 
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Meeting not found")
              
     notification = Notifications(
         user_id=updated_meeting.get("user_id"),
         item_id= updated_meeting.get("item_id"),
+        title= "Meeting Rejected",
         message="Your meeting request has been rejected.",
         type="meeting_rejected",
         read=False

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from db import itemsCollection, meetingsCollection
-from models import Item, ItemsCollection, ItemResponse, ClaimItem
+from db import itemsCollection, notifsCollection
+from models import Item, ItemsCollection, ItemResponse, ClaimItem, Notifications
 from bson import ObjectId
 from crud.items_crud import ItemsCrud
 from datetime import datetime
@@ -12,8 +12,19 @@ items_router = APIRouter()
 @items_router.post("/new", response_description="Post a new lost item")
 async def create_item(item: Item):
 
-    result = ItemsCrud.create_item(item)
+    result = await ItemsCrud.create_item(item)
     if result.inserted_id:
+         # Notify the founder for verification
+        notification = Notifications(
+        user_id=item.founded_by,
+        item_id= result.inserted_id,
+        title= "Found Item Pending Approval",
+        message = f"Please confirm and verify the {item.name} you found.",
+        type="verification_request",
+        read=False
+        )
+        await notifsCollection.insert_one(notification.dict())
+
         return {"message": "Item posted successfully"}
     
     else:
@@ -32,8 +43,9 @@ async def list_items():
 
 @items_router.get("/{id}", response_description="Get a specific item", response_model=Item)
 async def get_item(id: str):
-    item = ItemsCrud.get_item_byId(id)
+    item = await ItemsCrud.get_item_byId(id)
     if item is not None:
+                
         return item
     
     raise HTTPException(status_code=404, detail="Item not found")
@@ -43,7 +55,7 @@ async def get_item(id: str):
 @items_router.delete("/delete/{id}", response_description="Delete an item")
 async def delete_item(id: str):
 
-    result = ItemsCrud.delete_item(id)
+    result = await ItemsCrud.delete_item(id)
     if result.deleted_count:
         return {"message": "Item deleted successfully"}
     else:
@@ -106,6 +118,17 @@ async def approve_item(item_id):
         updated_item = await ItemsCrud.approve_item(item_id)
         
         if updated_item:
+            # # Notify the founder for verification
+            # notification = Notifications(
+            # user_id=updated_item.get("founded_by"),
+            # item_id= updated_item.get("_id"),
+            # message="Your meeting has been approved. Please be on time.",
+            # type="meeting_approved",
+            # read=False
+            # )
+            # await notifsCollection.insert_one(notification.dict())
+                    
+
             return {"message": "Item approved successfully", "item": updated_item}
         else:
             raise HTTPException(status_code=404, detail="Item not found")
