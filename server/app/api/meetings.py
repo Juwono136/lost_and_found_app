@@ -38,7 +38,7 @@ async def create_request(meeting: Meeting):
         user_id=meeting.user_id,
         item_id= meeting.item_id,
         title= "Claim Submitted",
-        message = f"Your claim for {item["name"]} has been submitted.",
+        message = f"Your claim for {item['name']} has been submitted.",
         type="claim_initiated",
         read=False
         )

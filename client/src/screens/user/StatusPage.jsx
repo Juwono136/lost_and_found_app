@@ -10,12 +10,6 @@ const StatusPage = () => {
 
   const { item } = location.state || {};
 
-  useEffect(() => {
-    if (!item) {
-      navigate("/claimed-items");
-    }
-  }, [item, navigate]);
-
   const [currentStatus, setCurrentStatus] = useState(0);
   const [meetingRejected, setMeetingRejected] = useState(false);
 

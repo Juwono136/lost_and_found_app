@@ -11,11 +11,13 @@ const AddItemModal = ({ onClose, onAddItem }) => {
   const handleAddItem = () => {
     const newItem = {
       id: Date.now(), // Generate a unique ID
-      title,
-      email,
+      name,
+      description,
       location,
+      storing,
+      dateReported,
+      userId,
       status,
-      date,
     };
     onAddItem(newItem);
     onClose();

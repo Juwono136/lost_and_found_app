@@ -27,16 +27,15 @@ const ClaimItemModal = ({ item, isVisible, onClose, userId }) => {
 
     const claimPayload = {
       user_id: userId,
-      item_id: item.id, // Assuming item.id is available from parent
+      item_id: item.id, //
       meeting_date: `${meetingDate} ${meetingTime}`,
-      location: "pos security", // Default location
-      status: "submitted", // Default status
+      location: "pos security",
+      status: "submitted",
     };
 
     try {
       await axiosInstance.post("/meeting/request", claimPayload);
       setStep(3);
-      onClaimSuccess();
     } catch (error) {
       console.error("Failed to submit claim request:", error);
       alert("Failed to submit the claim request.");

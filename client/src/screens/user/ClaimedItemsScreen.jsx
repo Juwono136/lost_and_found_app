@@ -11,31 +11,46 @@ const ClaimedItemsScreen = () => {
   const [loading, setLoading] = useState(true);
   const userId = 1; // Simulating logged-in user
 
-  const fetchClaimedItems = async () => {
-    try {
-      const response = await axiosInstance.get(`/meeting/meetings/${userId}`);
-      const fetchedItems = response.data.meetings.map((meeting) => ({
-        id: meeting._id,
-        title: meeting.item.name,
-        description: meeting.item.item_desc,
-        location: `${meeting.item.campus}, ${meeting.item.found_at}`,
-        date: new Date(meeting.meeting_date).toLocaleDateString(),
-        time: new Date(meeting.meeting_date).toLocaleTimeString(),
-        category: meeting.item.category,
-        status: meeting.item.status.toLowerCase(),
-        meetingStatus: meeting.status,
-      }));
-      setClaimedItems(fetchedItems);
-      setLoading(false);
-    } catch (error) {
-      console.error("Failed to fetch claimed items:", error);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchClaimedItems = async () => {
+      try {
+        const meetingsResponse = await axiosInstance.get(
+          `/meeting/meetings/${userId}`
+        );
+        const meetings = meetingsResponse.data.meetings;
+
+        const itemPromises = meetings.map((meeting) =>
+          axiosInstance.get(`/items/${meeting.item_id}`)
+        );
+        const itemResponses = await Promise.all(itemPromises);
+
+        const formattedData = meetings.map((meeting, index) => {
+          const item = itemResponses[index].data;
+
+          return {
+            id: meeting.item_id,
+            title: item.name,
+            description: item.item_desc,
+            location: `${item.campus}, ${item.found_at}`,
+            date: new Date(item.date_reported).toLocaleDateString(),
+            time: new Date(item.date_reported).toLocaleTimeString(),
+            category: item.category,
+            status: meeting.status,
+            foundedBy: item.founded_by,
+            receivedBy: item.PIC,
+          };
+        });
+
+        setClaimedItems(formattedData);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching claimed items:", error);
+        setLoading(false);
+      }
+    };
+
     fetchClaimedItems();
-  }, []);
+  }, [userId]);
 
   if (loading) {
     return <div>Loading...</div>;

@@ -44,10 +44,10 @@ const ItemsCardComponent = ({
     setItemStatus(newStatus);
   };
 
-  const handleClaimSuccess = () => {
-    setIsClaimed(true);
-    closeClaimModal();
-  };
+  // const handleClaimSuccess = () => {
+  //   setIsClaimed(true);
+  //   closeClaimModal();
+  // };
 
   return (
     <div className="w-full bg-white shadow-lg shadow-gray-400 rounded-lg p-4 flex flex-col justify-between">
@@ -143,14 +143,14 @@ const ItemsCardComponent = ({
           userId={loggedInUserId}
           isVisible={isClaimModalVisible}
           onClose={closeClaimModal}
-          onClaimSuccess={handleClaimSuccess}
+          // onClaimSuccess={handleClaimSuccess}
         />
       )}
 
       {/* Verify Item Modal */}
       {isVerifyModalVisible && (
         <VerifyItemModal
-          item={item}
+          item={item._id}
           isVisible={isVerifyModalVisible}
           onClose={closeVerifyModal}
           onStatusChange={handleStatusChange}

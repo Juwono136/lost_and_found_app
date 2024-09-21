@@ -2,34 +2,30 @@ import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import axiosInstance from "../service/axios"; // Ensure axios is configured
 
-const VerifyItemModal = ({ item, isVisible, onClose, onStatusChange }) => {
+const VerifyItemModal = ({
+  itemId,
+  isVisible,
+  onClose,
+  onStatusChange = () => {},
+}) => {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isVisible) return null;
 
-  // Debug: Check if the item and its id are correct
-  console.log("Item passed to modal:", item);
+  // console.log("Item passed to modal:", itemId);
 
   const handleCheckboxChange = (e) => {
     setIsConfirmed(e.target.checked);
   };
 
   const handleConfirm = async () => {
-    if (!item || !item.id) {
-      console.error("Item ID is missing");
-      return;
-    }
-
     setIsSubmitting(true);
     try {
-      // Make the API call to approve the item
-      const response = await axiosInstance.put(`/items/approve/${item.id}`);
+      const response = await axiosInstance.put(`/items/approve/${itemId}`);
       console.log("Item approved response:", response.data);
-
-      // Notify parent component that the status has changed
       onStatusChange("active");
-      onClose(); // Close the modal after success
+      onClose();
     } catch (error) {
       console.error("Failed to verify item:", error);
     } finally {

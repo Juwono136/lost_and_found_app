@@ -18,9 +18,6 @@ export default function Lost() {
       const response = await axiosInstance.get("/items");
       const fetchedItems = response.data.items
         .filter((item) => {
-          // Show the item if:
-          // - It is "active" or "claimed"
-          // - OR it is "waiting for approval" AND the item was founded by the logged-in user
           return (
             item.status === "active" ||
             item.status === "claimed" ||
