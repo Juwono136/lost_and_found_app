@@ -147,6 +147,7 @@ class NotifStatus(str, Enum):
 class Notifications(BaseModel):
     user_id:int
     item_id:PyObjectId
+    meeting_id: Optional[PyObjectId] = None
     title: str
     message: str
     read : bool
@@ -156,5 +157,5 @@ class Notifications(BaseModel):
 class NotifResponse(Notifications):
     notif_id: PyObjectId  
 
-class MeetingNotif(Notifications):
-    meeting_id: PyObjectId
+# class MeetingNotif(Notifications):
+#     meeting_id: PyObjectId

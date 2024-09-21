@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 # from models import Item, ItemResponse, ItemPostResponse
 from db import meetingsCollection, itemsCollection, notifsCollection
 from bson import ObjectId
-from models import Meeting, MeetingResponse, MeetingsCollection, UpdateMeeting, MeetingNotif
+from models import Meeting, MeetingResponse, MeetingsCollection, UpdateMeeting, Notifications
 
 from crud.items_crud import ItemsCrud
 from datetime import datetime
@@ -34,7 +34,7 @@ async def create_request(meeting: Meeting):
     
     if result.inserted_id:
           # Notify the founder for verification
-        notification = MeetingNotif(
+        notification = Notifications(
         user_id=meeting.user_id,
         item_id= meeting.item_id,
         meeting_id = str(result.inserted_id),
@@ -148,7 +148,7 @@ async def approve_meeting(meeting_id: str):
     updated_meeting = await meetingsCollection.find_one({"_id": object_id})
 
     
-    notification =  MeetingNotif(
+    notification =  Notifications(
         user_id=updated_meeting.get("user_id"),
         item_id= updated_meeting.get("item_id"),
         meeting_id= updated_meeting.get("_id"),
@@ -178,7 +178,7 @@ async def reject_meeting(meeting_id: str):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Meeting not found")
              
-    notification =  MeetingNotif(
+    notification =  Notifications(
         user_id=updated_meeting.get("user_id"),
         item_id= updated_meeting.get("item_id"),
         meeting_id= updated_meeting.get("_id"),
