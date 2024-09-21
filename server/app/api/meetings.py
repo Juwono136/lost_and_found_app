@@ -29,20 +29,16 @@ async def create_request(meeting: Meeting):
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
 
-    # Add the retrieved Item document to the meeting document
-    meeting_data = dict(meeting)
-    meeting_data["item"] = item  # Insert the Item document in the Meeting
-
     # Insert the Meeting document into the meetingsCollection
-    result = await meetingsCollection.insert_one(meeting_data)
+    result = await meetingsCollection.insert_one(meeting.dict())
     
     if result.inserted_id:
           # Notify the founder for verification
         notification = Notifications(
-        user_id=meeting_data.get("user_id"),
-        item_id= meeting_data.get("item_id"),
+        user_id=meeting.user_id,
+        item_id= meeting.item_id,
         title= "Claim Submitted",
-        message = f"Your claim for the {meeting_data["item"]["name"]} has been submitted.",
+        message = f"Your claim for {item["name"]} has been submitted.",
         type="claim_initiated",
         read=False
         )

@@ -109,7 +109,6 @@ class Meeting(BaseModel):
 
 class MeetingResponse(Meeting):
     id: PyObjectId = Field(alias="_id")
-    item: Item
 
 class MeetingsCollection(BaseModel):
     """
