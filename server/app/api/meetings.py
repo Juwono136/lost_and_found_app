@@ -146,14 +146,18 @@ async def approve_meeting(meeting_id: str):
 
     # Fetch the updated meeting
     updated_meeting = await meetingsCollection.find_one({"_id": object_id})
+        # Fetch the item details using item_id
+    item = await itemsCollection.find_one({"_id": ObjectId(updated_meeting.get("item_id"))})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
 
-    
+
     notification =  Notifications(
         user_id=updated_meeting.get("user_id"),
         item_id= updated_meeting.get("item_id"),
         meeting_id= updated_meeting.get("_id"),
         title= "Meeting Approved",
-        message="Your meeting has been approved. Please be on time.",
+        message=f"Your meeting for {item["name"]} has been approved. Please be on time.",
         type="meeting_approved",
         read=False
     )
@@ -169,6 +173,11 @@ async def approve_meeting(meeting_id: str):
 async def reject_meeting(meeting_id: str):
     object_id = ObjectId(meeting_id)
 
+    # Fetch the meeting to get the associated item_id
+    updated_meeting = await meetingsCollection.find_one({"_id": object_id})
+    if not updated_meeting:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+
     # Update status to "rejected"
     result = await meetingsCollection.update_one(
         {"_id": object_id},
@@ -177,30 +186,32 @@ async def reject_meeting(meeting_id: str):
 
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Meeting not found")
-             
-    notification =  Notifications(
+
+    # Update the associated item status to "active"
+    item_id = updated_meeting.get("item_id")
+    await itemsCollection.update_one(
+        {"_id": ObjectId(item_id)},
+        {"$set": {"status": "active"}}
+    )
+
+    item = await itemsCollection.find_one({"_id": ObjectId(item_id)})
+    if not item:
+        raise HTTPException(status_code=404, detail="Item not found")
+
+    # Create a notification for the user
+    notification = Notifications(
         user_id=updated_meeting.get("user_id"),
-        item_id= updated_meeting.get("item_id"),
-        meeting_id= updated_meeting.get("_id"),
-        title= "Meeting Rejected",
-        message="Your meeting request has been rejected.",
+        item_id=item_id,
+        meeting_id=updated_meeting.get("_id"),
+        title="Meeting Rejected",
+        message=f"Your claim for {item["name"]} has been rejected.",
         type="meeting_rejected",
         read=False
     )
     await notifsCollection.insert_one(notification.dict())
 
-
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Meeting not found")
-
-    # Fetch the updated meeting
-    updated_meeting = await meetingsCollection.find_one({"_id": object_id})
-
-
-    if updated_meeting:
-        return MeetingResponse(**updated_meeting)
-    else:
-        raise HTTPException(status_code=404, detail="Meeting not found")
+    # Return the updated meeting
+    return MeetingResponse(**updated_meeting)
 
 
 
@@ -242,8 +253,7 @@ async def delete_meeting(meeting_id: str):
     
 
 @meetings_router.put("/complete/{meeting_id}", response_description="Complete a meeting and claim the item")
-async def complete_meeting(meeting_id:str):
-
+async def complete_meeting(meeting_id: str):
     # Fetch the meeting details
     meeting = await meetingsCollection.find_one({"_id": ObjectId(meeting_id)})
     if not meeting:
@@ -257,4 +267,17 @@ async def complete_meeting(meeting_id:str):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Meeting not found")
 
-    return {"message": "Meeting completed successfully"}
+    # Create a notification for the user
+    notification = Notifications(
+        user_id=meeting.get("user_id"),
+        item_id=meeting.get("item_id"),
+        meeting_id=meeting.get("_id"),
+        title="Meeting Completed",
+        message="Your meeting has been successfully completed.",
+        type="meeting_completed",
+        read=False
+    )
+    await notifsCollection.insert_one(notification.dict())
+    updated_meeting = await meetingsCollection.find_one({"_id": ObjectId(meeting_id)})
+
+    return {"message": "Meeting completed successfully", "data" : MeetingResponse(**updated_meeting)}
