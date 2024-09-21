@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from db import notifsCollection
-from models import Notifications, ReadNotification
+from models import Notifications
 from bson import ObjectId
 from typing import List
 
@@ -9,7 +9,7 @@ from typing import List
 notifs_router = APIRouter()
 
 
-@notifs_router.get("/notifications/{user_id}", response_description="Fetch notifications by user", response_model=List[Notifications])
+@notifs_router.get("/read/{user_id}", response_description="Fetch notifications by user", response_model=List[Notifications])
 async def fetch_notifications_by_user(user_id: int):
     # try:
     #     # Convert user_id to ObjectId
@@ -27,7 +27,7 @@ async def fetch_notifications_by_user(user_id: int):
         raise HTTPException(status_code=404, detail="No notifications found for this user")
     
 
-@notifs_router.put("/notifications/read/{notification_id}", response_description="Change notification status to read")
+@notifs_router.put("/change_status/{notification_id}", response_description="Change notification status to read")
 async def read_notifications(notification_id: str):
     # Check if the notification ID is valid and convert it to ObjectId
     try:
