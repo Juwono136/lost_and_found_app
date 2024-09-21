@@ -91,7 +91,7 @@ class Meeting(BaseModel):
     user_id: int
     item_id: PyObjectId
     meeting_date: str
-    location: str
+    location: Optional[str] = "Pos Security Binus FX Campus"
     status: Optional[MeetingStatus]= MeetingStatus.submitted
 
     class Config:
@@ -147,9 +147,15 @@ class NotifStatus(str, Enum):
 class Notifications(BaseModel):
     user_id:int
     item_id:PyObjectId
+    meeting_id: Optional[PyObjectId] = None
     title: str
     message: str
     read : bool
     type: NotifStatus
-    created_at: datetime = datetime.now()
-  
+    created_at: datetime = str(datetime.now().isoformat())
+
+class NotifResponse(Notifications):
+    notif_id: PyObjectId  
+
+# class MeetingNotif(Notifications):
+#     meeting_id: PyObjectId

@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 # from models import Item, ItemResponse, ItemPostResponse
 from db import meetingsCollection, itemsCollection, notifsCollection
 from bson import ObjectId
-from models import Meeting, MeetingResponse, MeetingsCollection, UpdateMeeting, MeetingCompletion, Notifications
+from models import Meeting, MeetingResponse, MeetingsCollection, UpdateMeeting, Notifications
 
 from crud.items_crud import ItemsCrud
 from datetime import datetime
@@ -37,6 +37,7 @@ async def create_request(meeting: Meeting):
         notification = Notifications(
         user_id=meeting.user_id,
         item_id= meeting.item_id,
+        meeting_id = str(result.inserted_id),
         title= "Claim Submitted",
         message = f"Your claim for {item['name']} has been submitted.",
         type="claim_initiated",
@@ -147,9 +148,10 @@ async def approve_meeting(meeting_id: str):
     updated_meeting = await meetingsCollection.find_one({"_id": object_id})
 
     
-    notification = Notifications(
+    notification =  Notifications(
         user_id=updated_meeting.get("user_id"),
         item_id= updated_meeting.get("item_id"),
+        meeting_id= updated_meeting.get("_id"),
         title= "Meeting Approved",
         message="Your meeting has been approved. Please be on time.",
         type="meeting_approved",
@@ -176,9 +178,10 @@ async def reject_meeting(meeting_id: str):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Meeting not found")
              
-    notification = Notifications(
+    notification =  Notifications(
         user_id=updated_meeting.get("user_id"),
         item_id= updated_meeting.get("item_id"),
+        meeting_id= updated_meeting.get("_id"),
         title= "Meeting Rejected",
         message="Your meeting request has been rejected.",
         type="meeting_rejected",
@@ -238,9 +241,8 @@ async def delete_meeting(meeting_id: str):
         raise HTTPException(status_code=500, detail=str(e))
     
 
-@meetings_router.put("/complete/", response_description="Complete a meeting and claim the item")
-async def complete_meeting(meeting_completion: MeetingCompletion):
-    meeting_id = meeting_completion.meeting_id
+@meetings_router.put("/complete/{meeting_id}", response_description="Complete a meeting and claim the item")
+async def complete_meeting(meeting_id:str):
 
     # Fetch the meeting details
     meeting = await meetingsCollection.find_one({"_id": ObjectId(meeting_id)})
