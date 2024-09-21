@@ -142,6 +142,7 @@ class NotifStatus(str, Enum):
     meeting_rejected = "meeting_rejected"
     item_claimed = "item_claimed"
     verification_request = "verification_request"
+    meeting_completed = "meeting_completed"
     
 
 class Notifications(BaseModel):
@@ -155,7 +156,7 @@ class Notifications(BaseModel):
     created_at: datetime = str(datetime.now().isoformat())
 
 class NotifResponse(Notifications):
-    notif_id: PyObjectId  
+    id: PyObjectId  
 
 # class MeetingNotif(Notifications):
 #     meeting_id: PyObjectId

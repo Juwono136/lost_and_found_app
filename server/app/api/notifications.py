@@ -16,7 +16,7 @@ async def fetch_notifications_by_user(user_id: int):
     notifications = await notifications_cursor.to_list(length=100)
 
     if notifications:
-        return [NotifResponse(**{**notif, "notif_id": notif["_id"]}) for notif in notifications]  # Changed _id to notif_id
+        return [NotifResponse(**{**notif, "id": notif["_id"]}) for notif in notifications]  # Changed _id to notif_id
     else:
         raise HTTPException(status_code=404, detail="No notifications found for this user")
 
