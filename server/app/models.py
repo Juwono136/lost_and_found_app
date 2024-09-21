@@ -23,8 +23,8 @@ class Item(BaseModel):
     item_desc: Optional[str] = None
     campus: str
     found_at: str
-    storing_location: str
-    date_reported: Optional[str] = datetime.now()
+    storing_location: Optional[str] = "Pos Security Binus FX Campus"
+    date_reported: Optional[str] = str(datetime.now().isoformat())
     status: Optional[ItemStatus] = ItemStatus.waiting_for_approval
     PIC: int #person in charge
     founded_by: Optional[int] = None  # ID of the user who found the item
