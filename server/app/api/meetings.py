@@ -281,3 +281,38 @@ async def complete_meeting(meeting_id: str):
     updated_meeting = await meetingsCollection.find_one({"_id": ObjectId(meeting_id)})
 
     return {"message": "Meeting completed successfully", "data" : MeetingResponse(**updated_meeting)}
+
+
+@meetings_router.put("/incomplete/{meeting_id}", response_description="Mark a meeting as incomplete", response_model=MeetingResponse)
+async def mark_meeting_incomplete(meeting_id: str):
+    object_id = ObjectId(meeting_id)
+
+    # Fetch the meeting to check its existence
+    meeting = await meetingsCollection.find_one({"_id": object_id})
+    if not meeting:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+
+    # Update the meeting status to "incomplete"
+    result = await meetingsCollection.update_one(
+        {"_id": object_id},
+        {"$set": {"status": "incomplete"}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Meeting not found")
+
+    # Create a notification for the user
+    notification = Notifications(
+        user_id=meeting.get("user_id"),
+        item_id=meeting.get("item_id"),
+        meeting_id=meeting.get("_id"),
+        title="Meeting Marked Incomplete",
+        message="Your meeting has been marked as incomplete. Please check the details.",
+        type="meeting_incomplete",
+        read=False
+    )
+    await notifsCollection.insert_one(notification.dict())
+
+    # Fetch the updated meeting to return
+    updated_meeting = await meetingsCollection.find_one({"_id": object_id})
+    
+    return MeetingResponse(**updated_meeting)
