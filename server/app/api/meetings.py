@@ -157,7 +157,7 @@ async def approve_meeting(meeting_id: str):
         item_id= updated_meeting.get("item_id"),
         meeting_id= updated_meeting.get("_id"),
         title= "Meeting Approved",
-        message=f"Your meeting for {item["name"]} has been approved. Please be on time.",
+        message=f"Your meeting for {item['name']} has been approved. Please be on time.",
         type="meeting_approved",
         read=False
     )
@@ -204,7 +204,7 @@ async def reject_meeting(meeting_id: str):
         item_id=item_id,
         meeting_id=updated_meeting.get("_id"),
         title="Meeting Rejected",
-        message=f"Your claim for {item["name"]} has been rejected.",
+        message=f"Your claim for {item['name']} has been rejected.",
         type="meeting_rejected",
         read=False
     )

@@ -17,7 +17,6 @@ const NotificationPage = () => {
         const response = await axiosInstance.get(
           `/notification/read/${userId}`
         );
-        console.log("Fetched notifications:", response.data);
         const notificationsData = response.data;
 
         const notificationsWithStatus = await Promise.all(
@@ -58,17 +57,17 @@ const NotificationPage = () => {
 
     if (!notification.read) {
       try {
-        console.log("Notification ID:", notification._id); // Log the ID to see if it's undefined
+        console.log("Notification ID:", notification.id); // Log the ID to see if it's undefined
 
         // Send the PUT request to mark the notification as read
         const response = await axiosInstance.put(
-          `/notification/change_status/${notification._id}` // Use the correct notification ID
+          `/notification/change_status/${notification.id}` // Use the correct notification ID
         );
 
         if (response.status === 200) {
           setNotifications((prevNotifications) =>
             prevNotifications.map((n) =>
-              n._id === notification._id ? { ...n, read: true } : n
+              n._id === notification.id ? { ...n, read: true } : n
             )
           );
         } else {
@@ -97,7 +96,7 @@ const NotificationPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 pb-20">
       <h1 className="text-2xl font-bold mb-6 pt-10 px-4">Notifications</h1>
 
       <div className="px-4 space-y-4">
@@ -108,7 +107,7 @@ const NotificationPage = () => {
 
           return (
             <div
-              key={notification._id}
+              key={notification.id}
               className={`bg-white rounded-lg shadow-md p-4 relative flex flex-col ${
                 !notification.read ? "border-l-4 border-blue-500" : ""
               }`}
