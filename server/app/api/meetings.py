@@ -273,7 +273,7 @@ async def complete_meeting(meeting_id: str):
         item_id=meeting.get("item_id"),
         meeting_id=meeting.get("_id"),
         title="Meeting Completed",
-        message="Your meeting has been successfully completed.",
+        message="PLease verify that you've claimed and receive this item.",
         type="meeting_completed",
         read=False
     )
