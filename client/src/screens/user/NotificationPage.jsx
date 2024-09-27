@@ -28,7 +28,7 @@ const NotificationPage = () => {
                 );
                 return {
                   ...notification,
-                  item_status: itemResponse.data.status, // Add item status to notification
+                  item_status: itemResponse.data.status,
                 };
               } catch (error) {
                 console.error(
@@ -52,16 +52,16 @@ const NotificationPage = () => {
     fetchNotifications();
   }, [userId]);
 
+  // Reading a notification
   const handleNotificationClick = async (notification) => {
-    console.log("Notification clicked:", notification); // Add this log to check the notification object
+    console.log("Notification clicked:", notification);
 
     if (!notification.read) {
       try {
-        console.log("Notification ID:", notification.id); // Log the ID to see if it's undefined
+        console.log("Notification ID:", notification.id);
 
-        // Send the PUT request to mark the notification as read
         const response = await axiosInstance.put(
-          `/notification/change_status/${notification.id}` // Use the correct notification ID
+          `/notification/change_status/${notification.id}`
         );
 
         if (response.status === 200) {
@@ -81,11 +81,20 @@ const NotificationPage = () => {
       }
     }
 
-    if (notification.type === "verification_request") {
+    // Check if the notification is a verification request and the item is still waiting for approval
+    if (
+      notification.type === "verification_request" &&
+      notification.item_status === "waiting for approval"
+    ) {
       setSelectedItemId(notification.item_id);
-      // console.log("Item passed to modal:", notification.item_id);
       setIsVerifyModalVisible(true);
+    } else if (
+      notification.type === "verification_request" &&
+      notification.item_status === "active"
+    ) {
+      console.log("Item is already verified, not opening the modal.");
     } else {
+      // For other notification types
       navigate(`/status/${notification.item_id}`);
     }
   };

@@ -9,7 +9,7 @@ const ClaimedItemsScreen = () => {
 
   const [claimedItems, setClaimedItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const userId = 1; // Simulating logged-in user
+  const userId = 1;
 
   useEffect(() => {
     const fetchClaimedItems = async () => {
