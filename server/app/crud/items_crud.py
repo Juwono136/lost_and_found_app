@@ -5,7 +5,7 @@ from bson import ObjectId
 
 from models import ItemsCollection, Meeting,Item
 from db import itemsCollection
-
+from datetime import datetime
 class ItemsCrud:
 
     # get all data
@@ -51,7 +51,7 @@ class ItemsCrud:
             # Update the status to 'Approved'
             result = await itemsCollection.update_one(
                 {"_id": object_id},
-                {"$set": {"status": "active"}}
+                {"$set": {"status": "active", "published_at": str(datetime.now().isoformat())}}
                 
             )
             
