@@ -17,7 +17,6 @@ const NotificationPage = () => {
         const response = await axiosInstance.get(
           `/notification/read/${userId}`
         );
-        console.log("Fetched notifications:", response.data);
         const notificationsData = response.data;
 
         const notificationsWithStatus = await Promise.all(
@@ -29,7 +28,7 @@ const NotificationPage = () => {
                 );
                 return {
                   ...notification,
-                  item_status: itemResponse.data.status, // Add item status to notification
+                  item_status: itemResponse.data.status,
                 };
               } catch (error) {
                 console.error(
@@ -53,22 +52,22 @@ const NotificationPage = () => {
     fetchNotifications();
   }, [userId]);
 
+  // Reading a notification
   const handleNotificationClick = async (notification) => {
-    console.log("Notification clicked:", notification); // Add this log to check the notification object
+    console.log("Notification clicked:", notification);
 
     if (!notification.read) {
       try {
-        console.log("Notification ID:", notification._id); // Log the ID to see if it's undefined
+        console.log("Notification ID:", notification.id);
 
-        // Send the PUT request to mark the notification as read
         const response = await axiosInstance.put(
-          `/notification/change_status/${notification._id}` // Use the correct notification ID
+          `/notification/change_status/${notification.id}`
         );
 
         if (response.status === 200) {
           setNotifications((prevNotifications) =>
             prevNotifications.map((n) =>
-              n._id === notification._id ? { ...n, read: true } : n
+              n._id === notification.id ? { ...n, read: true } : n
             )
           );
         } else {
@@ -82,11 +81,20 @@ const NotificationPage = () => {
       }
     }
 
-    if (notification.type === "verification_request") {
+    // Check if the notification is a verification request and the item is still waiting for approval
+    if (
+      notification.type === "verification_request" &&
+      notification.item_status === "waiting for approval"
+    ) {
       setSelectedItemId(notification.item_id);
-      // console.log("Item passed to modal:", notification.item_id);
       setIsVerifyModalVisible(true);
+    } else if (
+      notification.type === "verification_request" &&
+      notification.item_status === "active"
+    ) {
+      console.log("Item is already verified, not opening the modal.");
     } else {
+      // For other notification types
       navigate(`/status/${notification.item_id}`);
     }
   };
@@ -97,7 +105,7 @@ const NotificationPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 pb-20">
       <h1 className="text-2xl font-bold mb-6 pt-10 px-4">Notifications</h1>
 
       <div className="px-4 space-y-4">
@@ -108,7 +116,7 @@ const NotificationPage = () => {
 
           return (
             <div
-              key={notification._id}
+              key={notification.id}
               className={`bg-white rounded-lg shadow-md p-4 relative flex flex-col ${
                 !notification.read ? "border-l-4 border-blue-500" : ""
               }`}

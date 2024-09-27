@@ -1,177 +1,126 @@
-import React, { useState, useEffect } from "react";
-import AddItemModal from "../../components/AddItemModal";
-import LostItemsTable from "../../components/LostItemsTable";
-import ClaimedItemsTable from "../../components/ClaimedItemsTable";
-import { AdminHeader } from "../../components/HeaderComponent";
+import React, { useEffect, useState } from "react";
 import axiosInstance from "../../service/axios";
+import {
+  FaBox,
+  FaCheckCircle,
+  FaUsers,
+  FaExclamationCircle,
+} from "react-icons/fa";
 
-const AdminDashboard = () => {
-  const [meetingRequests, setMeetingRequests] = useState([]);
-  const [items, setItems] = useState([]);
-  const [claimedItems, setClaimedItems] = useState([]);
-  const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
-
-  const userId = 1; // Assume logged-in admin user
-
-  const fetchData = async () => {
-    try {
-      // Fetch meeting requests
-      const meetingResponse = await axiosInstance.get("/meeting/");
-      const fetchedMeetings = meetingResponse.data.meetings.map((meeting) => ({
-        id: meeting._id,
-        userId: meeting.user_id,
-        userName: meeting.user_name, // Not yet connected
-        itemId: meeting.item_id,
-        itemName: meeting.item.name,
-        dateRequested: new Date(meeting.meeting_date).toLocaleDateString(),
-        timeRequested: new Date(meeting.meeting_date).toLocaleTimeString(),
-        location: meeting.location || "Pos Security",
-        status: meeting.status,
-      }));
-      setMeetingRequests(fetchedMeetings);
-
-      // Fetch lost items
-      const itemsResponse = await axiosInstance.get("/items/");
-      const fetchedItems = itemsResponse.data.items.filter(
-        (item) => item.status !== "claimed"
-      );
-      setItems(fetchedItems);
-
-      // Fetch claimed items
-      const claimedItemsResponse = await axiosInstance.get("/items/");
-      const fetchedClaimedItems = claimedItemsResponse.data.items.filter(
-        (item) => item.status === "claimed"
-      );
-      setClaimedItems(fetchedClaimedItems);
-    } catch (error) {
-      console.error("Failed to fetch data", error);
-    }
-  };
+const Dashboard = () => {
+  const [data, setData] = useState({
+    totalItems: 0,
+    claimsProcessed: 0,
+    totalMeetings: 0,
+    unapprovedItems: 0,
+  });
 
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const itemsResponse = await axiosInstance.get("/items/");
+        const meetingsResponse = await axiosInstance.get("/meeting/");
+
+        const totalItems = itemsResponse.data.items.length;
+
+        const claimsProcessed = itemsResponse.data.items.filter(
+          (item) => item.status === "claimed" || item.status === "on hold"
+        ).length;
+
+        const totalMeetings = meetingsResponse.data.meetings.length;
+
+        const unapprovedItems = meetingsResponse.data.meetings.filter(
+          (meeting) => meeting.status === "submitted"
+        ).length;
+
+        setData({
+          totalItems,
+          claimsProcessed,
+          totalMeetings,
+          unapprovedItems,
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
     fetchData();
   }, []);
 
-  // Handle approve/decline actions
-  const handleApproveMeeting = async (meetingId) => {
-    try {
-      await axiosInstance.put(`/meeting/approve/${meetingId}`);
-      fetchData(); // Refresh data after approving
-    } catch (error) {
-      console.error("Failed to approve meeting", error);
-    }
-  };
-
-  const handleDeclineMeeting = async (meetingId) => {
-    try {
-      await axiosInstance.put(`/meeting/decline/${meetingId}`);
-      fetchData(); // Refresh data after declining
-    } catch (error) {
-      console.error("Failed to decline meeting", error);
-    }
-  };
-
   return (
-    <div className="flex flex-col bg-gray-100 min-h-screen">
-      <AdminHeader userName="John Doe" userRole="Admin" />
+    <div className="flex flex-col bg-gray-100">
+      <div className="bg-white p-6 rounded-lg shadow mb-6 flex justify-between items-center relative overflow-hidden">
+        <div>
+          <h1 className="text-3xl font-bold">Welcome back, Admin 👋</h1>
+          <p className="text-gray-500 mt-2">
+            Here's what's happening on your dashboard today. See the statistics
+            at once.
+          </p>
+        </div>
+      </div>
 
-      <div className="p-6">
-        {/* Meeting Requests Table */}
-        <div className="mb-8">
-          <h2 className="text-lg font-bold mb-4">Meeting Requests</h2>
-          <table className="min-w-full bg-white rounded-md shadow-md">
-            <thead>
-              <tr className="bg-gray-200 text-left text-gray-600 text-sm font-semibold">
-                <th className="px-4 py-2">ID</th>
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">User ID</th>
-                <th className="px-4 py-2">Item</th>
-                <th className="px-4 py-2">Item ID</th>
-                <th className="px-4 py-2">Date Requested</th>
-                <th className="px-4 py-2">Time Requested</th>
-                <th className="px-4 py-2">Location</th>
-                <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {meetingRequests.map((request) => (
-                <tr key={request.id} className="border-b text-sm">
-                  <td className="px-4 py-2 ellipsis">{request.id}</td>
-                  <td className="px-4 py-2">{request.userName}</td>
-                  <td className="px-4 py-2 ellipsis">{request.itemId}</td>
-                  <td className="px-4 py-2">{request.itemName}</td>
-                  <td className="px-4 py-2 ellipsis">{request.userId}</td>
-                  <td className="px-4 py-2">{request.dateRequested}</td>
-                  <td className="px-4 py-2">{request.timeRequested}</td>
-                  <td className="px-4 py-2">{request.location}</td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        request.status === "submitted"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : request.status === "approved"
-                          ? "bg-green-100 text-green-600"
-                          : request.status === "rejected"
-                          ? "bg-red-100 text-red-600"
-                          : "bg-blue-100 text-blue-600"
-                      }`}
-                    >
-                      {request.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2">
-                    {request.status === "submitted" ? (
-                      <>
-                        <button
-                          onClick={() => handleApproveMeeting(request.id)}
-                          className="text-blue-500 hover:underline mr-2"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleDeclineMeeting(request.id)}
-                          className="text-red-500 hover:underline"
-                        >
-                          Decline
-                        </button>
-                      </>
-                    ) : (
-                      <span>No Actions</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Statistics Section */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {/* Total Items Panel */}
+        <div className="bg-white p-6 shadow rounded-lg flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="text-blue-600 bg-blue-100 p-4 rounded-full mr-4">
+              <FaBox size={32} /> {/* Icon with background */}
+            </div>
+            <div>
+              <h2 className="text-sm font-medium text-gray-500">Total Items</h2>
+              <p className="text-2xl font-bold">{data.totalItems}</p>
+            </div>
+          </div>
         </div>
 
-        {/* Lost Items Table */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold mt-8">Lost Items</h2>
-          <button
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-            onClick={() => setIsAddItemModalOpen(true)}
-          >
-            Add Item
-          </button>
+        {/* Claims Processed Panel */}
+        <div className="bg-white p-6 shadow rounded-lg flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="text-green-600 bg-green-100 p-4 rounded-full mr-4">
+              <FaCheckCircle size={32} /> {/* Icon with background */}
+            </div>
+            <div>
+              <h2 className="text-sm font-medium text-gray-500">
+                Claims Processed
+              </h2>
+              <p className="text-2xl font-bold">{data.claimsProcessed}</p>
+            </div>
+          </div>
         </div>
-        <LostItemsTable items={items} />
 
-        {/* Claimed Items History Table */}
-        <h2 className="text-xl font-bold mt-8">Claimed Items History</h2>
-        <ClaimedItemsTable claimedItems={claimedItems} />
+        {/* Meeting Requests Panel */}
+        <div className="bg-white p-6 shadow rounded-lg flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="text-orange-600 bg-orange-100 p-4 rounded-full mr-4">
+              <FaUsers size={32} /> {/* Icon with background */}
+            </div>
+            <div>
+              <h2 className="text-sm font-medium text-gray-500">
+                Meeting Requests
+              </h2>
+              <p className="text-2xl font-bold">{data.totalMeetings}</p>
+            </div>
+          </div>
+        </div>
 
-        {/* Add Item Modal */}
-        {isAddItemModalOpen && (
-          <AddItemModal
-            onClose={() => setIsAddItemModalOpen(false)}
-            onAddItem={(newItem) => setItems([...items, newItem])}
-          />
-        )}
+        {/* Unapproved Items Panel */}
+        <div className="bg-white p-6 shadow rounded-lg flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="text-red-600 bg-red-100 p-4 rounded-full mr-4">
+              <FaExclamationCircle size={32} /> {/* Icon with background */}
+            </div>
+            <div>
+              <h2 className="text-sm font-medium text-gray-500">
+                Unapproved Items
+              </h2>
+              <p className="text-2xl font-bold">{data.unapprovedItems}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default AdminDashboard;
+export default Dashboard;

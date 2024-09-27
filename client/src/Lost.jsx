@@ -18,12 +18,7 @@ export default function Lost() {
       const response = await axiosInstance.get("/items");
       const fetchedItems = response.data.items
         .filter((item) => {
-          return (
-            item.status === "active" ||
-            item.status === "claimed" ||
-            (item.status === "waiting for approval" &&
-              item.founded_by === userId)
-          );
+          return item.status === "active" || item.status === "claimed";
         })
         .map((item) => ({
           id: item._id,
