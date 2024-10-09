@@ -1,19 +1,42 @@
 import React from "react";
 import { useState } from "react";
+import { useAuth } from "../../service/AuthContext";
+
+import { useNavigate } from "react-router-dom";
+
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const { login, refreshAccessToken} = useAuth();
+  const navigate = useNavigate();
+  
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleLogin = () => {
-    // Handle login logic here
-    console.log("Logging in with", email, password);
-  };
+  const handleLogin = async () => {
+    try {
+        const userData = { email: email, password: password };
+        console.log("Logging in with", userData);
+
+        const loginResponse = await login(userData); // Log in to set the refresh token
+        if (loginResponse) { // Check if login is successful
+          const token = await refreshAccessToken(); // Get the access token
+          console.log("access:", token); // Store access token
+          navigate("/home"); // Navigate to home page after successful login
+        }
+
+        // At this point, the access token should be set
+    } catch (error) {
+        console.error("Login failed:", error);
+        alert("Login failed. Please check your credentials and try again.");
+    }
+};
+
+
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-white px-6">

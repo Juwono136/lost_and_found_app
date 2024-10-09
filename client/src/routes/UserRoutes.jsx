@@ -18,8 +18,6 @@ const UserRoutes = () => {
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/notifications" element={<NotificationPage />} />
       <Route path="/status/*" element={<StatusPage />} />
-      <Route path="/login" element={<LoginScreen />} />
-      <Route path="/register" element={<RegisterScreen />} />
       <Route path="/found-items" element={<FoundItemsScreen />} />
       <Route path="/claimed-items" element={<ClaimedItemsScreen />} />
     </Routes>

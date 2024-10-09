@@ -5,10 +5,13 @@ import SearchIcon from "../assets/search-icon.svg";
 import FilterModal from "./FilterModal"; // Import the FilterModal component
 import UserIcon from "../assets/default-profile.png"; // Add user icon for admin
 
+const user = JSON.parse(localStorage.getItem('user'));
+const userMessage = user.message.substring(2)
+
 // User Header
-const Header = ({ userName, onSearchFocus }) => {
+const Header = ({ onSearchFocus }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [isFilterVisible, setIsFilterVisible] = useState(false)
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -40,7 +43,7 @@ const Header = ({ userName, onSearchFocus }) => {
           isFocused ? "transform -translate-y-12" : ""
         }`}
       >
-        <h1 className="text-2xl font-bold text-white">Hello, {userName}</h1>
+        <h1 className="text-2xl font-bold text-white">{userMessage}</h1>
         <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
           <span className="text-lg">
             <img src={BellIcon} alt="Bell" className="w-6 h-6" />

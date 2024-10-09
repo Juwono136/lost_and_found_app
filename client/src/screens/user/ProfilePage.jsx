@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavigationBar from "../../components/NavigationBar";
 import ProfilePicPlaceholder from "../../assets/default-profile.png"; // Placeholder for profile picture
+import { getUserInfo } from "../../service/UserService";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useState(null);
 
   // Function to handle logout
   const handleLogout = () => {
@@ -21,6 +23,27 @@ const ProfilePage = () => {
   const handleFoundItems = () => {
     navigate("/found-items"); // Redirect to the FoundItemsScreen
   };
+
+
+   // Fetch user info when the component mounts
+   useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const data = await getUserInfo(); // Fetch user info
+        setUserInfo(data); // Set the user info in state
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      } finally {
+        setLoading(false); // Stop loading
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+
+
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -40,11 +63,11 @@ const ProfilePage = () => {
       <div className="mt-6 px-6">
         <div className="mb-4">
           <h2 className="text-lg font-semibold">Name</h2>
-          <p className="text-gray-600">John Doe</p>
+          <p className="text-gray-600">{userInfo?.personal_info?.name || "N/A"}</p>
         </div>
         <div className="mb-4">
           <h2 className="text-lg font-semibold">Email</h2>
-          <p className="text-gray-600">johndoe@example.com</p>
+          <p className="text-gray-600">{userInfo?.personal_info?.email || "N/A"}</p>
         </div>
       </div>
 

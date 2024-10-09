@@ -14,7 +14,7 @@ db = client.get_database(db)
 itemsCollection = db.get_collection("items")
 meetingsCollection = db.get_collection('meetings')
 notifsCollection = db.get_collection("notifications")
-
+logsCollection = db.get_collection("logs")
 
 
 # try:
