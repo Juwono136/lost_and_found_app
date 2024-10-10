@@ -7,13 +7,13 @@ const VerifyItemModal = ({
   isVisible,
   onClose,
   onStatusChange = () => {},
+  isClaimVerification = false, // New prop to determine if this is for claim verification
+  userId = null, // Pass in the user ID for claim verification
 }) => {
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isVisible) return null;
-
-  // console.log("Item passed to modal:", itemId);
 
   const handleCheckboxChange = (e) => {
     setIsConfirmed(e.target.checked);
@@ -22,12 +22,30 @@ const VerifyItemModal = ({
   const handleConfirm = async () => {
     setIsSubmitting(true);
     try {
-      const response = await axiosInstance.put(`/items/approve/${itemId}`);
-      console.log("Item approved response:", response.data);
-      onStatusChange("active");
-      onClose();
+      let response;
+
+      if (isClaimVerification) {
+        // Call the claim verification endpoint
+        response = await axiosInstance.put(`/items/claim/${itemId}`, {
+          claimed_by: userId, // Pass the user ID in the request payload
+        });
+        console.log("Item claim verified response:", response.data);
+        onStatusChange("claimed");
+      } else {
+        // Call the item approval endpoint
+        response = await axiosInstance.put(`/items/approve/${itemId}`);
+        console.log("Item approved response:", response.data);
+        onStatusChange("active");
+      }
+
+      onClose(); // Close the modal on success
     } catch (error) {
-      console.error("Failed to verify item:", error);
+      console.error(
+        isClaimVerification
+          ? "Failed to verify item claim:"
+          : "Failed to verify item:",
+        error
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -36,9 +54,13 @@ const VerifyItemModal = ({
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50">
       <div className="bg-white rounded-t-2xl w-full p-6 max-w-md">
-        <h2 className="text-lg font-bold mb-4">Verify Item</h2>
+        <h2 className="text-lg font-bold mb-4">
+          {isClaimVerification ? "Verify Item Claim" : "Verify Item"}
+        </h2>
         <p className="mb-4 text-gray-600">
-          Verify the item and confirm that the information is true.
+          {isClaimVerification
+            ? "Verify the claim and confirm that the item was received."
+            : "Verify the item and confirm that the information is true."}
         </p>
 
         {/* Terms and Conditions */}
