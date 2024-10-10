@@ -72,6 +72,7 @@ class ItemsCollection(BaseModel):
 
 class ClaimItem(BaseModel):
     claimed_by: int
+    
 
 class MeetingCompletion(BaseModel):
     meeting_id: PyObjectId
@@ -85,10 +86,11 @@ class MeetingStatus(str, Enum):
     approved= "approved"
     rejected = "rejected"
     completed = "completed"
+    incomplete = "incomplete"
 
 
 class Meeting(BaseModel):
-    user_id: int
+    user_id: PyObjectId
     item_id: PyObjectId
     meeting_date: str
     location: Optional[str] = "Pos Security Binus FX Campus"
@@ -140,13 +142,14 @@ class NotifStatus(str, Enum):
     claim_under_review = "claim_under_review"
     meeting_approved = "meeting_approved"
     meeting_rejected = "meeting_rejected"
+    meeting_incomplete = "meeting_incomplete"
     item_claimed = "item_claimed"
     verification_request = "verification_request"
     meeting_completed = "meeting_completed"
     
 
 class Notifications(BaseModel):
-    user_id:int
+    user_id:PyObjectId
     item_id:PyObjectId
     meeting_id: Optional[PyObjectId] = None
     title: str

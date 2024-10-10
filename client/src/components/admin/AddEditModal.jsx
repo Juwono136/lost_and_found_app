@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 import axiosInstance from "../../service/axios";
+import { convertFileToBase64 } from "../../service/convetToBase64";
 
 const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
   const [formData, setFormData] = useState({
     name: "",
     category: "Others",
-    itemImg: null,
-    itemDesc: "",
+    item_img: null,
+    item_desc: "",
     campus: "",
-    foundAt: "",
-    storingLocation: "",
-    PIC: userId || "",
-    foundedBy: "",
+    found_at: "",
+    storing_location: "",
+    PIC: userId || 1,
+    founded_by: 3,
   });
 
   const [founderEmail, setFounderEmail] = useState(""); // Track founder email input
@@ -23,14 +24,15 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
       setFormData({
         name: item.name || "",
         category: item.category || "Others",
-        itemImg: item.item_img || null,
-        itemDesc: item.item_desc || "",
+        item_img: item.item_img || null,
+        item_desc: item.item_desc || "",
         campus: item.campus || "",
-        foundAt: item.found_at || "",
-        storingLocation: item.storing_location || "",
-        PIC: userId || "",
-        foundedBy: item.founded_by || "",
+        found_at: item.found_at || "",
+        storing_location: item.storing_location || "",
+        // PIC: userId || 1,
+        // founded_by: item.founded_by || 1,
       });
+
       setFounderEmail(item.founderEmail || ""); // If you have an email field to be tracked
     }
   }, [item, userId]);
@@ -39,9 +41,18 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleImageUpload = (e) => {
+
+   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    setFormData({ ...formData, itemImg: file });
+    if (file) {
+      try {
+        const base64Image = await convertFileToBase64(file);
+        console.log(base64Image)
+        setFormData({ ...formData, item_img: base64Image});
+      } catch (error) {
+        console.error("Error converting image:", error);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -49,7 +60,13 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
     const formDataObj = new FormData();
     Object.keys(formData).forEach((key) => {
       formDataObj.append(key, formData[key]);
+    
     });
+       // Log the contents of formDataObj
+    for (let [key, value] of formDataObj.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+
 
     try {
       if (isEdit) {
@@ -84,15 +101,16 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
           <div className="flex items-center space-x-4 justify-center">
             {/* Image Upload Box */}
             <div className="relative border-dashed border-2 border-gray-400 h-24 w-24 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-50">
-              {formData.itemImg && (
+              {formData.item_img && (
                 <img
-                  src={URL.createObjectURL(formData.itemImg)}
+                  src= {formData.item_img}
                   alt="Uploaded Item"
                   className="object-cover w-full h-full rounded-md"
                 />
               )}
               <input
                 type="file"
+                accept=".jpeg, .png, .jpg"
                 onChange={handleImageUpload}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
@@ -139,8 +157,8 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
               <label className="block text-gray-600">Item Description</label>
               <input
                 type="text"
-                name="itemDesc"
-                value={formData.itemDesc}
+                name="item_desc"
+                value={formData.item_desc}
                 onChange={handleChange}
                 placeholder="Enter item description"
                 className="border p-2 rounded w-full"
@@ -164,8 +182,8 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
               <label className="block text-gray-600">Found At</label>
               <input
                 type="text"
-                name="foundAt"
-                value={formData.foundAt}
+                name="found_at"
+                value={formData.found_at}
                 onChange={handleChange}
                 placeholder="Enter where it was found"
                 className="border p-2 rounded w-full"
@@ -176,8 +194,8 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
               <label className="block text-gray-600">Storing Location</label>
               <input
                 type="text"
-                name="storingLocation"
-                value={formData.storingLocation}
+                name="storing_location"
+                value={formData.storing_location}
                 onChange={handleChange}
                 placeholder="Enter storage location"
                 className="border p-2 rounded w-full"

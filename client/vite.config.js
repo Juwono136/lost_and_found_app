@@ -11,4 +11,17 @@ export default defineConfig({
       plugins: [tailwindcss()],
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://78cb-103-94-10-238.ngrok-free.app/api/user",
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+    },
+  },
 });
+
+
+
