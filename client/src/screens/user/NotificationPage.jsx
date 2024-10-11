@@ -122,7 +122,7 @@ const NotificationPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 pb-20">
-      <h1 className="text-2xl font-bold mb-6 pt-10 px-4">Notifications</h1>
+      <h1 className="text-2xl font-bold mb-6 pt-10 px-4">History</h1>
 
       <div className="px-4 space-y-4">
         {notifications.map((notification) => {

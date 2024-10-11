@@ -5,10 +5,10 @@ const useUserRole = (userId) => {
 
   useEffect(() => {
     if (userId) {
-      if (userId % 2 === 0) {
+      if (userId === 4) {
         setRole("admin");
       } else {
-        setRole("security");
+        setRole("staff");
       }
     }
   }, [userId]);

@@ -65,7 +65,7 @@ const NavigationBar = ({ activeTab }) => {
             activeTab === "notifications" ? "text-blue-500" : "text-gray-500"
           }`}
         >
-          Notification
+          History
         </span>
       </div>
     </div>
