@@ -1,18 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BellIcon from "../assets/bell-icon.svg";
 import FilterIcon from "../assets/filter-icon.svg";
 import SearchIcon from "../assets/search-icon.svg";
 import FilterModal from "./FilterModal"; // Import the FilterModal component
 import UserIcon from "../assets/default-profile.png"; // Add user icon for admin
 
-const user = JSON.parse(localStorage.getItem('user'));
-const userMessage = user.message.substring(2)
 
 // User Header
 const Header = ({ onSearchFocus }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false)
+  const [userMessage, setUserMessage] = useState(""); // Add userMessage state
 
+  useEffect(() => { 
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.message) {
+      const message = user.message.substring(2); // Extract substring as needed
+      setUserMessage(message); // Set the userMessage state
+    }
+  }, []);
+
+  
   const handleFocus = () => {
     setIsFocused(true);
     onSearchFocus(); // Trigger screen transition to search

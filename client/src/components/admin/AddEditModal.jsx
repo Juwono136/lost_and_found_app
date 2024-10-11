@@ -26,7 +26,7 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
         category: item.category || "Others",
         item_img: item.item_img || null,
         item_desc: item.item_desc || "",
-        campus: item.campus || "",
+        campus: item.campus || "JWC Campus",
         found_at: item.found_at || "",
         storing_location: item.storing_location || "",
         // PIC: userId || 1,
@@ -47,7 +47,6 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
     if (file) {
       try {
         const base64Image = await convertFileToBase64(file);
-        console.log(base64Image)
         setFormData({ ...formData, item_img: base64Image});
       } catch (error) {
         console.error("Error converting image:", error);
@@ -63,9 +62,13 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
     
     });
        // Log the contents of formDataObj
-    for (let [key, value] of formDataObj.entries()) {
-        console.log(`${key}: ${value}`);
-    }
+       console.log("Payload being sent to the server:");
+       for (let [key, value] of formDataObj.entries()) {
+           console.log(`${key}: ${value}`);
+       }
+   
+
+    
 
 
     try {
@@ -73,6 +76,7 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
         await axiosInstance.put(`/items/update/${item._id}`, formDataObj);
       } else {
         await axiosInstance.post("/items/new", formDataObj);
+      
       }
       onClose(); // Close the modal after successful request
     } catch (error) {

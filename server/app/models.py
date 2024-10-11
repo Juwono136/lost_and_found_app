@@ -26,9 +26,9 @@ class Item(BaseModel):
     storing_location: Optional[str] = "Pos Security Binus FX Campus"
     date_reported: Optional[str] = str(datetime.now().isoformat())
     status: Optional[ItemStatus] = ItemStatus.waiting_for_approval
-    PIC: int #person in charge
-    founded_by: Optional[int] = None  # ID of the user who found the item
-    claimed_by: Optional[int] = None  # ID of the user who claimed the item
+    PIC: PyObjectId #person in charge
+    founded_by: Optional[PyObjectId] = None  # ID of the user who found the item
+    claimed_by: Optional[PyObjectId] = None  # ID of the user who claimed the item
     claim_date: Optional[str] = None
     published_at: Optional[str] = None    
 
