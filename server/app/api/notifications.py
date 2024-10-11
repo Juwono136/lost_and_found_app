@@ -3,7 +3,7 @@ from db import notifsCollection
 from models import Notifications, NotifResponse
 from bson import ObjectId
 from typing import List
-
+from pymongo import DESCENDING
 
 
 notifs_router = APIRouter()
@@ -20,7 +20,19 @@ async def fetch_notifications_by_user(user_id: int):
     else:
         raise HTTPException(status_code=404, detail="No notifications found for this user")
 
+@notifs_router.get("/read-all", response_description="Fetch all notifications", response_model=List[NotifResponse])
+async def fetch_all_notifications():
+    # Fetch all notifications sorted by creation date in descending order (latest first)
+    notifications_cursor = notifsCollection.find().sort("created_at", DESCENDING)
     
+    # Convert the cursor to a list with a limit of 100 (or change to the desired limit)
+    notifications = await notifications_cursor.to_list(length=100)
+
+    if notifications:
+        # Prepare the response, mapping MongoDB's _id to 'id'
+        return [NotifResponse(**{**notif, "id": str(notif["_id"])}) for notif in notifications]
+    else:
+        raise HTTPException(status_code=404, detail="No notifications found")
 
 @notifs_router.put("/change_status/{notif_id}", response_description="Change notification status to read")
 async def read_notifications(notif_id: str):  # Changed parameter name to notif_id
