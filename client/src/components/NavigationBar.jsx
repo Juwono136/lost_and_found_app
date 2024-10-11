@@ -11,7 +11,7 @@ const NavigationBar = ({ activeTab }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-white shadow-lg flex justify-around items-center py-4 border-t border-gray-200">
+    <div className="md:hidden fixed bottom-0 left-0 w-full bg-white shadow-lg flex justify-around items-center py-4 border-t border-gray-200">
       {/* Home Tab */}
       <div
         className="flex flex-col items-center cursor-pointer"

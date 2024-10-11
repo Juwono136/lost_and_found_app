@@ -8,6 +8,7 @@ const NotificationPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [isVerifyModalVisible, setIsVerifyModalVisible] = useState(false);
   const [selectedItemId, setSelectedItemId] = useState(null);
+  const [notificationType, setNotificationType] = useState(null);
   const navigate = useNavigate();
   const userId = 1;
 
@@ -19,6 +20,7 @@ const NotificationPage = () => {
         );
         const notificationsData = response.data;
 
+        // Fetch item statuses and add them to the notifications
         const notificationsWithStatus = await Promise.all(
           notificationsData.map(async (notification) => {
             if (notification.item_id) {
@@ -37,9 +39,8 @@ const NotificationPage = () => {
                 );
                 return { ...notification, item_status: null };
               }
-            } else {
-              return notification;
             }
+            return notification;
           })
         );
 
@@ -52,28 +53,17 @@ const NotificationPage = () => {
     fetchNotifications();
   }, [userId]);
 
-  // Reading a notification
   const handleNotificationClick = async (notification) => {
-    console.log("Notification clicked:", notification);
-
     if (!notification.read) {
       try {
-        console.log("Notification ID:", notification.id);
-
         const response = await axiosInstance.put(
           `/notification/change_status/${notification.id}`
         );
-
         if (response.status === 200) {
           setNotifications((prevNotifications) =>
             prevNotifications.map((n) =>
               n._id === notification.id ? { ...n, read: true } : n
             )
-          );
-        } else {
-          console.error(
-            "Failed to update notification status on server:",
-            response
           );
         }
       } catch (error) {
@@ -81,27 +71,53 @@ const NotificationPage = () => {
       }
     }
 
-    // Check if the notification is a verification request and the item is still waiting for approval
+    // Handle different notification types and item statuses
     if (
       notification.type === "verification_request" &&
       notification.item_status === "waiting for approval"
     ) {
       setSelectedItemId(notification.item_id);
+      setNotificationType("verification_request");
       setIsVerifyModalVisible(true);
     } else if (
-      notification.type === "verification_request" &&
-      notification.item_status === "active"
+      notification.type === "meeting_completed" &&
+      notification.item_status === "on hold"
     ) {
-      console.log("Item is already verified, not opening the modal.");
+      setSelectedItemId(notification.item_id);
+      setNotificationType("claim_verification");
+      setIsVerifyModalVisible(true);
+    } else if (notification.item_status === "active") {
+      console.log("Item is already verified.");
     } else {
-      // For other notification types
       navigate(`/status/${notification.item_id}`);
     }
   };
 
+  // Handle closing the modal
   const handleModalClose = () => {
     setIsVerifyModalVisible(false);
     setSelectedItemId(null);
+  };
+
+  // Handle claim verification (PUT request to verify claim)
+  const handleClaimVerification = async () => {
+    try {
+      const claimPayload = { claimed_by: userId };
+      const response = await axiosInstance.put(
+        `/items/claim/${selectedItemId}`,
+        claimPayload
+      );
+      if (response.status === 200) {
+        setNotifications((prevNotifications) =>
+          prevNotifications.map((n) =>
+            n.item_id === selectedItemId ? { ...n, item_status: "claimed" } : n
+          )
+        );
+        handleModalClose();
+      }
+    } catch (error) {
+      console.error("Error verifying item claim:", error);
+    }
   };
 
   return (
@@ -123,30 +139,30 @@ const NotificationPage = () => {
               onClick={() => handleNotificationClick(notification)}
             >
               <div className="flex justify-between items-start">
-                {/* Notification Title */}
                 <h3 className="text-md font-bold">{notification.title}</h3>
-                {/* {!notification.read && (
-                  <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
-                    New
-                  </span>
-                )} */}
               </div>
-
-              {/* Notification Message */}
               <p className="text-sm text-gray-700">{notification.message}</p>
-
-              {/* Notification Date */}
               <p className="text-xs text-gray-400">{createdAt}</p>
 
               <div className="flex-grow" />
 
+              {/* Buttons based on notification type and item status */}
               <div className="flex justify-start">
-                {notification.item_status === "waiting for approval" ? (
+                {notification.type === "verification_request" &&
+                notification.item_status === "waiting for approval" ? (
                   <button
                     className="mt-2 px-4 py-2 text-xs bg-blue-500 text-white rounded-full"
                     onClick={() => handleNotificationClick(notification)}
                   >
                     Verify
+                  </button>
+                ) : notification.type === "meeting_completed" &&
+                  notification.item_status === "on hold" ? (
+                  <button
+                    className="mt-2 px-4 py-2 text-xs bg-blue-500 text-white rounded-full"
+                    onClick={() => handleNotificationClick(notification)}
+                  >
+                    Verify Claim
                   </button>
                 ) : notification.item_status === "active" ? (
                   <button
@@ -165,11 +181,23 @@ const NotificationPage = () => {
       <NavigationBar activeTab="notifications" />
 
       {/* Verify Item Modal */}
-      {isVerifyModalVisible && (
+      {isVerifyModalVisible && notificationType === "verification_request" && (
         <VerifyItemModal
           isVisible={isVerifyModalVisible}
           onClose={handleModalClose}
           itemId={selectedItemId}
+        />
+      )}
+
+      {/* Verify Claim Modal */}
+      {isVerifyModalVisible && notificationType === "claim_verification" && (
+        <VerifyItemModal
+          isVisible={isVerifyModalVisible}
+          onClose={handleModalClose}
+          itemId={selectedItemId}
+          isClaimVerification={true} // New prop for claim verification
+          userId={userId} // Pass the user ID
+          onVerify={handleClaimVerification} // Trigger claim verification
         />
       )}
     </div>

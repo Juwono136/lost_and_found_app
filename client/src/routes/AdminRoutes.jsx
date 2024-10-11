@@ -8,6 +8,8 @@ import ClaimsHistory from "../screens/admin/ClaimsHistory";
 import MeetingsHistory from "../screens/admin/MeetingsHistory";
 import AdminLogin from "../screens/admin/AdminLogin";
 import AdminEditProfile from "../screens/admin/AdminEditProfile";
+import ManageUsers from "../screens/admin/ManageUsers";
+import ViewLog from "../screens/admin/ViewLog";
 
 const AdminRoutes = () => {
   return (
@@ -19,6 +21,8 @@ const AdminRoutes = () => {
         <Route path="claims-history" element={<ClaimsHistory />} />
         <Route path="meetings-history" element={<MeetingsHistory />} />
         <Route path="profile" element={<AdminEditProfile />} />
+        <Route path="manage-users" element={<ManageUsers />} />
+        <Route path="view-log" element={<ViewLog />} />
       </Route>
 
       <Route path="/login" element={<AdminLogin />} />

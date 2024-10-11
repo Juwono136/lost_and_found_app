@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 import axiosInstance from "../../service/axios";
 import { convertFileToBase64 } from "../../service/convetToBase64";
+import Webcam from "react-webcam";
 
 const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
   const [formData, setFormData] = useState({
@@ -16,8 +17,6 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
     founded_by: 3,
   });
 
-  const [founderEmail, setFounderEmail] = useState(""); // Track founder email input
-
   // useEffect to update formData when the selected item changes
   useEffect(() => {
     if (item) {
@@ -29,11 +28,9 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
         campus: item.campus || "JWC Campus",
         found_at: item.found_at || "",
         storing_location: item.storing_location || "",
-        // PIC: userId || 1,
-        // founded_by: item.founded_by || 1,
+        PIC: userId || 1,
+        founded_by: item.founded_by || 1,
       });
-
-      setFounderEmail(item.founderEmail || ""); // If you have an email field to be tracked
     }
   }, [item, userId]);
 
@@ -41,13 +38,13 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-
-   const handleImageUpload = async (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
       try {
         const base64Image = await convertFileToBase64(file);
-        setFormData({ ...formData, item_img: base64Image});
+        console.log(base64Image);
+        setFormData({ ...formData, item_img: base64Image });
       } catch (error) {
         console.error("Error converting image:", error);
       }
@@ -56,31 +53,41 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formDataObj = new FormData();
-    Object.keys(formData).forEach((key) => {
-      formDataObj.append(key, formData[key]);
-    
-    });
-       // Log the contents of formDataObj
-       console.log("Payload being sent to the server:");
-       for (let [key, value] of formDataObj.entries()) {
-           console.log(`${key}: ${value}`);
-       }
-   
 
-    
+    // Create a plain JSON object from formData state
+    const payload = {
+      name: formData.name,
+      category: formData.category,
+      item_img: formData.item_img || "", // Include base64 image string or empty string if not provided
+      item_desc: formData.item_desc || "",
+      campus: formData.campus,
+      found_at: formData.found_at,
+      storing_location: formData.storing_location || "",
+      PIC: formData.PIC, // Send as number since the backend expects it
+      founded_by: formData.founded_by ? formData.founded_by : null, // Send as number or null if not provided
+    };
 
+    console.log("Submitting JSON payload:", payload);
 
     try {
       if (isEdit) {
-        await axiosInstance.put(`/items/update/${item._id}`, formDataObj);
+        // Make PUT request for editing an item
+        await axiosInstance.put(`/items/update/${item._id}`, payload, {
+          headers: { "Content-Type": "application/json" }, // Set Content-Type to application/json
+        });
       } else {
-        await axiosInstance.post("/items/new", formDataObj);
-      
+        // Make POST request for creating a new item
+        await axiosInstance.post("/items/new", payload, {
+          headers: { "Content-Type": "application/json" }, // Set Content-Type to application/json
+        });
       }
       onClose(); // Close the modal after successful request
+      refreshItems(); // Refresh the items list after submission
     } catch (error) {
-      console.error("Error submitting form:", error);
+      console.error(
+        "Error submitting form:",
+        error.response?.data || error.message
+      );
     }
   };
 
@@ -107,7 +114,7 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
             <div className="relative border-dashed border-2 border-gray-400 h-24 w-24 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-50">
               {formData.item_img && (
                 <img
-                  src= {formData.item_img}
+                  src={formData.item_img}
                   alt="Uploaded Item"
                   className="object-cover w-full h-full rounded-md"
                 />
@@ -207,13 +214,13 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
             </div>
 
             <div>
-              <label className="block text-gray-600">Founder Email</label>
+              <label className="block text-gray-600">Founder</label>
               <input
-                type="email"
-                name="founderEmail"
-                value={founderEmail}
-                onChange={(e) => setFounderEmail(e.target.value)}
-                placeholder="Enter founder email"
+                type="number"
+                name="founded_by"
+                value={formData.founded_by}
+                onChange={handleChange}
+                placeholder="Enter founder ID"
                 className="border p-2 rounded w-full"
               />
             </div>
