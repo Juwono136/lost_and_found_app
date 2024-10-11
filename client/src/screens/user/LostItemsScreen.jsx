@@ -21,7 +21,7 @@ const LostMainScreen = ({ items, mostRecentItems, userId, onSearchFocus }) => {
       <Header userName="John" onSearchFocus={handleSearchFocus} />
 
       {/* Main content */}
-      <div className="bg-[#F8F8F8] rounded-lg px-4 py-6 flex-grow">
+      <div className="bg-[#F8F8F8] px-4 py-6 flex-grow">
         {/* Most Recent Section */}
         <h2 className="text-xl font-bold pb-4">Most Recent</h2>
         <div className="-mx-4">

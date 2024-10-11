@@ -15,20 +15,26 @@ const Items = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
+  // Function to fetch items from the server
+  const fetchItems = async () => {
+    setLoading(true);
+    try {
+      const itemResponse = await axiosInstance.get("/items/");
+      setItems(
+        itemResponse.data.items.filter((item) => item.status !== "claimed")
+      );
+    } catch (error) {
+      console.error("Error fetching items:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // useEffect to fetch items initially
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const itemResponse = await axiosInstance.get("/items/");
-        setItems(
-          itemResponse.data.items.filter((item) => item.status !== "claimed")
-        );
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching items:", error);
-      }
-    };
-    fetchData();
+    fetchItems();
   }, []);
 
   const handleItemClick = (item) => {
@@ -37,18 +43,18 @@ const Items = () => {
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false); // Close modal
+    setIsModalOpen(false);
   };
 
   const handleEditClick = (item) => {
-    setSelectedItem(item); // Set the item to be edited
-    setIsEdit(true); // Enable edit mode
-    setIsAddModalOpen(true); // Open modal for editing
+    setSelectedItem(item);
+    setIsEdit(true);
+    setIsAddModalOpen(true);
   };
 
   const handleDeleteClick = (item) => {
-    setItemToDelete(item); // Set item to delete
-    setIsDeleteModalOpen(true); // Open delete confirmation modal
+    setItemToDelete(item);
+    setIsDeleteModalOpen(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -56,16 +62,15 @@ const Items = () => {
       await axiosInstance.delete(`/items/delete/${itemToDelete._id}`);
       setItems((prevItems) =>
         prevItems.filter((i) => i._id !== itemToDelete._id)
-      ); // Remove item from the list
-      setIsDeleteModalOpen(false); // Close modal
-      setItemToDelete(null); // Reset item to delete
+      );
+      setIsDeleteModalOpen(false);
+      setItemToDelete(null);
     } catch (error) {
       console.error("Error deleting item:", error);
     }
   };
 
   const itemsPerPage = 10;
-  const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
@@ -82,17 +87,17 @@ const Items = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
-  if (loading) return <div>Loading...</div>;
-
   const handleOpenAddModal = () => {
-    setSelectedItem(null); // Clear selected item for new entry
-    setIsEdit(false); // Disable edit mode
-    setIsAddModalOpen(true); // Open modal for adding new item
+    setSelectedItem(null);
+    setIsEdit(false);
+    setIsAddModalOpen(true);
   };
 
   const handleCloseAddModal = () => {
-    setIsAddModalOpen(false); // Close add/edit modal
+    setIsAddModalOpen(false);
   };
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="h-full">
@@ -134,7 +139,7 @@ const Items = () => {
               <tr
                 className="border-b border-gray-200 hover:bg-gray-100 cursor-pointer"
                 key={item._id}
-                onClick={() => handleItemClick(item)} // Trigger drawer open on row click
+                onClick={() => handleItemClick(item)}
               >
                 <td className="py-3 px-6">{index + 1}</td>
                 <td className="py-3 px-6 flex items-center">
@@ -163,7 +168,7 @@ const Items = () => {
                         ? "bg-green-200 text-green-600"
                         : item.status === "on hold"
                         ? "bg-blue-200 text-blue-600"
-                        : "bg-gray-200 text-gray-600" // for "claimed"
+                        : "bg-gray-200 text-gray-600"
                     }`}
                   >
                     {item.status}
@@ -181,7 +186,7 @@ const Items = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleEditClick(item); // Trigger edit modal
+                      handleEditClick(item);
                     }}
                   >
                     <FiEdit className="h-4 w-4 text-blue-500 hover:text-blue-700" />
@@ -189,7 +194,7 @@ const Items = () => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDeleteClick(item); // Trigger delete confirmation
+                      handleDeleteClick(item);
                     }}
                   >
                     <FiTrash className="h-4 w-4 text-red-500 hover:text-red-700" />
@@ -221,18 +226,23 @@ const Items = () => {
         </div>
       </div>
 
+      {/* Detail Modal */}
       <DetailModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         item={selectedItem}
       />
+
+      {/* Add/Edit Modal */}
       <AddEditModal
         isOpen={isAddModalOpen}
         onClose={handleCloseAddModal}
         item={selectedItem}
         isEdit={isEdit}
+        refreshItems={fetchItems} // Pass the fetchItems function as a prop
       />
 
+      {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
