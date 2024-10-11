@@ -33,8 +33,6 @@ const ProfilePage = () => {
         setUserInfo(data); // Set the user info in state
       } catch (error) {
         console.error("Error fetching user info:", error);
-      } finally {
-        setLoading(false); // Stop loading
       }
     };
 

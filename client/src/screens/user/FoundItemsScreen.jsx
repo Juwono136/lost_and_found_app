@@ -3,20 +3,22 @@ import { useNavigate } from "react-router-dom";
 import ItemsCardComponent from "../../components/ItemsCardComponent";
 import BackArrowIcon from "../../assets/back-arrow-icon.svg";
 import axiosInstance from "../../service/axios"; // Import axios instance
+import userApi from "../../service/UserService";
 
 const FoundItemsScreen = () => {
   const navigate = useNavigate();
   const [foundItems, setFoundItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const userId = 1; // Simulating the logged-in user ID
+
 
   // Fetch found items for the current user
   const fetchFoundItems = async () => {
     try {
       const response = await axiosInstance.get("/items");
+      const user = await userApi.get("/user_infor");
       const fetchedItems = response.data.items
-        .filter((item) => item.founded_by === userId) // Filter items founded by the logged-in user
+        .filter((item) => item.founded_by === user.data._id) // Filter items founded by the logged-in user
         .map((item) => ({
           id: item.id,
           title: item.name,

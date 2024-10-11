@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 import axiosInstance from "../../service/axios";
 import { convertFileToBase64 } from "../../service/convetToBase64";
+import Webcam from "react-webcam";
 
 const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
   const [formData, setFormData] = useState({
@@ -24,7 +25,7 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
         category: item.category || "Others",
         item_img: item.item_img || null,
         item_desc: item.item_desc || "",
-        campus: item.campus || "",
+        campus: item.campus || "JWC Campus",
         found_at: item.found_at || "",
         storing_location: item.storing_location || "",
         PIC: userId || 1,

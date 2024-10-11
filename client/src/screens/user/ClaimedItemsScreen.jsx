@@ -9,11 +9,14 @@ const ClaimedItemsScreen = () => {
 
   const [claimedItems, setClaimedItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const userId = 1;
+  const [userId, setUserId] = useState(null);
+
 
   useEffect(() => {
     const fetchClaimedItems = async () => {
       try {
+        const user = await userApi.get("/user_infor");
+        setUserId(user.data._id)
         const meetingsResponse = await axiosInstance.get(
           `/meeting/meetings/${userId}`
         );
