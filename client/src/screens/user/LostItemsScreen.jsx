@@ -4,18 +4,13 @@ import CardComponent from "../../components/CardComponent";
 import AllItemsFound from "../../components/ItemCardList";
 
 const LostMainScreen = ({ items, mostRecentItems, userId, onSearchFocus }) => {
-  const [fadeOut, setFadeOut] = useState(false);
-
   const handleSearchFocus = () => {
-    setFadeOut(true);
     onSearchFocus();
   };
 
   return (
     <div
-      className={`bg-[#4880EE] min-h-screen flex flex-col transition-opacity ${
-        fadeOut ? "opacity-0" : "opacity-100"
-      }`}
+      className={"bg-[#4880EE] min-h-screen flex flex-col transition-opacity"}
     >
       {/* Header with greeting and search bar */}
       <Header userName="John" onSearchFocus={handleSearchFocus} />
