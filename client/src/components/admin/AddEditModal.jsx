@@ -1,31 +1,55 @@
 import React, { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
-import axiosInstance from "../../service/axios";
+import userApi, { getAllUser } from "../../service/UserService";
 import { convertFileToBase64 } from "../../service/convetToBase64";
-import Webcam from "react-webcam";
+import debounce from "lodash.debounce";
 
 const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
   const [formData, setFormData] = useState({
     name: "",
-    category: "Others",
+    category: "",
     item_img: null,
     item_desc: "",
     campus: "",
     found_at: "",
     storing_location: "",
     PIC: userId || 1,
-    founded_by: 3,
+    founded_by: "",
   });
 
-  // useEffect to update formData when the selected item changes
+  const [emailSearch, setEmailSearch] = useState("");
+  const [emailSuggestions, setEmailSuggestions] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [founderExists, setFounderExists] = useState(false);
+  const [registrationEmail, setRegistrationEmail] = useState("");
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const userData = await getAllUser();
+        if (Array.isArray(userData)) {
+          setUsers(userData);
+        } else if (userData && Array.isArray(userData.users)) {
+          setUsers(userData.users);
+        } else {
+          throw new Error("Unexpected response format");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   useEffect(() => {
     if (item) {
       setFormData({
         name: item.name || "",
-        category: item.category || "Others",
+        category: item.category || "",
         item_img: item.item_img || null,
         item_desc: item.item_desc || "",
-        campus: item.campus || "JWC Campus",
+        campus: item.campus || "",
         found_at: item.found_at || "",
         storing_location: item.storing_location || "",
         PIC: userId || 1,
@@ -43,7 +67,6 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
     if (file) {
       try {
         const base64Image = await convertFileToBase64(file);
-        console.log(base64Image);
         setFormData({ ...formData, item_img: base64Image });
       } catch (error) {
         console.error("Error converting image:", error);
@@ -54,40 +77,78 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Create a plain JSON object from formData state
     const payload = {
       name: formData.name,
       category: formData.category,
-      item_img: formData.item_img || "", // Include base64 image string or empty string if not provided
+      item_img: formData.item_img || "",
       item_desc: formData.item_desc || "",
       campus: formData.campus,
       found_at: formData.found_at,
       storing_location: formData.storing_location || "",
-      PIC: formData.PIC, // Send as number since the backend expects it
-      founded_by: formData.founded_by ? formData.founded_by : null, // Send as number or null if not provided
+      PIC: formData.PIC,
+      founded_by: formData.founded_by ? formData.founded_by : null,
     };
-
-    console.log("Submitting JSON payload:", payload);
 
     try {
       if (isEdit) {
-        // Make PUT request for editing an item
-        await axiosInstance.put(`/items/update/${item._id}`, payload, {
-          headers: { "Content-Type": "application/json" }, // Set Content-Type to application/json
+        await userApi.put(`/items/update/${item._id}`, payload, {
+          headers: { "Content-Type": "application/json" },
         });
       } else {
-        // Make POST request for creating a new item
-        await axiosInstance.post("/items/new", payload, {
-          headers: { "Content-Type": "application/json" }, // Set Content-Type to application/json
+        await userApi.post("/items/new", payload, {
+          headers: { "Content-Type": "application/json" },
         });
       }
-      onClose(); // Close the modal after successful request
-      refreshItems(); // Refresh the items list after submission
+      onClose();
+      window.location.reload();
     } catch (error) {
       console.error(
         "Error submitting form:",
         error.response?.data || error.message
       );
+    }
+  };
+
+  // Debounced function to filter email suggestions
+  const debouncedEmailSearch = debounce((searchTerm) => {
+    if (searchTerm.length > 1) {
+      const filteredSuggestions = users.filter((user) =>
+        user.personal_info.email
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      );
+      setEmailSuggestions(filteredSuggestions);
+      setFounderExists(filteredSuggestions.length > 0); // Set founderExists based on email presence
+    } else {
+      setEmailSuggestions([]);
+      setFounderExists(false); // Reset when search is cleared
+    }
+  }, 300);
+
+  const handleEmailSearch = (e) => {
+    const { value } = e.target;
+    setEmailSearch(value);
+    debouncedEmailSearch(value);
+    setRegistrationEmail(value); // Set email for registration if not found
+  };
+
+  // Handle selecting an email from suggestions
+  const handleEmailSelect = (email, id) => {
+    setFormData({ ...formData, founded_by: id });
+    setEmailSearch(email);
+    setEmailSuggestions([]);
+    setFounderExists(true); // Set founderExists to true on selection
+  };
+
+  // Handle sending a registration link if email not found
+  const handleSendRegistrationLink = async () => {
+    try {
+      await userApi.post("/user/send-registration-link", {
+        email: registrationEmail,
+      });
+      alert(`Registration link sent to ${registrationEmail}`);
+    } catch (error) {
+      console.error("Error sending registration link:", error);
     }
   };
 
@@ -110,7 +171,6 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex items-center space-x-4 justify-center">
-            {/* Image Upload Box */}
             <div className="relative border-dashed border-2 border-gray-400 h-24 w-24 rounded-md flex items-center justify-center cursor-pointer hover:bg-gray-50">
               {formData.item_img && (
                 <img
@@ -126,8 +186,6 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
             </div>
-
-            {/* Text Next to Image Box */}
             <div className="text-sm text-gray-600">
               <span className="block text-gray-500">Drag image here</span>
               <span className="text-blue-600 cursor-pointer">
@@ -184,8 +242,10 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
               >
-                <option value="Tech">FX Sudirman (Senayan)</option>
-                <option value="Phone">JWC (Senayan)</option>
+                <option value="FX Sudirman (Senayan)">
+                  FX Sudirman (Senayan)
+                </option>
+                <option value="JWC (Senayan)">JWC (Senayan)</option>
               </select>
             </div>
 
@@ -213,15 +273,61 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
               />
             </div>
 
-            <div>
-              <label className="block text-gray-600">Founder</label>
+            {/* Email Search Input */}
+            <div className="relative">
+              <label className="block text-gray-600">Founder Email</label>
               <input
-                type="number"
+                type="text"
+                value={emailSearch}
+                onChange={handleEmailSearch}
+                placeholder="Search for founder's email"
+                className="border p-2 rounded w-full"
+              />
+
+              {emailSuggestions.length > 0 && (
+                <ul className="absolute z-10 bg-white border border-gray-300 rounded w-full mt-1 max-h-48 overflow-y-auto">
+                  {emailSuggestions.map((suggestion) => (
+                    <li
+                      key={suggestion._id}
+                      className="p-2 hover:bg-gray-200 cursor-pointer"
+                      onClick={() =>
+                        handleEmailSelect(
+                          suggestion.personal_info.email,
+                          suggestion._id
+                        )
+                      }
+                    >
+                      {suggestion.personal_info.email}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {/* Show button to send registration link only when email is not found */}
+              {!founderExists && emailSearch.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-red-500">Founder not found.</p>
+                  <button
+                    type="button"
+                    className="bg-blue-500 text-white py-1 px-2 rounded mt-2"
+                    onClick={handleSendRegistrationLink}
+                  >
+                    Send Registration Link
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-gray-600">Founder ID</label>
+              <input
+                type="text"
                 name="founded_by"
                 value={formData.founded_by}
                 onChange={handleChange}
-                placeholder="Enter founder ID"
+                placeholder="Founder ID"
                 className="border p-2 rounded w-full"
+                readOnly
               />
             </div>
           </div>

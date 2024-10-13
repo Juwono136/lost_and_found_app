@@ -1,7 +1,6 @@
 import React from "react";
-import CalendarIcon from "../assets/calendar-icon.svg";
-import ClockIcon from "../assets/clock-icon.svg";
-import LocationIcon from "../assets/location-icon.svg";
+import { FaCalendar, FaClock } from "react-icons/fa";
+import { IoLocationSharp } from "react-icons/io5";
 
 const CardComponent = ({ items }) => {
   return (
@@ -24,15 +23,15 @@ const CardComponent = ({ items }) => {
           {/* Location, Date, and Time */}
           <div className="text-xs text-gray-500 flex flex-col items-start space-y-1">
             <div className="flex items-center">
-              <img src={LocationIcon} alt="Location" className="w-4 h-4 mr-1" />
+              <IoLocationSharp className="w-4 h-4 mr-1" />
               <span>{item.location}</span>
             </div>
             <div className="flex items-center">
-              <img src={CalendarIcon} alt="Calendar" className="w-4 h-4 mr-1" />
+              <FaCalendar className="w-4 h-4 mr-1" />
               <span>{item.date}</span>
             </div>
             <div className="flex items-center">
-              <img src={ClockIcon} alt="Clock" className="w-4 h-4 mr-1" />
+              <FaClock className="w-4 h-4 mr-1" />
               <span>{item.time}</span>
             </div>
           </div>

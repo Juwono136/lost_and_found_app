@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CalendarIcon from "../assets/calendar-icon.svg";
 import LocationIcon from "../assets/location-icon.svg";
-import ClaimItemModal from "./ClaimItemModal";
+import ClaimItemModal from "./user/ClaimItemModal";
 import VerifyItemModal from "./VerifyItemModal";
 
 const ItemsCardComponent = ({

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Header } from "../../components/HeaderComponent";
-import CardComponent from "../../components/CardComponent";
+import { Header } from "../../components/Header";
+import CardComponent from "../../components/user/CardComponent";
 import AllItemsFound from "../../components/ItemCardList";
 
 const LostMainScreen = ({ items, mostRecentItems, userId, onSearchFocus }) => {

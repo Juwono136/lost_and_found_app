@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ClearIcon from "../assets/clear-icon.svg";
+import ClearIcon from "../../assets/clear-icon.svg";
 
 const FilterModal = ({ isVisible, onClose, onApply }) => {
   const [sortBy, setSortBy] = useState(""); // "oldest" or "newest"

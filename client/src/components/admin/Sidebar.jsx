@@ -13,8 +13,11 @@ import {
   FaBookOpen,
 } from "react-icons/fa";
 import AppLogo from "../../assets/app-logo.png";
+import { useAuth } from "../../service/AuthContext";
 
 const Sidebar = () => {
+  const { role } = useAuth();
+
   return (
     <aside className="w-64 bg-white text-black flex-shrink-0 h-screen shadow-lg">
       <div className="p-4 flex items-center">
@@ -93,32 +96,37 @@ const Sidebar = () => {
               Meetings History
             </NavLink>
           </li>
-          <li>
-            <NavLink
-              to="/admin/manage-users"
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-blue-100 text-blue-600 p-3 block rounded-lg flex items-center"
-                  : "p-3 block hover:bg-gray-100 rounded-lg flex items-center"
-              }
-            >
-              <FaUserFriends className="mr-3" />
-              Manage Users
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/admin/view-log"
-              className={({ isActive }) =>
-                isActive
-                  ? "bg-blue-100 text-blue-600 p-3 block rounded-lg flex items-center"
-                  : "p-3 block hover:bg-gray-100 rounded-lg flex items-center"
-              }
-            >
-              <FaBookOpen className="mr-3" />
-              View Log
-            </NavLink>
-          </li>
+
+          {role === 4 && (
+            <>
+              <li>
+                <NavLink
+                  to="/admin/manage-users"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "bg-blue-100 text-blue-600 p-3 block rounded-lg flex items-center"
+                      : "p-3 block hover:bg-gray-100 rounded-lg flex items-center"
+                  }
+                >
+                  <FaUserFriends className="mr-3" />
+                  Manage Users
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/admin/view-log"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "bg-blue-100 text-blue-600 p-3 block rounded-lg flex items-center"
+                      : "p-3 block hover:bg-gray-100 rounded-lg flex items-center"
+                  }
+                >
+                  <FaBookOpen className="mr-3" />
+                  View Log
+                </NavLink>
+              </li>
+            </>
+          )}
         </ul>
 
         {/* Profile Section Title */}

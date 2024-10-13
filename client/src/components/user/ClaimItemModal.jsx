@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
-import axiosInstance from "../service/axios"; // Import axios instance
+import axiosInstance from "../../service/axios"; // Import axios instance
 
-import CalendarIcon from "../assets/calendar-icon.svg";
-import LocationIcon from "../assets/location-icon.svg";
-import ClockIcon from "../assets/clock-icon.svg";
-import DefaultImg from "../assets/default-profile.png";
-import SuccessIcon from "../assets/success-icon.svg";
+import { FaCalendar, FaClock } from "react-icons/fa";
+import { IoLocationSharp } from "react-icons/io5";
+
+import DefaultImg from "../../assets/default-profile.png";
+import SuccessIcon from "../../assets/success-icon.svg";
 
 const ClaimItemModal = ({ item, isVisible, onClose, userId }) => {
   const [step, setStep] = useState(1); // Steps: 1. Item details, 2. Meeting, 3. Success
@@ -65,26 +65,18 @@ const ClaimItemModal = ({ item, isVisible, onClose, userId }) => {
               <div className="flex-1">
                 <h3 className="text-sm text-gray-500">When</h3>
                 <div className="flex items-center">
-                  <img
-                    src={CalendarIcon}
-                    alt="Calendar"
-                    className="w-4 h-4 mr-1"
-                  />
+                  <FaCalendar className="w-4 h-4 mr-1" />
                   <span>{item.date}</span>
                 </div>
                 <div className="flex items-center">
-                  <img src={ClockIcon} alt="Clock" className="w-4 h-4 mr-1" />
+                  <FaClock className="w-4 h-4 mr-1" />
                   <span>{item.time}</span>
                 </div>
               </div>
               <div className="flex-1">
                 <h3 className="text-sm text-gray-500">Where</h3>
                 <div className="flex items-center">
-                  <img
-                    src={LocationIcon}
-                    alt="Location"
-                    className="w-4 h-4 mr-2"
-                  />
+                  <IoLocationSharp className="w-4 h-4 mr-2" />
                   <span>{item.location}</span>
                 </div>
               </div>

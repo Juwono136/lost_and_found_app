@@ -6,7 +6,7 @@ import FilterIcon from "../../assets/filter-blue-icon.svg";
 import ClearIcon from "../../assets/clear-blue-icon.svg";
 import ClockIcon from "../../assets/clock-icon.svg";
 import ItemCardComponent from "../../components/ItemsCardComponent";
-import FilterModal from "../../components/FilterModal"; // Import the FilterModal component
+import FilterModal from "../../components/user/FilterModal"; // Import the FilterModal component
 
 const SearchScreen = ({
   items,
