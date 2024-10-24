@@ -10,7 +10,7 @@ const NotificationPage = () => {
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [notificationType, setNotificationType] = useState(null);
   const navigate = useNavigate();
-  const userId = 1;
+  const userId = "66e1daa4f9a7602063f24eff";
 
   useEffect(() => {
     const fetchNotifications = async () => {

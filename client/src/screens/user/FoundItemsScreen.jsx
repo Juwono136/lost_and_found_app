@@ -10,8 +10,6 @@ const FoundItemsScreen = () => {
   const [foundItems, setFoundItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
-
   // Fetch found items for the current user
   const fetchFoundItems = async () => {
     try {
@@ -51,9 +49,9 @@ const FoundItemsScreen = () => {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 ">
       {/* Back Arrow and Title */}
-      <div className="flex items-center mb-6">
+      <div className="flex items-center mb-6 ">
         <img
           src={BackArrowIcon}
           alt="Back"
@@ -64,7 +62,7 @@ const FoundItemsScreen = () => {
       </div>
 
       {/* Found Items List */}
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {foundItems.length > 0 ? (
           foundItems.map((item) => (
             <ItemsCardComponent

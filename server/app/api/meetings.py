@@ -2,11 +2,11 @@ from fastapi import APIRouter, HTTPException
 # from models import Item, ItemResponse, ItemPostResponse
 from db import meetingsCollection, itemsCollection, notifsCollection
 from bson import ObjectId
-from models import Meeting, MeetingResponse, MeetingsCollection, UpdateMeeting, Notifications
-
+from models import Meeting, MeetingResponse, MeetingsCollection, UpdateMeeting, Notifications, MeetingRequest
 from crud.items_crud import ItemsCrud
 from datetime import datetime
 meetings_router = APIRouter()
+
 
 
 @meetings_router.post("/request", response_description="Request a meeting", response_model=MeetingResponse)
@@ -70,7 +70,7 @@ async def list_meetings():
 
 
 @meetings_router.get("/meetings/{user_id}", response_description="Get list of meetings for a user", response_model=MeetingsCollection)
-async def get_user_meetings(user_id: int):
+async def get_user_meetings(user_id: str ):
     try:
         # Query to find meetings for the specific user
         cursor = meetingsCollection.find({"user_id": user_id})

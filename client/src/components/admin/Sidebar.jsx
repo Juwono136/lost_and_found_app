@@ -97,36 +97,34 @@ const Sidebar = () => {
             </NavLink>
           </li>
 
-          {role === 4 && (
-            <>
-              <li>
-                <NavLink
-                  to="/admin/manage-users"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "bg-blue-100 text-blue-600 p-3 block rounded-lg flex items-center"
-                      : "p-3 block hover:bg-gray-100 rounded-lg flex items-center"
-                  }
-                >
-                  <FaUserFriends className="mr-3" />
-                  Manage Users
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/admin/view-log"
-                  className={({ isActive }) =>
-                    isActive
-                      ? "bg-blue-100 text-blue-600 p-3 block rounded-lg flex items-center"
-                      : "p-3 block hover:bg-gray-100 rounded-lg flex items-center"
-                  }
-                >
-                  <FaBookOpen className="mr-3" />
-                  View Log
-                </NavLink>
-              </li>
-            </>
-          )}
+          <>
+            <li>
+              <NavLink
+                to="/admin/manage-users"
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-blue-100 text-blue-600 p-3 block rounded-lg flex items-center"
+                    : "p-3 block hover:bg-gray-100 rounded-lg flex items-center"
+                }
+              >
+                <FaUserFriends className="mr-3" />
+                Manage Users
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/admin/view-log"
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-blue-100 text-blue-600 p-3 block rounded-lg flex items-center"
+                    : "p-3 block hover:bg-gray-100 rounded-lg flex items-center"
+                }
+              >
+                <FaBookOpen className="mr-3" />
+                View Log
+              </NavLink>
+            </li>
+          </>
         </ul>
 
         {/* Profile Section Title */}

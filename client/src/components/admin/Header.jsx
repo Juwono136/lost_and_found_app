@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaRegBell, FaSearch } from "react-icons/fa";
-import NotificationDrawer from "./NotificationDrawer"; // Your NotificationDrawer component
+import NotificationDrawer from "./NotificationDrawer";
+import { getUserInfo } from "../../service/UserService";
 
 const Header = ({ isAdminView, toggleView }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // State to manage search input
+  const [searchQuery, setSearchQuery] = useState("");
+  const [user, setUser] = useState(null);
+
   const [notifications] = useState([
-    // Dummy notifications (Replace with real fetched data)
     {
       title: "Item Approved",
       message: "Your item has been approved by the founder.",
@@ -19,12 +21,24 @@ const Header = ({ isAdminView, toggleView }) => {
     },
   ]);
 
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userData = await getUserInfo();
+        setUser(userData.personal_info);
+        // console.log("User: ", userData);
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   const toggleDrawer = () => setIsDrawerOpen(!isDrawerOpen);
 
-  // Handle search input change
   const handleSearchChange = (e) => setSearchQuery(e.target.value);
 
-  // Handle search submission (optional)
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     console.log("Searching for:", searchQuery);
@@ -68,18 +82,18 @@ const Header = ({ isAdminView, toggleView }) => {
         </button>
 
         {/* Notification Bell Icon */}
-        <div
+        {/* <div
           className="bg-gray-200 p-3 rounded-full cursor-pointer"
           onClick={toggleDrawer}
         >
           <FaRegBell className="text-gray-600 hover:text-gray-800" />
-        </div>
+        </div> */}
 
         {/* Profile Section */}
         <div className="flex items-center bg-gray-200 p-1 pl-4 rounded-full space-x-2">
-          <span className="text-sm text-gray-700">Admin Name</span>
+          <span className="text-sm text-gray-700">{user?.name || "Admin"}</span>
           <img
-            src="https://via.placeholder.com/50x50"
+            src={user?.avatar || "https://via.placeholder.com/50x50"}
             alt="Profile Pic"
             className="h-10 w-10 rounded-full"
           />

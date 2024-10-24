@@ -77,6 +77,9 @@ class ClaimItem(BaseModel):
 class MeetingCompletion(BaseModel):
     meeting_id: PyObjectId
 
+class MeetingRequest(BaseModel):
+    user_id: PyObjectId
+
 class ItemUpdate(BaseModel):
     name : str
     
@@ -107,6 +110,7 @@ class Meeting(BaseModel):
                 "status": "submitted"
             }
         }
+
 
 
 class MeetingResponse(Meeting):

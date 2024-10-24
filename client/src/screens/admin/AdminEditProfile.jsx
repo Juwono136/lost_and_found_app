@@ -1,17 +1,32 @@
-import React, { useState } from "react";
-import { FaEdit } from "react-icons/fa"; // Edit icon from react-icons
+import React, { useState, useEffect } from "react";
+import { FaEdit } from "react-icons/fa";
+import { getUserInfo } from "../../service/UserService";
 
 const EditProfile = () => {
   const [formData, setFormData] = useState({
-    firstName: "Mehrab",
-    lastName: "Bozorgi",
-    email: "Mehrabbozorgi.business@gmail.com",
-    address: "33062 Zboncak isle",
-    contactNumber: "58677.79",
-    city: "Mehrab",
-    state: "Bozorgi",
-    password: "sdbffbn65sfdvb s",
+    firstName: "",
+    lastName: "",
+    email: "",
+    address: "",
+    contactNumber: "",
+    program: "",
+    role: "0",
+    password: "",
   });
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userData = await getUserInfo();
+        setFormData(userData.personal_info);
+        // console.log("User: ", userData);
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,8 +47,8 @@ const EditProfile = () => {
           <h2 className="text-2xl font-semibold">Edit Profile</h2>
           <div className="relative">
             <img
-              src="https://via.placeholder.com/150"
-              alt="Profile"
+              src={formData?.avatar || "https://via.placeholder.com/50x50"}
+              alt="Profile Pic"
               className="w-28 h-28 rounded-full mx-auto"
             />
             <button
@@ -55,7 +70,7 @@ const EditProfile = () => {
               type="text"
               id="firstName"
               name="firstName"
-              value={formData.firstName}
+              value={formData.name}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded-md"
             />
@@ -70,7 +85,7 @@ const EditProfile = () => {
               type="text"
               id="lastName"
               name="lastName"
-              value={formData.lastName}
+              value={formData.name}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded-md"
             />
@@ -115,40 +130,44 @@ const EditProfile = () => {
               type="text"
               id="contactNumber"
               name="contactNumber"
-              value={formData.contactNumber}
+              value={formData.phone}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded-md"
             />
           </div>
 
-          {/* City */}
+          {/* Program */}
           <div>
             <label htmlFor="city" className="block font-medium">
-              City
+              Program
             </label>
             <input
               type="text"
-              id="city"
-              name="city"
-              value={formData.city}
+              id="program"
+              name="program"
+              value={formData.program}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded-md"
             />
           </div>
 
-          {/* State */}
+          {/* Role */}
           <div>
-            <label htmlFor="state" className="block font-medium">
-              State
+            <label htmlFor="role" className="block font-medium">
+              Role
             </label>
-            <input
-              type="text"
-              id="state"
-              name="state"
-              value={formData.state}
+            <select
+              id="role"
+              name="role"
+              value={formData.role}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded-md"
-            />
+            >
+              <option value="">Select Role</option>
+              <option value="0">General</option>
+              <option value="3">Staff</option>
+              <option value="4">Admin</option>
+            </select>
           </div>
 
           {/* Password */}
@@ -162,6 +181,7 @@ const EditProfile = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
+              placeholder="Enter new password"
               className="w-full border border-gray-300 p-2 rounded-md"
             />
           </div>

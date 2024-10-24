@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../service/axios";
 import DetailModal from "../../components/admin/DetailModal";
 import { LuListFilter } from "react-icons/lu";
-import SuccessAlert from "../../components/common/SuccessAlert";
+import Alert from "../../components/common/Alert";
 
 const MeetingRequests = () => {
   const [meetings, setMeetings] = useState([]);
@@ -14,6 +14,7 @@ const MeetingRequests = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [showAlert, setShowAlert] = useState(false);
+  const [alertType, setAlertType] = useState("");
   const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
@@ -25,7 +26,13 @@ const MeetingRequests = () => {
         setItems(itemResponse.data.items);
         setLoading(false);
       } catch (error) {
+        setAlertType("error");
+        setAlertMessage(
+          "Error fetching data from the server. Please try again."
+        );
+        setShowAlert(true);
         console.error("Error fetching data:", error);
+        setLoading(false);
       }
     };
     fetchData();
@@ -83,15 +90,19 @@ const MeetingRequests = () => {
     try {
       if (action === "approve") {
         await axiosInstance.put(`/meeting/approve/${meetingId}`);
+        setAlertType("success");
         setAlertMessage("Meeting approved successfully!");
       } else if (action === "reject") {
         await axiosInstance.put(`/meeting/reject/${meetingId}`);
+        setAlertType("success");
         setAlertMessage("Meeting rejected successfully!");
       } else if (action === "complete") {
         await axiosInstance.put(`/meeting/complete/${meetingId}`);
+        setAlertType("success");
         setAlertMessage("Meeting marked as completed!");
       } else if (action === "incomplete") {
         await axiosInstance.put(`/meeting/incomplete/${meetingId}`);
+        setAlertType("success");
         setAlertMessage("Meeting marked as incomplete.");
       }
 
@@ -104,6 +115,9 @@ const MeetingRequests = () => {
       const meetingResponse = await axiosInstance.get("/meeting/");
       setMeetings(meetingResponse.data.meetings);
     } catch (error) {
+      setAlertType("error");
+      setAlertMessage("Error performing the action. Please try again.");
+      setShowAlert(true);
       console.error("Error performing action:", error);
     }
   };
@@ -124,7 +138,6 @@ const MeetingRequests = () => {
       </div>
 
       <div className="bg-white p-4 shadow-md rounded-lg">
-        {/* Table */}
         <table className="min-w-full bg-white">
           <thead>
             <tr className="bg-gray-200 text-gray-600 text-sm leading-normal">
@@ -179,7 +192,7 @@ const MeetingRequests = () => {
                       <button
                         className="text-green-600 underline hover:text-green-900"
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent row click
+                          e.stopPropagation();
                           handleAction("approve", meeting._id);
                         }}
                       >
@@ -188,7 +201,7 @@ const MeetingRequests = () => {
                       <button
                         className="text-red-600 underline hover:text-red-900"
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent row click
+                          e.stopPropagation();
                           handleAction("reject", meeting._id);
                         }}
                       >
@@ -201,7 +214,7 @@ const MeetingRequests = () => {
                       <button
                         className="text-green-600 underline hover:text-green-900"
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent row click
+                          e.stopPropagation();
                           handleAction("complete", meeting._id);
                         }}
                       >
@@ -210,7 +223,7 @@ const MeetingRequests = () => {
                       <button
                         className="text-red-600 underline hover:text-red-900"
                         onClick={(e) => {
-                          e.stopPropagation(); // Prevent row click
+                          e.stopPropagation();
                           handleAction("incomplete", meeting._id);
                         }}
                       >
@@ -253,7 +266,8 @@ const MeetingRequests = () => {
       />
 
       {showAlert && (
-        <SuccessAlert
+        <Alert
+          type={alertType}
           message={alertMessage}
           onClose={() => setShowAlert(false)}
         />

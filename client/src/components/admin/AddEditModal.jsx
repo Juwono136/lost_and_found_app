@@ -3,6 +3,7 @@ import { IoClose } from "react-icons/io5";
 import userApi, { getAllUser } from "../../service/UserService";
 import { convertFileToBase64 } from "../../service/convetToBase64";
 import debounce from "lodash.debounce";
+import axiosInstance from "../../service/axios";
 
 const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
   const [formData, setFormData] = useState({
@@ -91,11 +92,11 @@ const AddEditModal = ({ isOpen, onClose, item, isEdit, userId }) => {
 
     try {
       if (isEdit) {
-        await userApi.put(`/items/update/${item._id}`, payload, {
+        await axiosInstance.put(`/items/update/${item._id}`, payload, {
           headers: { "Content-Type": "application/json" },
         });
       } else {
-        await userApi.post("/items/new", payload, {
+        await axiosInstance.post("/items/new", payload, {
           headers: { "Content-Type": "application/json" },
         });
       }

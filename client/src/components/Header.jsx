@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from "react";
-import BellIcon from "../assets/bell-icon.svg";
 import FilterIcon from "../assets/filter-icon.svg";
 import SearchIcon from "../assets/search-icon.svg";
 import FilterModal from "./user/FilterModal"; // Import the FilterModal component
-import UserIcon from "../assets/default-profile.png"; // Add user icon for admin
 import AppLogo from "../assets/app-logo-white.png"; // Import app logo
 import { FaRegBell } from "react-icons/fa";
+import { getUserInfo } from "../service/UserService";
+import { useNavigate } from "react-router-dom";
 
 // User Header
-const Header = ({ userName, onSearchFocus }) => {
+const Header = ({ onSearchChange, onSearchFocus }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   // const [userMessage, setUserMessage] = useState(""); // Add userMessage state
 
@@ -40,6 +43,29 @@ const Header = ({ userName, onSearchFocus }) => {
     handleCloseFilter();
   };
 
+  // this can be propagated from Lost, revision for later
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userData = await getUserInfo();
+        setUser(userData.personal_info);
+        // console.log("User: ", userData);
+      } catch (error) {
+        console.error("Failed to fetch user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen((prev) => !prev);
+  };
+
+  const handleSearchChangeWeb = (event) => {
+    onSearchChange(event.target.value); // Send search term to LostMainScreen
+  };
+
   return (
     <div className="w-full">
       {/* Mobile Header */}
@@ -48,16 +74,16 @@ const Header = ({ userName, onSearchFocus }) => {
           isFocused ? "opacity-0" : "opacity-100"
         }`}
       >
-        {/* Top Section with Greeting and Button */}
         <div
           className={`flex items-center justify-between transition-transform ${
             isFocused ? "transform -translate-y-12" : ""
           }`}
         >
-          <h1 className="text-2xl font-bold text-white">Hello, {userName}</h1>
+          <h1 className="text-2xl font-bold text-white">
+            Hello, {user?.name || "User Name"}
+          </h1>
         </div>
 
-        {/* Search Bar */}
         <div
           className={`relative mt-4 w-full flex items-center border border-gray-300 rounded-full bg-white px-4 py-1 transition-transform ${
             isFocused ? "transform -translate-y-12" : ""
@@ -74,7 +100,7 @@ const Header = ({ userName, onSearchFocus }) => {
             src={FilterIcon}
             alt="Filter"
             className="w-6 h-6 cursor-pointer"
-            onClick={handleOpenFilter} // Open the filter modal on click
+            onClick={handleOpenFilter}
           />
         </div>
       </div>
@@ -89,6 +115,7 @@ const Header = ({ userName, onSearchFocus }) => {
             type="text"
             placeholder="Search for an item..."
             className="flex-grow px-4 py-2 bg-transparent focus:outline-none"
+            onChange={handleSearchChangeWeb}
           />
           {/* <img
             src={FilterIcon}
@@ -103,16 +130,54 @@ const Header = ({ userName, onSearchFocus }) => {
             <FaRegBell className="text-gray-600 hover:text-gray-800 cursor-pointer" />
           </div>
 
-          <div className="flex items-center bg-white p-1 pl-4 rounded-full space-x-2">
-            <span className="text-sm text-gray-700">User Name</span>
-            <img
-              src="https://via.placeholder.com/50x50"
-              alt="Profile Pic"
-              className="h-10 w-10 rounded-full"
-            />
+          <div className="relative">
+            <div
+              className="flex items-center bg-white p-1 pl-4 rounded-full space-x-2"
+              onClick={toggleDropdown}
+            >
+              <span className="text-sm text-gray-700">
+                {user?.name || "User Name"}
+              </span>
+              <img
+                src={user?.avatar || "https://via.placeholder.com/50x50"}
+                alt="Profile Pic"
+                className="h-10 w-10 rounded-full"
+              />
+            </div>
           </div>
         </div>
       </div>
+
+      {isDropdownOpen && (
+        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+          <ul>
+            <li
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              onClick={() => navigate("/edit-profile")}
+            >
+              Edit Profile
+            </li>
+            <li
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              onClick={() => navigate("/claimed-items")}
+            >
+              Claimed Items
+            </li>
+            <li
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              onClick={() => navigate("/found-items")}
+            >
+              Found Items
+            </li>
+            <li
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-500"
+              // onClick={handleLogout}
+            >
+              Log Out
+            </li>
+          </ul>
+        </div>
+      )}
 
       {/* Filter Modal */}
       <FilterModal

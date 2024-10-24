@@ -22,7 +22,7 @@ const SearchScreen = ({
   const navigate = useNavigate();
 
   useEffect(() => {
-    setTimeout(() => setShowBackArrow(true), 100); // Delay to match the transition
+    setTimeout(() => setShowBackArrow(true), 100);
   }, []);
 
   const handleClearSearch = () => {

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ItemsCardComponent from "../../components/ItemsCardComponent";
 import BackArrowIcon from "../../assets/back-arrow-icon.svg";
 import axiosInstance from "../../service/axios";
+import userApi from "../../service/UserService";
 
 const ClaimedItemsScreen = () => {
   const navigate = useNavigate();
@@ -11,14 +12,14 @@ const ClaimedItemsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
 
-
   useEffect(() => {
     const fetchClaimedItems = async () => {
       try {
         const user = await userApi.get("/user_infor");
-        setUserId(user.data._id)
+        setUserId(user.data._id);
+        console.log("user id: ", user.data._id);
         const meetingsResponse = await axiosInstance.get(
-          `/meeting/meetings/${userId}`
+          `/meeting/meetings/${user.data._id}`
         );
         const meetings = meetingsResponse.data.meetings;
 
@@ -60,7 +61,7 @@ const ClaimedItemsScreen = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6 flex-col">
       {/* Back Arrow and Title */}
       <div className="flex items-center mb-6">
         <img
@@ -73,7 +74,7 @@ const ClaimedItemsScreen = () => {
       </div>
 
       {/* Claimed Items */}
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {claimedItems.length > 0 ? (
           claimedItems.map((item) => (
             <ItemsCardComponent
