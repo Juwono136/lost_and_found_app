@@ -1,13 +1,11 @@
-from pydantic import BaseModel, BeforeValidator, Field
+from pydantic import BaseModel, BeforeValidator, Field, ConfigDict
 from enum import Enum
-from  typing import Annotated, Optional, List, Dict
+from typing import Annotated, Optional, List
 from bson import ObjectId
 from datetime import datetime
 
 # Represents an ObjectId field in the database.
-# It will be represented as a `str` on the model so that it can be serialized to JSON.
 PyObjectId = Annotated[str, BeforeValidator(str)]
-
 
 
 class ItemStatus(str, Enum):
@@ -15,6 +13,7 @@ class ItemStatus(str, Enum):
     active = "active"
     onhold = "on hold"
     claimed = "claimed"
+
 
 class Item(BaseModel):
     name: str
@@ -26,67 +25,60 @@ class Item(BaseModel):
     storing_location: Optional[str] = "Pos Security Binus FX Campus"
     date_reported: Optional[str] = str(datetime.now().isoformat())
     status: Optional[ItemStatus] = ItemStatus.waiting_for_approval
-    PIC: PyObjectId #person in charge
+    PIC: PyObjectId  # Person in charge
     founded_by: Optional[PyObjectId] = None  # ID of the user who found the item
     claimed_by: Optional[PyObjectId] = None  # ID of the user who claimed the item
     claim_date: Optional[str] = None
     published_at: Optional[str] = None    
 
-    class Config:
-        orm_mode = True,
-        schema_extra = {
-            "example": {
-                "name": "Dompet hitam",
-                "category": "Wallet",
-                "item_img": None,
-                "item_desc": "Dompet hitam dengan bahan kulit",
-                "campus": "FX Sudirman",
-                "found_at": "Room 603",
-                "storing_location": "Pos security Binus FX Lobby",
-                "date_reported": "2024-09-12T14:30:00Z",
-                "status": "Claimed",
-                "PIC": "Suhaidin Pratama",
-                "founded_by": 1,
-                "claimed_by": 1,
-                "claim_date": "2024-09-12T19:30:00Z",
-                "published_at": "2024-09-12T14:45:00Z"
-            }
+    model_config = ConfigDict(from_attributes=True, json_schema_extra={
+        "example": {
+            "name": "Dompet hitam",
+            "category": "Wallet",
+            "item_img": None,
+            "item_desc": "Dompet hitam dengan bahan kulit",
+            "campus": "FX Sudirman",
+            "found_at": "Room 603",
+            "storing_location": "Pos security Binus FX Lobby",
+            "date_reported": "2024-09-12T14:30:00Z",
+            "status": "Claimed",
+            "PIC": "Suhaidin Pratama",
+            "founded_by": "66e3265dd3279cd0f30238f4",
+            "claimed_by": "66e3265dd3279cd0f30238f4",
+            "claim_date": "2024-09-12T19:30:00Z",
+            "published_at": "2024-09-12T14:45:00Z"
         }
+    })
+
 
 class ItemResponse(Item):
     id: Optional[PyObjectId] = Field(alias="_id", default=None)
 
-    class Config:
-        orm_mode = True
-
 
 class ItemsCollection(BaseModel):
-    """
-    A container holding a list of `ItemModel` instances.
-
-    This exists because providing a top-level array in a JSON response can be a [vulnerability](https://haacked.com/archive/2009/06/25/json-hijacking.aspx/)
-    """
-
+    """Container holding a list of `ItemModel` instances."""
     items: List[ItemResponse]
 
 
 class ClaimItem(BaseModel):
     claimed_by: int
-    
+
 
 class MeetingCompletion(BaseModel):
     meeting_id: PyObjectId
 
+
 class MeetingRequest(BaseModel):
     user_id: PyObjectId
 
+
 class ItemUpdate(BaseModel):
-    name : str
-    
+    name: str
+
 
 class MeetingStatus(str, Enum):
     submitted = "submitted"
-    approved= "approved"
+    approved = "approved"
     rejected = "rejected"
     completed = "completed"
     incomplete = "incomplete"
@@ -97,29 +89,25 @@ class Meeting(BaseModel):
     item_id: PyObjectId
     meeting_date: str
     location: Optional[str] = "Pos Security Binus FX Campus"
-    status: Optional[MeetingStatus]= MeetingStatus.submitted
+    status: Optional[MeetingStatus] = MeetingStatus.submitted
 
-    class Config:
-        orm_mode = True
-        schema_extra = {
-            "example": {
-                "user_id": 1,
-                "item_id": "66e3265dd3279cd0f30238f4",
-                "meeting_date": "2024-09-13T11:00:00Z",
-                "location": "Pos security di lobby Binus FX",
-                "status": "submitted"
-            }
+    model_config = ConfigDict(from_attributes=True, json_schema_extra={
+        "example": {
+            "user_id": "66e3265dd3279cd0f30238f4",
+            "item_id": "66e3265dd3279cd0f30238f4",
+            "meeting_date": "2024-09-13T11:00:00Z",
+            "location": "Pos security di lobby Binus FX",
+            "status": "submitted"
         }
-
+    })
 
 
 class MeetingResponse(Meeting):
     id: PyObjectId = Field(alias="_id")
 
+
 class MeetingsCollection(BaseModel):
-    """
-    A container holding a list of `MeetingModel` instances.
-    """
+    """Container holding a list of `MeetingModel` instances."""
     meetings: List[MeetingResponse]
 
 
@@ -129,16 +117,17 @@ class UpdateMeeting(BaseModel):
 
 
 class UserSignUp(BaseModel):
-    binusian_id:str
-    name:str
-    email:str
-    program:str
-    password:str
-    confirmPassword:str
+    binusian_id: str
+    name: str
+    email: str
+    program: str
+    password: str
+    confirmPassword: str
+
 
 class UserSignIn(BaseModel):
-    email:str
-    password:str
+    email: str
+    password: str
 
 
 class NotifStatus(str, Enum):
@@ -150,20 +139,20 @@ class NotifStatus(str, Enum):
     item_claimed = "item_claimed"
     verification_request = "verification_request"
     meeting_completed = "meeting_completed"
-    
+
 
 class Notifications(BaseModel):
-    user_id:PyObjectId
-    item_id:PyObjectId
+    user_id: PyObjectId
+    item_id: PyObjectId
     meeting_id: Optional[PyObjectId] = None
     title: str
     message: str
-    read : bool
+    read: bool
     type: NotifStatus
-    created_at: datetime = str(datetime.now().isoformat())
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    model_config = ConfigDict(from_attributes=True)
+
 
 class NotifResponse(Notifications):
-    id: PyObjectId  
-
-# class MeetingNotif(Notifications):
-#     meeting_id: PyObjectId
+    id: PyObjectId
