@@ -1,5 +1,5 @@
 const axios = require("axios");
-const USER_API_URL = process.env.USER_API_URL;  // Ensure this is set in your .env file
+const USER_API_URL = process.env.USER_API_URL;  
 
 // Sign up a new user
 exports.signup = async (req, res) => {
@@ -90,6 +90,18 @@ exports.updateUser = async (req, res) => {
   try {
     const response = await axios.put(`${USER_API_URL}/update_user`, req.body);
     res.status(response.status).json({ message: "User updated successfully", data: response.data });
+  } catch (error) {
+    if (error.response)
+      res.status(error.response.status).json({ message: error.response.data });
+    else res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// reset password
+exports.resetPassword = async (req, res) => {
+  try {
+    const response = await axios.post(`${USER_API_URL}/reset`, req.body);
+    res.status(response.status).json({ message: "Password reset successfully", data: response.data });
   } catch (error) {
     if (error.response)
       res.status(error.response.status).json({ message: error.response.data });
