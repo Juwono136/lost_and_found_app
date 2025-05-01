@@ -1,87 +1,85 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { refreshAccessToken, clearAccessToken } from "./axios"; // Import axiosInstance
+import authService from "../features/auth/authService";
+import tokenService from "../features/token/tokenService";
 
-const API_URL = "http://localhost:5000/api/user";
+const API_BASE = import.meta.env.VITE_USER_API_URL; 
 const AuthContext = createContext();
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
 
-const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() =>
-    JSON.parse(localStorage.getItem("user"))
-  );
+export default function AuthProvider({ children }) {
+  const [user, setUser]     = useState(() => JSON.parse(localStorage.getItem("user")));
+  const [role, setRole]     = useState(user?.selectedRole || null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  // const [isRefreshing, setIsRefreshing] = useState(false);
-  const [role, setRole] = useState(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    return userData ? userData.selectedRole : null;
-  });
+  const [error, setError]     = useState("");
 
-  const login = async (userData) => {
+  // — LOGIN —
+  const login = async (credentials) => {
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/signin`, userData, {
-        withCredentials: true,
-      });
-      localStorage.setItem("user", JSON.stringify(response.data || {}));
-      setUser(response.data);
-      setRole(response.data.selectedRole);
-      await refreshAccessToken(); // Refresh access token after login
-      setLoading(false);
-      return response.data;
+      const data = await authService.signin(credentials);
+      localStorage.setItem("user", JSON.stringify(data));
+      setUser(data);
+      setRole(data.selectedRole);
+      await tokenService.refreshToken();
+      return data;
     } catch (err) {
       setError(err.response?.data?.message || err.message);
-      setLoading(false);
       throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
+  // — LOGOUT —
   const logout = async () => {
     setLoading(true);
     try {
-      await axios.get(`${API_URL}/logout`);
+      await authService.logout();
+      localStorage.removeItem("user");
+      tokenService.clearToken();
       setUser(null);
       setRole(null);
-      clearAccessToken();
-      localStorage.removeItem("user");
-      Cookies.remove("refreshtoken");
-      setLoading(false);
     } catch (err) {
-      setError(err.response?.data?.message || err.message);
+      console.error("Logout failed:", err);
+    } finally {
       setLoading(false);
     }
   };
 
+  // — ROLE SELECTION (if your API asks) —
+  const selectRole = async ({ userId, selectedRole }) => {
+    const data = await authService.selectRole({ current: userId, selectedRole });
+    setRole(selectedRole);
+    // also persist on `user` object if you need:
+    setUser(u => ({ ...u, selectedRole }));
+    await tokenService.refreshToken();
+    return data;
+  };
+
+  // — ATTEMPT TO REFRESH TOKEN ON APP START —
   useEffect(() => {
-    const fetchAccessToken = async () => {
+    (async () => {
       try {
-        await refreshAccessToken();
+        await tokenService.refreshToken();
       } catch (err) {
-        console.error("Failed to refresh access token on load:", err);
+        console.warn("Could not refresh on load:", err);
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchAccessToken();
+    })();
   }, []);
 
   const value = {
     user,
     role,
-    login,
-    logout,
     loading,
     error,
-    refreshAccessToken,
+    login,
+    logout,
+    selectRole,
+    refreshToken: tokenService.refreshToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
-
-export default AuthProvider;
+}

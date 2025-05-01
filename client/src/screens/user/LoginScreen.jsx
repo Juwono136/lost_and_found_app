@@ -18,13 +18,12 @@ export default function LoginScreen() {
     setLoading(true);
 
     try {
-      // 1️⃣ Call the signin feature
+      //  Call the signin feature
       const signinData = await authService.signin({ email, password });
 
-      // ───── Insert here: store the returned user ID for select-role ─────
       localStorage.setItem("userId", signinData.id);
 
-      // 2️⃣ Handle role selection if required
+      // Handle role selection if required
       if (signinData.roleSelectionRequired) {
         navigate("/select-role", {
           state: { roles: signinData.role, userId: signinData.id },
@@ -32,15 +31,15 @@ export default function LoginScreen() {
         return;
       }
 
-      // 3️⃣ Refresh token to get access token
+      // Refresh token to get access token
       const tokenData = await tokenService.refreshToken();
       localStorage.setItem("accessToken", tokenData.access_token);
 
-      // 4️⃣ Optionally fetch current user profile
+      // Optionally fetch current user profile
       const currentUser = await userService.getCurrentUser();
       localStorage.setItem("userInfo", JSON.stringify(currentUser));
 
-      // 5️⃣ Redirect to homepage
+      // Redirect to homepage
       navigate("/home");
     } catch (err) {
       console.error(err);
@@ -103,7 +102,7 @@ export default function LoginScreen() {
                            focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               />
               <Link
-                to="/forgot-password"
+                to="/forgot"
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-indigo-600 hover:underline"
               >
                 Forgot?
