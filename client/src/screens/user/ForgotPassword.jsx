@@ -1,8 +1,8 @@
-// src/screens/user/ForgotPassword.jsx
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import authService from "../../features/auth/authService";
 
+// This component handles password reset requests
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,7 @@ export default function ForgotPassword() {
 
     try {
       const res = await authService.forgotPassword({ email });
-      // your API responds with { message: "Check your inbox..." }
+
       setMessage(res.message || "Check your inbox for reset instructions.");
     } catch (err) {
       setError(

@@ -1,8 +1,8 @@
-// client/src/screens/user/RegisterScreen.jsx
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import authService from "../../features/auth/authService";
 
+// This component handles user registration
 const RegisterScreen = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
