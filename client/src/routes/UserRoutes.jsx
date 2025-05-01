@@ -10,6 +10,7 @@ import RegisterScreen from "../screens/user/RegisterScreen";
 import FoundItemsScreen from "../screens/user/FoundItemsScreen";
 import ClaimedItemsScreen from "../screens/user/ClaimedItemsScreen";
 import EditProfile from "../screens/user/EditProfile";
+import SelectRoleScreen from "../screens/user/SelectRoleScreen";
 
 const UserRoutes = () => {
   return (
@@ -22,6 +23,8 @@ const UserRoutes = () => {
       <Route path="/found-items" element={<FoundItemsScreen />} />
       <Route path="/claimed-items" element={<ClaimedItemsScreen />} />
       <Route path="/edit-profile" element={<EditProfile />} />
+
+      <Route path="/select-role" element={<SelectRoleScreen />} />
     </Routes>
   );
 };

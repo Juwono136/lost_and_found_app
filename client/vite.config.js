@@ -6,6 +6,9 @@ import svgr from "@svgr/rollup";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), svgr()],
+  define: {
+    'process.env': process.env, 
+  },
   css: {
     postcss: {
       plugins: [tailwindcss()],
@@ -13,8 +16,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": {
-        target: "https://78cb-103-94-10-238.ngrok-free.app/api/user",
+      "/api/user": {
+        target: "https://csbi-users.portproject.my.id",
         changeOrigin: true,
         secure: false,
         ws: true,

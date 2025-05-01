@@ -7,6 +7,7 @@ import AuthProvider from "./service/AuthContext";
 import PrivateRoute from "./routes/privateroute";
 import LoginScreen from "./screens/user/LoginScreen";
 import RegisterScreen from "./screens/user/RegisterScreen";
+import SelectRoleScreen from "./screens/user/SelectRoleScreen";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
          
           <Route path="/login" element={<LoginScreen />} />
           <Route path="/register" element={<RegisterScreen />} />
+          <Route path="/select-role" element={<SelectRoleScreen />} />
 
           <Route element={<PrivateRoute />}>
            {/* Render user routes */}
