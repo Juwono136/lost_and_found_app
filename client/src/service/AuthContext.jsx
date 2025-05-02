@@ -13,7 +13,7 @@ export default function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState("");
 
-  // — LOGIN —
+  // LOGIN 
   const login = async (credentials) => {
     setLoading(true);
     try {
@@ -31,7 +31,7 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  // — LOGOUT —
+  // LOGOUT 
   const logout = async () => {
     setLoading(true);
     try {
@@ -47,17 +47,16 @@ export default function AuthProvider({ children }) {
     }
   };
 
-  // — ROLE SELECTION (if your API asks) —
+  // ROLE SELECTION
   const selectRole = async ({ userId, selectedRole }) => {
     const data = await authService.selectRole({ current: userId, selectedRole });
     setRole(selectedRole);
-    // also persist on `user` object if you need:
+    
     setUser(u => ({ ...u, selectedRole }));
     await tokenService.refreshToken();
     return data;
   };
 
-  // — ATTEMPT TO REFRESH TOKEN ON APP START —
   useEffect(() => {
     (async () => {
       try {
