@@ -1,4 +1,3 @@
-// src/screens/user/SelectRoleScreen.jsx
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import authService from '../../features/auth/authService';
@@ -25,7 +24,7 @@ export default function SelectRoleScreen() {
     e.preventDefault();
     setError('');
     try {
-      // NOTE: payload key must be `userId`, not `current`
+     
       await authService.selectRole({ userId, selectedRole });
       navigate('/home');
     } catch (err) {
