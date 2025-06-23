@@ -286,12 +286,7 @@ const ItemTable= ({searchItem, category, status, date})=>{
     const dashboardHead=["No.","Name","Founder","Location","Store","Status","Reported","Staff"]
     const dashboardRows = getDashboardRows(allItems,users);
 
-    
-
-
-    const deleteRow=(id)=>{
-
-    }
+    const deleteRow = () => {}
 
     useEffect(() => {
           const handleResize = () => {
@@ -602,6 +597,7 @@ const ItemTable= ({searchItem, category, status, date})=>{
                   date_reported,
                   staff_name})=>{
                   return(
+                    <>
                   <tr className="even:bg-gray-100">
                     <td className="p-2">
                       <Typography>{item_id}</Typography>
@@ -617,26 +613,28 @@ const ItemTable= ({searchItem, category, status, date})=>{
                     </td>
                     <td className="p-2">
                       <Typography>{location_store}</Typography>
-                </td>
-                <td className="p-2">
-                  <Chip 
-                    size="sm"
-                    value={item_status} 
-                    className={`text-center rounded-2xl border-2 ${
-                            item_status === "Active" ? "bg-green-300 text-white border-green-600" :
-                            item_status === "Claimed" ? "bg-blue-300 text-white border-blue-600" :
-                            item_status === "Pending" ? "bg-pink-200 text-white border-pink-600" :
-                            item_status === "On Hold" ? "bg-yellow-300 text-black border-yellow-800" :
-                            "bg-red-400 text-white border-red-800"
-                          }`} />
-                </td>
-                <td className="p-2">
-                  <Typography>{date_reported}</Typography>
-                </td>
-                <td className="p-2">
-                  <Typography>{staff_name}</Typography>
-                </td>
-              </tr>)
+                    </td>
+                    <td className="p-2">
+                      <Chip 
+                        size="sm"
+                        value={item_status} 
+                        className={`text-center rounded-2xl border-2 ${
+                                item_status === "Active" ? "bg-green-300 text-white border-green-600" :
+                                item_status === "Claimed" ? "bg-blue-300 text-white border-blue-600" :
+                                item_status === "Pending" ? "bg-pink-200 text-white border-pink-600" :
+                                item_status === "On Hold" ? "bg-yellow-300 text-black border-yellow-800" :
+                                "bg-red-400 text-white border-red-800"
+                              }`} />
+                    </td>
+                    <td className="p-2">
+                      <Typography>{date_reported}</Typography>
+                    </td>
+                    <td className="p-2">
+                      <Typography>{staff_name}</Typography>
+                    </td>
+              </tr>
+              </>
+              )
 
             })}
           </tbody>
