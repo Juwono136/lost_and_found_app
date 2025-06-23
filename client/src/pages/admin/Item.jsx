@@ -1,0 +1,207 @@
+import React, { useEffect, useState } from "react";
+import {useNavigate} from "react-router-dom"
+import ItemTable from "../../components/admin/ItemTable";
+import { FaPlus, FaSearch, FaFilter } from "react-icons/fa";
+import { Button, Input, Select,Option, Popover,PopoverHandler,PopoverContent } from "@material-tailwind/react";
+import Datepicker from "react-tailwindcss-datepicker";
+import dayjs from 'dayjs'
+
+const Item = () => {
+
+  
+
+  const navigate =useNavigate()
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
+  const [searchItem, setSearchItem]=useState("")
+  const [category, setCategory]=useState("")
+  const [status, setStatus]=useState("")
+  const [value, setValue] = useState({ 
+        startDate: null, 
+        endDate: null
+    });
+  const [openPopover, setOpenPopover] = useState(false);
+
+  const handleChange = (newValue) => {
+    setValue(newValue);
+    if (newValue.startDate && newValue.endDate) {
+      setOpenPopover(false); // Close the popover when both dates are selected
+    }
+  };
+
+  const formatDateRange = ({ startDate, endDate }) => {
+      if (!startDate && !endDate) return "";
+      if (startDate && !endDate) return dayjs(startDate).format("DD/MM/YYYY");
+      if (startDate && endDate) {
+        return `${dayjs(startDate).format("DD/MM/YYYY")} - ${dayjs(endDate).format("DD/MM/YYYY")}`;
+      }
+      return "";
+    };
+
+  useEffect(() => {
+    //retrieve items
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 700); 
+    };
+  
+    window.addEventListener('resize', handleResize);
+  
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return (<>{isMobile ?(
+    <div className=" w-full">
+      <div className="flex flex-col items-center mb-[5px]">
+        <button className="flex items-center gap-1 bg-fuchsia text-white p-1 text-xs border border-black rounded" onClick={()=>navigate("/admin/items/add")}><FaPlus/>Add item</button>
+      </div>
+      <div className="flex items-center gap-2 flex-1 relative">
+        <FaSearch className="absolute left-3 transform-translate-y-1/2 text-gray-400"/>
+        <Input
+          className="w-full pl-10 custom-input"
+          label="search item here.."
+          labelProps={{ className: "custom-label pl-10" }}
+          value={searchItem}
+          onChange={(e) => setSearchItem(e.target.value)}
+        />
+      </div>
+      <div className="pt-3 pb-3 flex flex-row flex-wrap gap-4 items-center ">
+          <div className="flex items-center gap-2 flex-1 relative">
+            <Select 
+              className="w-full pl-10"
+              label="Filter By Category" 
+              value={category} 
+              onChange={(val) => setCategory(val || "")}
+              inputProps={{ className: "p-5" }}
+              >
+                <Option value="">all</Option>
+                <Option value="electronics">electronics</Option>
+                <Option value="daily appliance">daily appliance</Option>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2 flex-1 relative ">
+            <Select 
+              className="w-full pl-10"
+              label="Filter By Status" 
+              value={status} 
+              onChange={(val) => setStatus(val || "")}
+              inputProps={{ className: "p-5" }}
+              >
+                <Option value="">all</Option>
+                <Option value="Claimed">Claimed</Option>
+                <Option value="Active">Active</Option>
+                <Option value="Pending">Pending</Option>
+                <Option value="On Hold">On Hold</Option>
+                <Option value="Cancel">Cancel</Option>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2 flex-1 relative">
+            <Popover open={openPopover} handler={setOpenPopover}>
+              <PopoverHandler>
+                <Input
+                  label="Select a Date"
+                  value={formatDateRange(value)}
+                  readOnly
+                  onClick={(e) => e.preventDefault()} // prevent manual input
+                />
+              </PopoverHandler>
+              <PopoverContent className="right-3">
+                <Datepicker
+                  value={value}
+                  onChange={handleChange}
+                  primaryColor="blue"
+                  toggleClassName="hidden" // optional: hides default toggle button if any
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        
+        </div>
+      <ItemTable searchItem={searchItem} category={category} status={status} date={value}/>
+    </div>
+  ):(
+    <div className=" w-full">
+        <div className="flex flex-row justify-between items-center">
+          List of items 
+          <Button className="flex items-center gap-1 bg-fuchsia text-white p-1 text-xs border border-black rounded" onClick={()=>navigate("/admin/items/add")}>
+            <FaPlus/>Add item
+          </Button>
+        </div>
+        <div className="pt-3 pb-3 flex flex-row flex-wrap gap-4 items-center ">
+          <div className="flex items-center gap-2 flex-1 relative">
+            <FaSearch className="absolute left-3 transform-translate-y-1/2 text-gray-400"/>
+            <Input
+              className="w-full pl-10 custom-input"
+              label="search item here.."
+              labelProps={{ className: "custom-label pl-10" }}
+              value={searchItem}
+              onChange={(e) => setSearchItem(e.target.value)}
+            />
+          </div>
+          <div className="flex items-center gap-2 flex-1 relative ">
+            {/* <FaFilter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" style={{ zIndex: 10 }}/> */}
+            <Select 
+              className="w-full pl-10"
+              label="Filter By Category" 
+              value={category} 
+              onChange={(val) => setCategory(val || "")}
+              inputProps={{ className: "p-5" }}
+              >
+                <Option value="">all</Option>
+                <Option value="electronics">electronics</Option>
+                <Option value="daily appliance">daily appliance</Option>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-2 flex-1 relative ">
+            <Select 
+              className="w-full pl-10"
+              label="Filter By Status" 
+              value={status} 
+              onChange={(val) => setStatus(val || "")}
+              inputProps={{ className: "p-5" }}
+              >
+                <Option value="">all</Option>
+                <Option value="Claimed">Claimed</Option>
+                <Option value="Active">Active</Option>
+                <Option value="Pending">Pending</Option>
+                <Option value="On Hold">On Hold</Option>
+                <Option value="Cancel">Cancel</Option>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-2 flex-1 relative">
+            <Popover open={openPopover} handler={setOpenPopover}>
+              <PopoverHandler>
+                <Input
+                  label="Select a Date"
+                  value={formatDateRange(value)}
+                  readOnly
+                  onClick={(e) => e.preventDefault()} // prevent manual input
+                />
+              </PopoverHandler>
+              <PopoverContent className="right-3">
+                <Datepicker
+                  value={value}
+                  onChange={handleChange}
+                  primaryColor="blue"
+                  toggleClassName="hidden" // optional: hides default toggle button if any
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        
+        </div>
+        <ItemTable searchItem={searchItem} category={category} status={status} date={value}/>
+    </div>
+  )}
+  </>
+    
+  );
+};
+
+export default Item;
