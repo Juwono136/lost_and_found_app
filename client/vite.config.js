@@ -17,7 +17,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api/user": {
-        target: "https://csbi-users.portproject.my.id",
+        target: process.env.VITE_USER_API_URL,
         changeOrigin: true,
         secure: false,
         ws: true,

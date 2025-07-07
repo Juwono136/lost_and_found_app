@@ -23,8 +23,7 @@ export default function SelectRoleScreen() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    try {
-     
+    try {   
       await authService.selectRole({ userId, selectedRole });
       navigate('/home');
     } catch (err) {
