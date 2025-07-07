@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { signIn } from "../../features/auth/authSlice";
@@ -6,29 +6,34 @@ import { signIn } from "../../features/auth/authSlice";
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, loading, error } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (user) {
-      navigate("/home");
-    }
-  }, [user, navigate]);
+  const { loading, error } = useSelector((state) => state.auth);
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       alert("Please fill in all fields");
       return;
     }
 
     try {
-      await dispatch(signIn({ email, password })).unwrap();
-      navigate("/home");
+      const result = await dispatch(signIn({ email, password })).unwrap();
+
+      if (result.roleSelectionRequired) {
+        navigate("/select-role", {
+          state: {
+            roles: result.role,   
+            userId: result.id,    
+          },
+        });
+      } else {
+        navigate("/home");
+      }
     } catch {
-      // error is available in state.auth.error
+  
     }
   };
 
@@ -94,7 +99,7 @@ export default function LoginScreen() {
           </button>
 
           <p className="mt-4 text-center text-sm text-gray-600">
-            Don’t have an account?{' '}
+            Don’t have an account?{" "}
             <Link to="/register" className="font-medium text-indigo-600 hover:underline">
               Sign up
             </Link>
