@@ -1,14 +1,25 @@
-const mongoose = require("mongoose");
+// backend/models/notification.js
 
-const notificationSchema = new mongoose.Schema({
-  user_id: { type: String, required: true },
-  item_id: { type: String, required: true },
-  meeting_id: { type: String },
-  title: { type: String, required: true },
-  message: { type: String, required: true },
-  read: { type: Boolean, default: false },
-  type: { 
-    type: String, 
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
+
+const notificationSchema = new Schema({
+  user_id: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  item_id: {
+    type: Schema.Types.ObjectId,
+    ref: "Item",
+    required: true,
+  },
+  meeting_id: {
+    type: Schema.Types.ObjectId,
+    ref: "Meeting",
+  },
+  type: {
+    type: String,
     enum: [
       "claim_initiated",
       "claim_under_review",
@@ -17,11 +28,24 @@ const notificationSchema = new mongoose.Schema({
       "meeting_incomplete",
       "item_claimed",
       "verification_request",
-      "meeting_completed"
+      "meeting_completed",
     ],
-    required: true 
+    required: true,
   },
-  created_at: { type: Date, default: Date.now }
+  title: {
+    type: String,
+    required: true,
+  },
+  message: {
+    type: String,
+    required: true,
+  },
+  read: {
+    type: Boolean,
+    default: false,
+  },
+}, {
+  timestamps: true, // adds createdAt & updatedAt
 });
 
 module.exports = mongoose.model("Notification", notificationSchema);

@@ -1,37 +1,58 @@
-const Notification = require("../models/notification");
+// controllers/notificationsController.js
 
-// Fetch notifications by user (sorted by created_at descending)
-exports.fetchNotificationsByUser = async (req, res) => {
+const Notification = require('../models/notification');
+
+// Create a new notification
+exports.createNotification = async (req, res, next) => {
   try {
-    const notifications = await Notification.find({ user_id: req.params.user_id }).sort({ created_at: -1 }).limit(100);
-    if (notifications.length)
-      res.json(notifications);
-    else res.status(404).json({ message: "No notifications found for this user" });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching notifications", error: error.message });
+    const payload = {
+      user_id:    req.body.user_id,
+      item_id:    req.body.item_id,
+      meeting_id: req.body.meeting_id,
+      type:       req.body.type,
+      title:      req.body.title,
+      message:    req.body.message,
+      read:       req.body.read || false,
+    };
+
+    const notif = new Notification(payload);
+    const saved = await notif.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    next(err);
   }
 };
 
-// Fetch all notifications (sorted by created_at descending)
-exports.fetchAllNotifications = async (req, res) => {
+// Fetch notifications by user
+exports.fetchNotificationsByUser = async (req, res, next) => {
   try {
-    const notifications = await Notification.find({}).sort({ created_at: -1 }).limit(100);
-    if (notifications.length)
-      res.json(notifications);
-    else res.status(404).json({ message: "No notifications found" });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching notifications", error: error.message });
+    const { userId } = req.params;
+    const notifs = await Notification.find({ user_id: userId })
+      .sort({ createdAt: -1 })
+      .lean();
+    if (!notifs.length) {
+      return res.status(404).json({ message: 'No notifications found' });
+    }
+    res.json(notifs);
+  } catch (err) {
+    next(err);
   }
 };
 
-// Update a notification's status to read
-exports.changeStatus = async (req, res) => {
+// Mark a notification as read
+exports.markAsRead = async (req, res, next) => {
   try {
-    const updated = await Notification.findByIdAndUpdate(req.params.notif_id, { read: true }, { new: true });
-    if (updated)
-      res.json({ message: "Notification status updated" });
-    else res.status(404).json({ message: "Notification not found" });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to update notification status", error: error.message });
+    const { id } = req.params;
+    const updated = await Notification.findByIdAndUpdate(
+      id,
+      { read: true },
+      { new: true }
+    );
+    if (!updated) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+    res.json({ message: 'Notification marked as read', notification: updated });
+  } catch (err) {
+    next(err);
   }
 };

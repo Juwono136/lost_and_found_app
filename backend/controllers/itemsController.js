@@ -1,91 +1,109 @@
-const Item = require("../models/item");
-const { default: mongoose } = require("mongoose");
-
-// List all items (limit to 1000)
-exports.getItems = async (req, res) => {
-  try {
-    const items = await Item.find({}).limit(1000);
-    res.json({ items });
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+const Item = require('../models/item');
 
 // Create a new item
-exports.createItem = async (req, res) => {
+exports.createItem = async (req, res, next) => {
   try {
-    const newItem = new Item(req.body);
+    const payload = {
+      user_id: req.body.user_id,
+      staff_id: req.body.staff_id,
+      name: req.body.name,
+      item_img: req.body.item_img,
+      item_desc: req.body.item_desc,
+      category: req.body.category,
+      found_at: req.body.found_at,
+      storing_location: req.body.storing_location,
+      draft: req.body.draft || false,
+      status: req.body.status || 'waiting for approval',
+      claimed_by: req.body.claimed_by,
+      claim_date: req.body.claim_date,
+      published_at: req.body.published_at,
+    };
+
+    const newItem = new Item(payload);
     const saved = await newItem.save();
-
-    res.status(201).json({ message: "Item posted successfully", item: saved });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to post item", error: error.message });
+    res.status(201).json(saved);
+  } catch (err) {
+    next(err);
   }
 };
 
-// Get an item by ID
-exports.getItemById = async (req, res) => {
+// List all items
+exports.listItems = async (req, res, next) => {
   try {
-    const item = await Item.findById(req.params.id);
-    if (item) res.json(item);
-    else res.status(404).json({ message: "Item not found" });
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving item", error: error.message });
+    const items = await Item.find().sort({ createdAt: -1 }).lean();
+    res.json(items);
+  } catch (err) {
+    next(err);
   }
 };
 
-// Delete an item by ID
-exports.deleteItem = async (req, res) => {
+// Get a single item by ID
+exports.getItemById = async (req, res, next) => {
   try {
-    const result = await Item.deleteOne({ _id: req.params.id });
-    if (result.deletedCount) res.json({ message: "Item deleted successfully" });
-    else res.status(404).json({ message: "Item not found" });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting item", error: error.message });
+    const { id } = req.params;
+    const item = await Item.findById(id).lean();
+    if (!item) return res.status(404).json({ message: 'Item not found' });
+    res.json(item);
+  } catch (err) {
+    next(err);
   }
 };
 
-// Claim an item (update status, claimed_by, claim_date)
-exports.claimItem = async (req, res) => {
+// Update an item’s details
+exports.updateItem = async (req, res, next) => {
   try {
-    const { claimed_by } = req.body;
+    const { id } = req.params;
+    const updateData = { ...req.body };
+    const updated = await Item.findByIdAndUpdate(id, updateData, { new: true });
+    if (!updated) return res.status(404).json({ message: 'Item not found' });
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Delete an item
+exports.deleteItem = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await Item.findByIdAndDelete(id);
+    if (!result) return res.status(404).json({ message: 'Item not found' });
+    res.json({ message: 'Item deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Claim an item
+exports.claimItem = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { user_id: claimed_by } = req.body;
     const update = {
-      status: "claimed",
+      status: 'claimed',
       claimed_by,
-      claim_date: new Date().toISOString()
+      claim_date: new Date(),
     };
-    const updated = await Item.findByIdAndUpdate(req.params.item_id, update, { new: true });
-    if (updated) res.json(updated);
-    else res.status(404).json({ message: "Item not found" });
-  } catch (error) {
-    res.status(500).json({ message: "Error claiming item", error: error.message });
+    const claimed = await Item.findByIdAndUpdate(id, update, { new: true });
+    if (!claimed) return res.status(404).json({ message: 'Item not found' });
+    res.json(claimed);
+  } catch (err) {
+    next(err);
   }
 };
 
-// Update item details (general update)
-exports.updateItem = async (req, res) => {
+// Approve an item (set active + published_at)
+exports.approveItem = async (req, res, next) => {
   try {
-  
-    const updateData = req.body;
-    const updated = await Item.findByIdAndUpdate(req.params.item_id, updateData, { new: true });
-    if (updated) res.json(updated);
-    else res.status(404).json({ message: "Item not found" });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating item", error: error.message });
-  }
-};
-
-// Approve an item 
-exports.approveItem = async (req, res) => {
-  try {
+    const { id } = req.params;
     const update = {
-      status: "active",
-      published_at: new Date().toISOString()
+      status: 'active',
+      published_at: new Date(),
     };
-    const updated = await Item.findByIdAndUpdate(req.params.item_id, update, { new: true });
-    if (updated) res.json({ message: "Item approved successfully", item: updated });
-    else res.status(404).json({ message: "Item not found" });
-  } catch (error) {
-    res.status(500).json({ message: "Error approving item", error: error.message });
+    const approved = await Item.findByIdAndUpdate(id, update, { new: true });
+    if (!approved) return res.status(404).json({ message: 'Item not found' });
+    res.json(approved);
+  } catch (err) {
+    next(err);
   }
 };

@@ -1,26 +1,27 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const itemsController = require("../controllers/itemsController");
+const itemsController = require('../controllers/itemsController');
 
-// Create new item (POST /items/new)
-router.post("/new", itemsController.createItem);
+// Create new item
+router.post('/', itemsController.createItem);
 
-// List all items (GET /items)
-router.get("/", itemsController.getItems);
+// List all items
+router.get('/', itemsController.listItems);
 
-// Get item by ID (GET /items/:id)
-router.get("/:id", itemsController.getItemById);
+// Get item by ID
+router.get('/:id', itemsController.getItemById);
 
-// Delete an item (DELETE /items/delete/:id)
-router.delete("/delete/:id", itemsController.deleteItem);
+// Update item details
+router.put('/:id', itemsController.updateItem);
 
-// Claim an item (PUT /items/claim/:item_id)
-router.put("/claim/:item_id", itemsController.claimItem);
+// Delete an item
+router.delete('/:id', itemsController.deleteItem);
 
-// Update item details (PUT /items/update/:item_id)
-router.put("/update/:item_id", itemsController.updateItem);
+// Claim an item
+router.put('/:id/claim', itemsController.claimItem);
 
-// Approve an item (PUT /items/approve/:item_id)
-router.put("/approve/:item_id", itemsController.approveItem);
+// Approve an item
+
+router.put('/:id/approve', itemsController.approveItem);
 
 module.exports = router;

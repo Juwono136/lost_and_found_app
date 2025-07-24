@@ -1,186 +1,215 @@
-const Meeting = require("../models/meeting");
-const Item = require("../models/item");
-const Notification = require("../models/notification");
+const Meeting = require('../models/meeting');
+const Item = require('../models/item');
+const Notification = require('../models/notification');
 
-// Create a new meeting request (updates item status to "on hold", inserts meeting, sends notification)
-exports.createRequest = async (req, res) => {
+// Create a meeting request
+exports.createRequest = async (req, res, next) => {
   try {
-    const { item_id, user_id } = req.body;
-    // Update item status to "on hold"
-    const updatedItem = await Item.findByIdAndUpdate(item_id, { status: "on hold" }, { new: true });
-    if (!updatedItem) return res.status(404).json({ message: "Item not found" });
+    const { item_id, user_id, meeting_date, meeting_time, meeting_location } = req.body;
 
-    // Create meeting request
-    const newMeeting = new Meeting(req.body);
-    const savedMeeting = await newMeeting.save();
+    // put item on hold
+    const updatedItem = await Item.findByIdAndUpdate(
+      item_id,
+      { status: 'on hold' },
+      { new: true }
+    );
+    if (!updatedItem) return res.status(404).json({ message: 'Item not found' });
 
-    // Create notification for the founder
-    const notification = new Notification({
-      user_id, 
+    // create meeting
+    const meeting = new Meeting({
+      item_id,
+      user_id,
+      meeting_date: new Date(meeting_date),
+      meeting_time,
+      meeting_location: meeting_location || updatedItem.storing_location,
+      status: 'submitted'
+    });
+    const savedMeeting = await meeting.save();
+
+    // notify user
+    const notif = new Notification({
+      user_id,
       item_id,
       meeting_id: savedMeeting._id,
-      title: "Claim Submitted",
+      title: 'Claim Submitted',
       message: `Your claim for ${updatedItem.name} has been submitted.`,
-      type: "claim_initiated",
+      type: 'claim_initiated',
       read: false
     });
-    await notification.save();
+    await notif.save();
 
     res.status(201).json(savedMeeting);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to post meeting", error: error.message });
+  } catch (err) {
+    next(err);
   }
 };
 
 // List all meetings
-exports.listMeetings = async (req, res) => {
+exports.listMeetings = async (req, res, next) => {
   try {
-    const meetings = await Meeting.find({}).limit(1000);
-    res.json({ meetings });
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving meetings", error: error.message });
+    const meetings = await Meeting.find().sort({ createdAt: -1 }).lean();
+    res.json(meetings);
+  } catch (err) {
+    next(err);
   }
 };
 
-// Get meetings for a specific user
-exports.getUserMeetings = async (req, res) => {
+// Get a single meeting by ID
+exports.getUserMeetings = async (req, res, next) => {
   try {
-    const meetings = await Meeting.find({ user_id: req.params.user_id });
-    if (!meetings.length)
-      return res.status(404).json({ message: `No meetings found for user ${req.params.user_id}` });
-    res.json({ meetings });
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving user meetings", error: error.message });
+    const { user_id } = req.params;
+    const meetings = await Meeting.find({ user_id }).sort({ createdAt: -1 }).lean();
+    if (meetings.length === 0) {
+      return res.status(404).json({ message: `No meetings found for user ${user_id}` });
+    }
+    res.json(meetings);
+  } catch (err) {
+    next(err);
   }
 };
 
-// Approve a meeting request
-exports.approveMeeting = async (req, res) => {
+// Update meeting details
+exports.updateMeeting = async (req, res, next) => {
   try {
-    const meeting_id = req.params.meeting_id;
-    const updatedMeeting = await Meeting.findByIdAndUpdate(meeting_id, { status: "approved" }, { new: true });
-    if (!updatedMeeting)
-      return res.status(404).json({ message: "Meeting not found" });
-    
-    // Retrieve the associated item for notification
+    const { meeting_id } = req.params;
+    const updateData = {};
+    if (req.body.meeting_date)  updateData.meeting_date = new Date(req.body.meeting_date);
+    if (req.body.meeting_time)  updateData.meeting_time = req.body.meeting_time;
+    if (req.body.meeting_location) updateData.meeting_location = req.body.meeting_location;
+
+    const updated = await Meeting.findByIdAndUpdate(meeting_id, updateData, { new: true });
+    if (!updated) return res.status(404).json({ message: 'Meeting not found' });
+    res.json(updated);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Approve a meeting
+exports.approveMeeting = async (req, res, next) => {
+  try {
+    const { meeting_id } = req.params;
+    const updatedMeeting = await Meeting.findByIdAndUpdate(
+      meeting_id,
+      { status: 'approved' },
+      { new: true }
+    );
+    if (!updatedMeeting) return res.status(404).json({ message: 'Meeting not found' });
+
+    // notify user
     const item = await Item.findById(updatedMeeting.item_id);
-    if (!item)
-      return res.status(404).json({ message: "Item not found" });
-    
-    // Send notification to the user
-    const notification = new Notification({
+    if (!item) return res.status(404).json({ message: 'Item not found' });
+
+    const notif = new Notification({
       user_id: updatedMeeting.user_id,
       item_id: updatedMeeting.item_id,
       meeting_id: updatedMeeting._id,
-      title: "Meeting Approved",
+      title: 'Meeting Approved',
       message: `Your meeting for ${item.name} has been approved. Please be on time.`,
-      type: "meeting_approved",
+      type: 'meeting_approved',
       read: false
     });
-    await notification.save();
-    
+    await notif.save();
+
     res.json(updatedMeeting);
-  } catch (error) {
-    res.status(500).json({ message: "Error approving meeting", error: error.message });
+  } catch (err) {
+    next(err);
   }
 };
 
-// Reject a meeting request (update status to "rejected", send notification)
-exports.rejectMeeting = async (req, res) => {
+// Reject a meeting
+exports.rejectMeeting = async (req, res, next) => {
   try {
-    const meeting_id = req.params.meeting_id;
+    const { meeting_id } = req.params;
     const meeting = await Meeting.findById(meeting_id);
-    if (!meeting)
-      return res.status(404).json({ message: "Meeting not found" });
-    
-    meeting.status = "rejected";
+    if (!meeting) return res.status(404).json({ message: 'Meeting not found' });
+
+    meeting.status = 'rejected';
     await meeting.save();
 
-    await Item.findByIdAndUpdate(meeting.item_id, { status: "active" });
-
+    await Item.findByIdAndUpdate(meeting.item_id, { status: 'active' });
     const item = await Item.findById(meeting.item_id);
-    if (!item)
-      return res.status(404).json({ message: "Item not found" });
+    if (!item) return res.status(404).json({ message: 'Item not found' });
 
-    const notification = new Notification({
+    const notif = new Notification({
       user_id: meeting.user_id,
       item_id: meeting.item_id,
       meeting_id: meeting._id,
-      title: "Meeting Rejected",
+      title: 'Meeting Rejected',
       message: `Your claim for ${item.name} has been rejected.`,
-      type: "meeting_rejected",
+      type: 'meeting_rejected',
       read: false
     });
-    await notification.save();
+    await notif.save();
 
     res.json(meeting);
-  } catch (error) {
-    res.status(500).json({ message: "Error rejecting meeting", error: error.message });
+  } catch (err) {
+    next(err);
   }
 };
 
-// Delete a meeting
-exports.deleteMeeting = async (req, res) => {
+// Mark a meeting as completed
+exports.completeMeeting = async (req, res, next) => {
   try {
-    const result = await Meeting.deleteOne({ _id: req.params.meeting_id });
-    if (result.deletedCount)
-      res.json({ message: "Meeting successfully deleted" });
-    else res.status(404).json({ message: "Meeting not found" });
-  } catch (error) {
-    res.status(500).json({ message: "Error cancelling meeting", error: error.message });
-  }
-};
+    const { meeting_id } = req.params;
+    const meeting = await Meeting.findById(meeting_id);
+    if (!meeting) return res.status(404).json({ message: 'Meeting not found' });
 
-// Mark meeting as complete (update status to "completed", send notification)
-exports.completeMeeting = async (req, res) => {
-  try {
-    const meeting = await Meeting.findById(req.params.meeting_id);
-    if (!meeting)
-      return res.status(404).json({ message: "Meeting not found" });
-    
-    meeting.status = "completed";
+    meeting.status = 'completed';
     await meeting.save();
 
-    const notification = new Notification({
+    const notif = new Notification({
       user_id: meeting.user_id,
       item_id: meeting.item_id,
       meeting_id: meeting._id,
-      title: "Meeting Completed",
+      title: 'Meeting Completed',
       message: "Please verify that you've claimed and received this item.",
-      type: "meeting_completed",
+      type: 'meeting_completed',
       read: false
     });
-    await notification.save();
+    await notif.save();
 
-    res.json({ message: "Meeting completed successfully", meeting });
-  } catch (error) {
-    res.status(500).json({ message: "Error completing meeting", error: error.message });
+    res.json({ message: 'Meeting completed successfully', meeting });
+  } catch (err) {
+    next(err);
   }
 };
 
-// Mark meeting as incomplete (update status to "incomplete", send notification)
-exports.markMeetingIncomplete = async (req, res) => {
+//mark a meeting as incomplete
+exports.markMeetingIncomplete = async (req, res, next) => {
   try {
-    const meeting = await Meeting.findById(req.params.meeting_id);
-    if (!meeting)
-      return res.status(404).json({ message: "Meeting not found" });
-    
-    meeting.status = "incomplete";
+    const { meeting_id } = req.params;
+    const meeting = await Meeting.findById(meeting_id);
+    if (!meeting) return res.status(404).json({ message: 'Meeting not found' });
+
+    meeting.status = 'incomplete';
     await meeting.save();
 
-    const notification = new Notification({
+    const notif = new Notification({
       user_id: meeting.user_id,
       item_id: meeting.item_id,
       meeting_id: meeting._id,
-      title: "Meeting Marked Incomplete",
-      message: "Your meeting has been marked as incomplete. Please check the details.",
-      type: "meeting_incomplete",
+      title: 'Meeting Marked Incomplete',
+      message: 'Your meeting has been marked as incomplete. Please check the details.',
+      type: 'meeting_incomplete',
       read: false
     });
-    await notification.save();
-    
+    await notif.save();
+
     res.json(meeting);
-  } catch (error) {
-    res.status(500).json({ message: "Error marking meeting incomplete", error: error.message });
+  } catch (err) {
+    next(err);
+  }
+};
+
+//delete a meeting
+exports.deleteMeeting = async (req, res, next) => {
+  try {
+    const { meeting_id } = req.params;
+    const result = await Meeting.findByIdAndDelete(meeting_id);
+    if (!result) return res.status(404).json({ message: 'Meeting not found' });
+    res.json({ message: 'Meeting successfully deleted' });
+  } catch (err) {
+    next(err);
   }
 };
