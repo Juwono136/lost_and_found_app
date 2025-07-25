@@ -1,12 +1,10 @@
 import { Option, Select } from "@material-tailwind/react";
 import React, { useEffect, useState, useMemo } from "react";
-import { FaChevronCircleDown } from "react-icons/fa";
-import {useNavigate, useLocation} from "react-router-dom"
+import {useNavigate } from "react-router-dom"
 import { AreaChart, Area, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid, Label } from "recharts";
 
 const GraphOfItems =()=>{
     const [dateFilter, setDateFilter] = useState('');
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
     const [items, setItems] = useState([{
             _id:1,
             user_info:"1",
@@ -196,58 +194,9 @@ const GraphOfItems =()=>{
     const navigate =useNavigate()
 
     return (
-        <>{isMobile ? (
-        <div className="flex flex-col items-center w-full h-[280px] justify-between text-center mb-4 border-2 border-solid border-[#3917b4] rounded p-3 ">
-              <h3 className="text-md font-semibold text-gray-700">Lost Item VS Claimed Items</h3>
-              <div className="w-full h-full flex flex-col items-start justify-between">
-                {/* Graph */}
-              
-                {filterData().length > 0 ? (<div className="w-full h-[180px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart width={780} height={180} data={filterData()} margin={{left:-30, bottom:10}}>
-                    <defs>
-                      <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#3917b4" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#3917b4" stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorClaimed" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#00cdff" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#00cdff" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <XAxis dataKey="date"  label={{ value: 'Date', position: 'insideBottom', offset:-3, style: { textAnchor: 'middle' }}}/>
-                    <YAxis label={{angle: -90, position: 'insideLeft', offset:0, style: { textAnchor: 'middle' }}} /> 
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip />
-                    <Legend verticalAlign="top" align="right" iconType="square" iconSize={10} wrapperStyle={{ fontSize: '12px' }}/>
-                    <Area type="monotone" dataKey="TotalReported" name="Lost Item" stroke="#3917b4" fillOpacity={1} fill="url(#colorTotal)" />
-                    <Area type="monotone" dataKey="TotalClaimed" name="Claimed Item" stroke="#00cdff" fillOpacity={1} fill="url(#colorClaimed)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-                </div>
-                ) : (
-                  <div className="flex items-center justify-center w-full h-full text-gray-500 text-sm">
-                    No item matches your filter.
-                  </div>
-                )}
-                {/* sorting */}
-                <Select 
-                    className="text-xs"
-                    label="select graph date"
-                    onChange={(value) => {
-                      setDateFilter(value)}}>
-
-                    <Option value="">All Time</Option>
-                    <Option value="90days">Last 90 Days</Option>
-                    <Option value="month">Past Month</Option>
-                  </Select>
-              </div>
-            </div>
-            ):(
-            <div className="flex flex-col items-start w-full h-[300px] justify-between text-center mb-4 border-2 border-solid border-[#3917b4] rounded p-3 relative">
+            <div className="flex flex-col items-start w-full h-[350px] justify-between text-center mb-4 border-2 border-solid border-gray-200 shadow shadow-lg rounded p-3 relative">
               <h3 className="text-left font-semibold text-gray-700 text-xl">Lost Item VS Claimed Items</h3>
-              
-              <div className="w-full h-full flex items-start justify-between mt-2">
+              <div className="w-full h-4/5  items-start justify-between mt-2 ">
                 {/* Graph */}
                 {filterData().length > 0 ? (
                   <div className="flex-1 h-full">
@@ -280,20 +229,19 @@ const GraphOfItems =()=>{
                 )}
                 
                 {/* sorting */}
-                <div className="absolute top-2 right-3">
-                  <Select 
-                    className="text-xs"
-                    label="select graph date"
-                    onChange={(value) => {
-                      setDateFilter(value)}}>
-
-                    <Option value="">All Time</Option>
-                    <Option value="90days">Last 90 Days</Option>
-                    <Option value="month">Past Month</Option>
-                  </Select>
-                </div>
               </div>
-            </div>)}</>
+              <div className="lg:absolute lg:top-2 lg:right-3 justify-center lg:w-auto w-full">
+                <Select 
+                  className="text-xs"
+                  label="select graph date"
+                  onChange={(value) => {
+                    setDateFilter(value)}}>
+                  <Option value="">All Time</Option>
+                  <Option value="90days">Last 90 Days</Option>
+                  <Option value="month">Past Month</Option>
+                </Select>
+              </div>
+            </div>
     )
     
 

@@ -12,7 +12,6 @@ const Item = () => {
 
   const navigate =useNavigate()
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
   const [searchItem, setSearchItem]=useState("")
   const [category, setCategory]=useState("")
   const [status, setStatus]=useState("")
@@ -42,88 +41,7 @@ const Item = () => {
     //retrieve items
   }, []);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 700); 
-    };
-  
-    window.addEventListener('resize', handleResize);
-  
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  return (<>{isMobile ?(
-    <div className=" w-full">
-      <div className="flex flex-col items-center mb-[5px]">
-        <button className="flex items-center gap-1 bg-fuchsia text-white p-1 text-xs border border-black rounded" onClick={()=>navigate("/admin/items/add")}><FaPlus/>Add item</button>
-      </div>
-      <div className="flex items-center gap-2 flex-1 relative">
-        <FaSearch className="absolute left-3 transform-translate-y-1/2 text-gray-400"/>
-        <Input
-          className="w-full pl-10 custom-input"
-          label="search item here.."
-          labelProps={{ className: "custom-label pl-10" }}
-          value={searchItem}
-          onChange={(e) => setSearchItem(e.target.value)}
-        />
-      </div>
-      <div className="pt-3 pb-3 flex flex-row flex-wrap gap-4 items-center ">
-          <div className="flex items-center gap-2 flex-1 relative">
-            <Select 
-              className="w-full pl-10"
-              label="Filter By Category" 
-              value={category} 
-              onChange={(val) => setCategory(val || "")}
-              inputProps={{ className: "p-5" }}
-              >
-                <Option value="">all</Option>
-                <Option value="electronics">electronics</Option>
-                <Option value="daily appliance">daily appliance</Option>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2 flex-1 relative ">
-            <Select 
-              className="w-full pl-10"
-              label="Filter By Status" 
-              value={status} 
-              onChange={(val) => setStatus(val || "")}
-              inputProps={{ className: "p-5" }}
-              >
-                <Option value="">all</Option>
-                <Option value="Claimed">Claimed</Option>
-                <Option value="Active">Active</Option>
-                <Option value="Pending">Pending</Option>
-                <Option value="On Hold">On Hold</Option>
-                <Option value="Cancel">Cancel</Option>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2 flex-1 relative">
-            <Popover open={openPopover} handler={setOpenPopover}>
-              <PopoverHandler>
-                <Input
-                  label="Select a Date"
-                  value={formatDateRange(value)}
-                  readOnly
-                  onClick={(e) => e.preventDefault()} // prevent manual input
-                />
-              </PopoverHandler>
-              <PopoverContent className="right-3">
-                <Datepicker
-                  value={value}
-                  onChange={handleChange}
-                  primaryColor="blue"
-                  toggleClassName="hidden" // optional: hides default toggle button if any
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-        
-        </div>
-      <ItemTable searchItem={searchItem} category={category} status={status} date={value}/>
-    </div>
-  ):(
+  return (
     <div className=" w-full">
         <div className="flex flex-row justify-between items-center">
           List of items 
@@ -142,38 +60,38 @@ const Item = () => {
               onChange={(e) => setSearchItem(e.target.value)}
             />
           </div>
-          <div className="flex items-center gap-2 flex-1 relative ">
-            {/* <FaFilter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" style={{ zIndex: 10 }}/> */}
-            <Select 
-              className="w-full pl-10"
-              label="Filter By Category" 
-              value={category} 
-              onChange={(val) => setCategory(val || "")}
-              inputProps={{ className: "p-5" }}
-              >
-                <Option value="">all</Option>
-                <Option value="electronics">electronics</Option>
-                <Option value="daily appliance">daily appliance</Option>
-            </Select>
-          </div>
+          <div className="flex gap-5 md:w-auto w-full">
+            <div className="flex items-center gap-2 flex-1 relative ">
+              <Select 
+                className="w-full pl-10"
+                label="Filter By Category" 
+                value={category} 
+                onChange={(val) => setCategory(val || "")}
+                inputProps={{ className: "p-5" }}
+                >
+                  <Option value="">all</Option>
+                  <Option value="electronics">electronics</Option>
+                  <Option value="daily appliance">daily appliance</Option>
+              </Select>
+            </div>
 
-          <div className="flex items-center gap-2 flex-1 relative ">
-            <Select 
-              className="w-full pl-10"
-              label="Filter By Status" 
-              value={status} 
-              onChange={(val) => setStatus(val || "")}
-              inputProps={{ className: "p-5" }}
-              >
-                <Option value="">all</Option>
-                <Option value="Claimed">Claimed</Option>
-                <Option value="Active">Active</Option>
-                <Option value="Pending">Pending</Option>
-                <Option value="On Hold">On Hold</Option>
-                <Option value="Cancel">Cancel</Option>
-            </Select>
+            <div className="flex items-center gap-2 flex-1 relative ">
+              <Select 
+                className="w-full pl-10"
+                label="Filter By Status" 
+                value={status} 
+                onChange={(val) => setStatus(val || "")}
+                inputProps={{ className: "p-5" }}
+                >
+                  <Option value="">all</Option>
+                  <Option value="Claimed">Claimed</Option>
+                  <Option value="Active">Active</Option>
+                  <Option value="Pending">Pending</Option>
+                  <Option value="On Hold">On Hold</Option>
+                  <Option value="Cancel">Cancel</Option>
+              </Select>
+            </div>
           </div>
-
           <div className="flex items-center gap-2 flex-1 relative">
             <Popover open={openPopover} handler={setOpenPopover}>
               <PopoverHandler>
@@ -198,10 +116,7 @@ const Item = () => {
         </div>
         <ItemTable searchItem={searchItem} category={category} status={status} date={value}/>
     </div>
-  )}
-  </>
-    
-  );
+  )
 };
 
 export default Item;

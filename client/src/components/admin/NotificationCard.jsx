@@ -26,8 +26,8 @@ const NotificationCard = ({user_id, item_info, meeting_info, message, is_read}) 
   };
 
   return (
-    <div className="flex items-center bg-violet-200 border border-solid border-purple-700 mb-[20px] p-[10px] " onClick={handleMarkAsRead}>
-        <p className={`flex flex-row gap-2 ${isRead ? "" : "font-bold"} ${isMobile?"text-xs" : "text-base"}`} > <AiFillExclamationCircle size={30} className="text-purple-800"/>Item with id {item_info} needs approval for meeting. Please approve for progress of item.</p>
+    <div className="flex items-center border border-gray-300 shadow shadow-lg mb-5 p-4 " onClick={handleMarkAsRead}>
+        <p className={`flex flex-row gap-2 ${isRead ? "" : "font-bold"} text-xs md:text-base`} > <AiFillExclamationCircle size={30} className="text-purple-800"/>Item with id {item_info} needs approval for meeting. Please approve for progress of item.</p>
     </div>
   );
 };

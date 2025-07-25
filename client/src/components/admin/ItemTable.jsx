@@ -317,126 +317,123 @@ const ItemTable= ({searchItem, category, status, date})=>{
 
     return(
     //renders page for items page
-    <>{PageName.startsWith("/admin/items")?(
-      isMobile?((<>
-      <div className="h-[500px]"> 
-        <Card className="h-[95%] flex flex-col">
-          <div className="overflow-x-auto flex-grow">
-            <table className="w-[600px] table-fixed">
-              <thead className="sticky top-0 bg-white z-10">
-                <tr>
-                  {itemHead.map((col) => (
-                    <th
-                      key={col}
-                      className="border-b border-blue-gray-100 bg-blue-gray-50 p-2 text-center"
-                    >
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal leading-none opacity-70"
-                      >
-                        {col}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {itemDisplayed.map(
-                  (
-                    {
-                      _id,
-                      item_name,
-                      item_short_desc,
-                      item_category,
-                      location_store,
-                      date_reported,
-                      item_status,
-                    },
-                    index
-                  ) => {
-                    return (
-                      <tr key={_id} onClick={() => navigate(`/admin/items/edit?id=${_id}`)} className=" cursor-pointer even:bg-gray-100">
-                        <td className="p-2 text-center">
-                          <Typography>{_id}</Typography>
-                        </td>
-                        <td className="p-2 text-center">
-                          <Typography>{item_name}</Typography>
-                        </td>
-                        <td className="p-2 text-center">
-                          <Typography>{item_short_desc}</Typography>
-                        </td>
-                        <td className="p-2 text-center">
-                          <Typography>{item_category}</Typography>
-                        </td>
-                        <td className="p-2 text-center">
-                          <Typography>{location_store}</Typography>
-                        </td>
-                        <td className="p-2 text-center">
-                          <Typography>{date_reported}</Typography>
-                        </td>
-                        <td className="p-2 text-right">
-                          <div className="flex justify-end">
-                            {getStatusIcon(item_status)}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  }
-                )}
-              </tbody>
-            </table>
-          </div>
+    // <>{
+    //   isMobile?((<>
+    //   <div className="h-[500px]"> 
+    //     <Card className="h-[95%] flex flex-col">
+    //       <div className="overflow-x-auto flex-grow">
+    //         <table className="w-[600px] table-fixed">
+    //           <thead className="sticky top-0 bg-white z-10">
+    //             <tr>
+    //               {itemHead.map((col) => (
+    //                 <th
+    //                   key={col}
+    //                   className="border-b border-blue-gray-100 bg-blue-gray-50 p-2 text-center"
+    //                 >
+    //                   <Typography
+    //                     variant="small"
+    //                     color="blue-gray"
+    //                     className="font-normal leading-none opacity-70"
+    //                   >
+    //                     {col}
+    //                   </Typography>
+    //                 </th>
+    //               ))}
+    //             </tr>
+    //           </thead>
+    //           <tbody>
+    //             {itemDisplayed.map(
+    //               (
+    //                 {
+    //                   _id,
+    //                   item_name,
+    //                   item_short_desc,
+    //                   item_category,
+    //                   location_store,
+    //                   date_reported,
+    //                   item_status,
+    //                 },
+    //                 index
+    //               ) => {
+    //                 return (
+    //                   <tr key={_id} onClick={() => navigate(`/admin/items/edit?id=${_id}`)} className=" cursor-pointer even:bg-gray-100">
+    //                     <td className="p-2 text-center">
+    //                       <Typography>{_id}</Typography>
+    //                     </td>
+    //                     <td className="p-2 text-center">
+    //                       <Typography>{item_name}</Typography>
+    //                     </td>
+    //                     <td className="p-2 text-center">
+    //                       <Typography>{item_short_desc}</Typography>
+    //                     </td>
+    //                     <td className="p-2 text-center">
+    //                       <Typography>{item_category}</Typography>
+    //                     </td>
+    //                     <td className="p-2 text-center">
+    //                       <Typography>{location_store}</Typography>
+    //                     </td>
+    //                     <td className="p-2 text-center">
+    //                       <Typography>{date_reported}</Typography>
+    //                     </td>
+                        
+    //                   </tr>
+    //                 );
+    //               }
+    //             )}
+    //           </tbody>
+    //         </table>
+    //       </div>
 
-          <CardFooter className="mt-auto border-t px-4 py-2">
-            <div className="flex justify-between items-center w-full">
-              <div className="flex justify-center items-center gap-4">
-                <Button
-                  variant="text"
-                  disabled={active === 1}
-                  onClick={prev}
-                  className="w-10 h-10 p-0 flex items-center justify-center"
-                >
-                  <FaCaretSquareLeft size={30} />
-                </Button>
-                <Typography color="gray" className="font-normal">
-                  <strong className="text-gray-900">{active}</strong> of{" "}
-                  <strong className="text-gray-900">{totalPages}</strong>
-                </Typography>
-                <Button
-                  variant="text"
-                  disabled={active === totalPages}
-                  onClick={next}
-                  className="w-10 h-10 p-0 flex items-center justify-center"
-                >
-                  <FaCaretSquareRight size={30} />
-                </Button>
-              </div>
+    //       <CardFooter className="mt-auto border-t px-4 py-2">
+    //         <div className="flex justify-between items-center w-full">
+    //           <div className="flex justify-center items-center gap-4">
+    //             <Button
+    //               variant="text"
+    //               disabled={active === 1}
+    //               onClick={prev}
+    //               className="w-10 h-10 p-0 flex items-center justify-center"
+    //             >
+    //               <FaCaretSquareLeft size={30} />
+    //             </Button>
+    //             <Typography color="gray" className="font-normal">
+    //               <strong className="text-gray-900">{active}</strong> of{" "}
+    //               <strong className="text-gray-900">{totalPages}</strong>
+    //             </Typography>
+    //             <Button
+    //               variant="text"
+    //               disabled={active === totalPages}
+    //               onClick={next}
+    //               className="w-10 h-10 p-0 flex items-center justify-center"
+    //             >
+    //               <FaCaretSquareRight size={30} />
+    //             </Button>
+    //           </div>
 
-              <div className="w-[30%] flex justify-end">
-                <Select
-                className="text-xs"
-                containerProps={{className:"min-w-0"}}
-                menuProps={{className:"text-lg max-w-[90px]"}}
-                  onChange={(value) => {
-                    setItemPerPage(Number(value));
-                    setActive(1);
-                  }}
-                  value={itemPerPage.toString()}
-                >
-                  <Option value="10" className="mb-2">10</Option>
-                  <Option value="25" className="mb-2">25</Option>
-                  <Option value="50" className="mb-2">50</Option>
-                  <Option value="100">100</Option>
-                </Select>
-              </div>
+    //           <div className="w-[30%] flex justify-end">
+    //             <Select
+    //             className="text-xs"
+    //             containerProps={{className:"min-w-0"}}
+    //             menuProps={{className:"text-lg max-w-[90px]"}}
+    //               onChange={(value) => {
+    //                 setItemPerPage(Number(value));
+    //                 setActive(1);
+    //               }}
+    //               value={itemPerPage.toString()}
+    //             >
+    //               <Option value="10" className="mb-2">10</Option>
+    //               <Option value="25" className="mb-2">25</Option>
+    //               <Option value="50" className="mb-2">50</Option>
+    //               <Option value="100">100</Option>
+    //             </Select>
+    //           </div>
 
-            </div>
-          </CardFooter>
-        </Card>
-      </div>
+    //         </div>
+    //       </CardFooter>
+    //     </Card>
+    //   </div>
 
-      </>)):(<>
+    //   </>)):(
+        <>
       <div>
         <Card className="h-[425px] flex flex-col">
           <div className="overflow-auto flex-grow">
@@ -494,7 +491,9 @@ const ItemTable= ({searchItem, category, status, date})=>{
                           <Typography>{date_reported}</Typography>
                         </td>
                         <td className="p-2">
-                          <Chip 
+                          
+                          <div className=" md:block hidden">
+                            <Chip 
                             size="sm"
                             value={item_status} 
                             className={`text-center rounded-2xl border-2 ${
@@ -504,6 +503,11 @@ const ItemTable= ({searchItem, category, status, date})=>{
                             item_status === "On Hold" ? "bg-yellow-300 text-black border-yellow-800" :
                             "bg-red-400 text-white border-red-800"
                           }`} />
+                          </div>
+                          
+                          <div className="flex justify-end md:hidden">
+                            {getStatusIcon(item_status)}
+                          </div>
                         </td>
                       </tr>
                     );
@@ -538,7 +542,7 @@ const ItemTable= ({searchItem, category, status, date})=>{
                 </Button>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className=" flex items-center gap-2">
                 <span className="text-sm text-gray-700">Display Per Page:</span>
 
                   <Select
@@ -547,7 +551,6 @@ const ItemTable= ({searchItem, category, status, date})=>{
                       setActive(1);
                     }}
                     value={itemPerPage.toString()}
-                    menuProps={"w-[5px]"}
                   >
                     <Option value="10">10</Option>
                     <Option value="25">25</Option>
@@ -561,90 +564,7 @@ const ItemTable= ({searchItem, category, status, date})=>{
         </Card>
       </div>
 
-      </>)
-      
-    ):(
-    //renders items for dashboard page
-        <div className="overflow-x-auto overflow-y-hidden h-[265px] bg-black text-white text-xs" onClick={()=>navigate("/admin/items")}>
-          <Card>
-            <table>
-              <thead>
-                <tr>
-                  {dashboardHead.map((col)=>(
-                      <th
-                      key={col}
-                      className="border-b border-blue-gray-100 bg-blue-gray-50 p-4 "
-                    >
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal leading-none opacity-70"
-                      >
-                        {col}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {dashboardRows.map(({
-                  item_id,
-                  item_name,
-                  student_name,
-                  location_found,
-                  location_store,
-                  item_status,
-                  date_reported,
-                  staff_name})=>{
-                  return(
-                    <>
-                  <tr className="even:bg-gray-100">
-                    <td className="p-2">
-                      <Typography>{item_id}</Typography>
-                    </td>
-                    <td className="p-2">
-                      <Typography>{item_name}</Typography>
-                    </td>
-                    <td className="p-2">
-                      <Typography>{student_name}</Typography>
-                    </td>
-                    <td className="p-2">
-                      <Typography>{location_found}</Typography>
-                    </td>
-                    <td className="p-2">
-                      <Typography>{location_store}</Typography>
-                    </td>
-                    <td className="p-2">
-                      <Chip 
-                        size="sm"
-                        value={item_status} 
-                        className={`text-center rounded-2xl border-2 ${
-                                item_status === "Active" ? "bg-green-300 text-white border-green-600" :
-                                item_status === "Claimed" ? "bg-blue-300 text-white border-blue-600" :
-                                item_status === "Pending" ? "bg-pink-200 text-white border-pink-600" :
-                                item_status === "On Hold" ? "bg-yellow-300 text-black border-yellow-800" :
-                                "bg-red-400 text-white border-red-800"
-                              }`} />
-                    </td>
-                    <td className="p-2">
-                      <Typography>{date_reported}</Typography>
-                    </td>
-                    <td className="p-2">
-                      <Typography>{staff_name}</Typography>
-                    </td>
-              </tr>
-              </>
-              )
-
-            })}
-          </tbody>
-        </table>
-      </Card>
-    </div>
-        )
-
-        }
-        </>
+      </>
     )
 }
 
