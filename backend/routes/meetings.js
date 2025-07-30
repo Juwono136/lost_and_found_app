@@ -1,32 +1,32 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const meetingsController = require('../controllers/meetingsController');
+const meetingsController = require("../controllers/meetingsController");
 
-// Create a meeting request
-router.post('/request', meetingsController.createRequest);
+//Create a meeting request
+router.post("/request", meetingsController.createRequest);
 
-// List all meetings
-router.get('/', meetingsController.listMeetings);
+//List all meetings
+router.get("/", meetingsController.listMeetings);
 
-// Get meetings for a specific user
-router.get('/user/:userId', meetingsController.getUserMeetings);
+//Get meetings for a specific user
+router.get("/user/:user_id", meetingsController.getUserMeetings);
 
-// Update meeting details
-router.put('/:meetingId', meetingsController.updateMeeting);
+//Update meeting details
+router.put("/update/:meeting_id", meetingsController.updateMeeting);
 
-// Approve a meeting
-router.put('/:meetingId/approve', meetingsController.approveMeeting);
+//Approve a meeting request
+router.put("/approve/:meeting_id", meetingsController.approveMeeting);
 
-// Reject a meeting
-router.put('/:meetingId/reject', meetingsController.rejectMeeting);
+//Reject a meeting request
+router.put("/reject/:meeting_id", meetingsController.rejectMeeting);
 
-// Complete a meeting
-router.put('/:meetingId/complete', meetingsController.completeMeeting);
+//Delete/cancel a meeting
+router.delete("/cancel/:meeting_id", meetingsController.deleteMeeting);
 
-// Mark a meeting as incomplete
-router.put('/:meetingId/incomplete', meetingsController.markMeetingIncomplete);
+//Mark a meeting completed
+router.put("/complete/:meeting_id", meetingsController.completeMeeting);
 
-// Delete a meeting
-router.delete('/:meetingId', meetingsController.deleteMeeting);
+//Mark a meeting incomplete
+router.put("/incomplete/:meeting_id", meetingsController.markMeetingIncomplete);
 
 module.exports = router;
