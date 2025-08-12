@@ -7,7 +7,7 @@ import { Pie, PieChart,Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Respo
 const GraphOfMeetings =()=>{
     const [dateFilter, setDateFilter] = useState('');
     const [meetingData,setMeetingData]=useState([
-        {name:"resched",number:10},
+        {name:"rescheduled",number:10},
         {name:"need approval",number:5},
         {name:"rejected",number:15},
     ]

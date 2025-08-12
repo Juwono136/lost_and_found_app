@@ -42,7 +42,7 @@ export const AddFounderInfo =({ binusian, setBinusian, setStatus})=>{
 
     return(
     <div className="flex flex-col w-full h-full gap-5">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-5">
             <div className="flex md:flex-row flex-col w-full h-full justify-between gap-6 ">
                 <div className=" h-full md:w-1/2 w-full gap-5">
                     <div className="pt-[20px] pb-[100px]">
@@ -116,7 +116,7 @@ export const AddFounderInfo =({ binusian, setBinusian, setStatus})=>{
                     </Dialog>
                 </div>
             </div>
-            <div className="flex flex-row w-full justify-between ">
+            <div className="flex flex-row w-full justify-between items-center mb-8">
                 <Button size="lg" className="bg-red-500 rounded-full px-6 py-2 capitalize flex justify-center items-center gap-2" onClick={() => setStatus("AddItem")}><FaArrowLeft/>Prev</Button>
                 <Button size="lg" className="bg-indigo-600 rounded-full px-6 py-2 capitalize flex justify-center items-center gap-2" onClick={() => setStatus("SubmitItem")}>Next<FaArrowRight/></Button>
             </div>

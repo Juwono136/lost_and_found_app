@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Datepicker from "react-tailwindcss-datepicker";
 import dayjs from "dayjs";
 import {
   Input,
   Button,
   Textarea,
+  Dialog,DialogHeader,DialogFooter,
 } from "@material-tailwind/react";
 import { FaArrowRight, FaRegTrashAlt } from "react-icons/fa";
 
 
 export const AddItemInfo = ({ item, setItem, setStatus}) => {
-  const navigate = useNavigate();
 
   const UploadImage = (event) => {
     const file = event.target.files[0];
@@ -25,6 +24,14 @@ export const AddItemInfo = ({ item, setItem, setStatus}) => {
   };
 
   const [value, setValue] = useState("");
+  
+  const [openDialogDeleteImage, setOpenDialogDeleteImage] = useState(false);
+  const toggleOpenDialogDeleteImage = (value) => setOpenDialogDeleteImage(!openDialogDeleteImage);
+
+  const handleDeleteImage= () =>{
+    setItem({...item,Item_img:""});
+    setOpenDialogDeleteImage(false)
+  }
 
   return (
     <div className="flex flex-col gap-12">
@@ -51,7 +58,7 @@ export const AddItemInfo = ({ item, setItem, setStatus}) => {
               )}
             </label>
           </div>
-          <Button onClick={()=>{setItem({...item,Item_img:""})}} className="bg-red-600 flex gap-5 w-3/5"><FaRegTrashAlt/> Delete Image</Button>
+          <Button onClick={()=>setOpenDialogDeleteImage(true)} className="bg-red-600 flex gap-5 w-3/5"><FaRegTrashAlt/> Delete Image</Button>
         </div>
         {/* input item info component */}
         <div className="h-full flex flex-col lg:w-3/5 w-full gap-6">
@@ -67,8 +74,21 @@ export const AddItemInfo = ({ item, setItem, setStatus}) => {
               />
             </div>
             <div className="lg:w-1/2">
-              <h1>Date Found</h1>
-              <Datepicker
+                <h1>Item Category</h1>
+                <Input
+                type="text"
+                className="bg-gray-200 "
+                value={item.Item_category}
+                onChange={(e) =>
+                  setItem({ ...item, Item_category: e.target.value })
+                }
+              />
+              
+            </div>
+          </div>
+          <div>
+            <h1>Date Found</h1>
+            <Datepicker
               asSingle={true}
               value={value}
               useRange={false}
@@ -84,7 +104,6 @@ export const AddItemInfo = ({ item, setItem, setStatus}) => {
               }}
               primaryColor="blue"
             />
-            </div>
           </div>
           <div>
             <h1>Short Item Description</h1>
@@ -106,34 +125,24 @@ export const AddItemInfo = ({ item, setItem, setStatus}) => {
               setItem({ ...item, Item_detail_desc: e.target.value })
             }/>
           </div>
-          <div className="flex lg:flex-row flex-col justify-between lg:gap-1 gap-4">
-            <div className="lg:w-1/3">
-              <h1>Item Category</h1>
-              <Input
-              type="text"
-              className="bg-gray-200 lg:w-[30vh]"
-              value={item.Item_category}
-              onChange={(e) =>
-                setItem({ ...item, Item_category: e.target.value })
-              }
-            />
-            </div>
-            <div className="lg:w-1/3">
+          <div className="flex lg:flex-row flex-col w-full gap-5">
+            
+            <div className="lg:w-1/2">
               <h1>Location Found</h1>
               <Input
               type="text"
-              className="bg-gray-200 lg:w-[30vh]"
+              className="bg-gray-200 "
               value={item.location_found}
               onChange={(e) =>
                 setItem({ ...item, location_found: e.target.value })
               }
             />
             </div>
-            <div className="lg:w-1/3">
+            <div className="lg:w-1/2">
               <h1>Located Stored</h1>
               <Input
               type="text"
-              className="bg-gray-200 lg:w-[30vh]"
+              className="bg-gray-200 "
               value={item.location_store}
               onChange={(e) =>
                 setItem({ ...item, location_store: e.target.value })
@@ -152,6 +161,22 @@ export const AddItemInfo = ({ item, setItem, setStatus}) => {
         <FaArrowRight />
         </Button>
       </div>
+      <Dialog open={openDialogDeleteImage} handler={toggleOpenDialogDeleteImage} size="sm" className="absolute w-[200px]">
+            <DialogHeader>Are you sure you want delete this record?</DialogHeader>
+            <DialogFooter>
+            <Button
+                variant="text"
+                color="red"
+                onClick={toggleOpenDialogDeleteImage}
+                className="mr-1"
+            >
+                <span>Cancel</span>
+            </Button>
+            <Button variant="text" color="green" onClick={()=>{handleDeleteImage()}}>
+                <span>Delete</span>
+            </Button>
+            </DialogFooter>
+        </Dialog>
     </div>
   );
 };

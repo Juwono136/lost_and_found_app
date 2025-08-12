@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {useNavigate} from "react-router-dom"
 import ItemTable from "../../components/admin/ItemTable";
+import ColumnSelector from "../../components/admin/ColumnSelector";
 import { FaPlus, FaSearch, FaFilter } from "react-icons/fa";
 import { Button, Input, Select,Option, Popover,PopoverHandler,PopoverContent } from "@material-tailwind/react";
 import Datepicker from "react-tailwindcss-datepicker";
@@ -12,6 +13,20 @@ const Item = () => {
 
   const navigate =useNavigate()
 
+  const allFields = [
+    "_id",
+    "item_name",
+    "item_short_desc",
+    "item_category",
+    "location_store",
+    "date_reported",
+    "item_status",
+    "user_name",
+    "user_email",
+    "user_phone"
+  ];
+
+  const [visibleFields, setVisibleFields] = useState(allFields);
   const [searchItem, setSearchItem]=useState("")
   const [category, setCategory]=useState("")
   const [status, setStatus]=useState("")
@@ -44,7 +59,11 @@ const Item = () => {
   return (
     <div className=" w-full">
         <div className="flex flex-row justify-between items-center">
-          List of items 
+          <ColumnSelector
+            allFields={allFields}
+            visibleFields={visibleFields}
+            setVisibleFields={setVisibleFields}
+          />
           <Button className="flex items-center gap-1 bg-fuchsia text-white p-1 text-xs border border-black rounded" onClick={()=>navigate("/admin/items/add")}>
             <FaPlus/>Add item
           </Button>
@@ -114,7 +133,10 @@ const Item = () => {
           </div>
         
         </div>
-        <ItemTable searchItem={searchItem} category={category} status={status} date={value}/>
+        <ItemTable searchItem={searchItem} category={category} status={status} date={value} 
+            allFields={allFields}
+            visibleFields={visibleFields}
+            setVisibleFields={setVisibleFields}/>
     </div>
   )
 };

@@ -49,6 +49,9 @@ const Header = ({toggleSidebar, showSidebar}) => {
             case "/admin/settings":
                 setPageName("Setting")
                 break
+            case "/admin/items/add":
+                setPageName("Add Item")
+                break
         }
 
     },[path])
@@ -80,7 +83,7 @@ const Header = ({toggleSidebar, showSidebar}) => {
           onClick={()=>setShowProfile(!showProfile)}
         ></div>
       )}
-        <header className="bg-blue-800 h-[40px] flex items-center px-4 py-5">
+        <header className="bg-blue-800 h-[40px] flex items-center px-4 py-6">
             {!showSidebar && (
             <button onClick={toggleSidebar} >
                 <FaBars />
@@ -90,7 +93,7 @@ const Header = ({toggleSidebar, showSidebar}) => {
             <div className="flex items-center ml-auto gap-3">
                 <button className="text-[10px] bg-white rounded-full h-[20px] px-2" onClick={()=>navigate("/admin")}>Home Page</button>
                 <div
-                    className={`absolute right-7 top-10 bg-white shadow-lg rounded-md p-2 transition-transform duration-300 ease-out z-40 p-3 w-[13rem] text-[12px] justify-between shadow-xl
+                    className={`absolute right-7 top-12 bg-white shadow-lg rounded-md p-2 transition-transform duration-300 ease-out z-40 p-3 w-[13rem] text-[12px] justify-between shadow-xl
                         ${showNotification ? "scale-100 opacity-100" : "scale-0 opacity-0"}
                     `}>
                     {notificationAmount>0?(<>
@@ -105,7 +108,7 @@ const Header = ({toggleSidebar, showSidebar}) => {
                     )}
                 </div>
                 <div
-                className={`absolute right-2 top-10 bg-white shadow-lg rounded-md p-2 transition-transform duration-300 ease-out z-40 gap-2 w-[15rem] shadow-xl
+                className={`absolute right-2 top-12 bg-white shadow-lg rounded-md p-2 transition-transform duration-300 ease-out z-40 gap-2 w-[15rem] shadow-xl
                     ${showProfile ? "scale-100 opacity-100" : "scale-0 opacity-0"}
                 `}>
                     <div className="space-y-3">

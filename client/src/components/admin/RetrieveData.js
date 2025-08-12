@@ -107,18 +107,26 @@ export const allItems=[{
 export const users=[{
     _id:"1",
     name:"alisa",
+    email:"alisa@mail",
+    phone:1111,
     role:"student"
 },{_id:"2",
     name:"rayhan",
+    email:"Rayhan@mail",
+    phone:1111,
     role:"student"
 },{
     _id:"3",
     name:"kevin",
+    email:"Kevin@mail",
+    phone:1111,
     role:"staff"
     },
     {
-    _id:"1",
+    _id:"4",
     name:"juwono",
+    email:"Juwono@mail",
+    phone:1111,
     role:"staff"
     }]
 

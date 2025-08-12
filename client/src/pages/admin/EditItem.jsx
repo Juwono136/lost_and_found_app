@@ -1,11 +1,29 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import Datepicker from "react-tailwindcss-datepicker";
+import dayjs from "dayjs";
+import {
+  Input,
+  Button,
+  Textarea,
+  Dialog,DialogHeader,DialogFooter,
+} from "@material-tailwind/react";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const EditItem = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const id = searchParams.get("id");
     const navigate =useNavigate()
+
+    const [openDialogDeleteImage, setOpenDialogDeleteImage] = useState(false);
+    const toggleOpenDialogDeleteImage = (value) => setOpenDialogDeleteImage(!openDialogDeleteImage);
+    const [openDialogDelete, setOpenDialogDelete] = useState(false);
+    const toggleOpenDialogDelete = (value) => setOpenDialogDelete(!openDialogDelete);
+    const [openDialogEdit, setOpenDialogEdit] = useState(false);
+    const toggleOpenDialogEdit = (value) => setOpenDialogEdit(!openDialogEdit);
+
+    
 
     const [item, setItem] = useState({
         _id:0,
@@ -26,23 +44,24 @@ const EditItem = () => {
         updatedAt:"",
       });
 
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
+    const [value, setValue] = useState("");
 
     useEffect(() => {
         
     }, []);
 
-    useEffect(() => {
-        const handleResize = () => {
-        setIsMobile(window.innerWidth < 700); 
-        };
+    const handleDelete = ()=>{
+        navigate("/admin/items")
+    }
 
-        window.addEventListener('resize', handleResize);
+    const handleSubmit = ()=>{
+        navigate("/admin/items")
+    }
 
-        return () => {
-        window.removeEventListener('resize', handleResize);
-        };
-    }, []);
+    const handleDeleteImage= () =>{
+      setItem({...item,Item_img:""});
+      setOpenDialogDeleteImage(false)
+    }
 
     const UploadImage = (event) => {
         const file = event.target.files[0]; // Get the selected file
@@ -60,65 +79,162 @@ const EditItem = () => {
     }
   
     return (
-    <>{isMobile?(
-        <div className="h-[90%] overflow:auto text-xs mb-[5px] pb-6">
-        <div className="w-full h-[60vh] flex flex-col gap-4 ">
-            <div className="flex flex-row w-full">
-                <div className="w-full h-[40vh] border border-solid border-black p-[5px] flex items-center justify-center overflow-hidden">
-                    <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
-                        <input type="file" accept="image/*" onChange={UploadImage} className="hidden"/>
-                        {item.Item_img ? (
-                        <img src={item.Item_img} alt="Preview" className="top-0 left-0 max-w-full max-h-full object-cover"/>
-                        ) : (
-                            <span className="text-gray-500  ">Upload Image</span>
-                        )}
-                    </label>
-                </div>
-                
-            </div>
-            <div className="h-full flex flex-col gap-4">
-                    <input type="text" className="bg-gray-300 placeholder-gray-500 p-[9px] rounded" placeholder="Item Name" value={item.Item_name} onChange={(e) => setItem({ ...item, Item_name: e.target.value })}/>
-                    <input type="text" className="bg-gray-300 placeholder-gray-500 p-[9px] rounded" placeholder="Item Category" value={item.Item_category} onChange={(e) => setItem({ ...item, Item_category: e.target.value })}/>
-                    <input type="text" className="bg-gray-300 placeholder-gray-500 p-[9px] rounded" placeholder="Location Found" value={item.location_found} onChange={(e) => setItem({ ...item, location_found: e.target.value })}/>
-                    <input type="text" className="bg-gray-300 placeholder-gray-500 p-[9px] rounded" placeholder="Location Store" value={item.location_store} onChange={(e) => setItem({ ...item, location_store: e.target.value })}/>
-
-                <textarea className="bg-gray-300 placeholder-gray-500 p-[9px] rounded " placeholder="Complete Item Description" value={item.Item_detail_desc} onChange={(e) => setItem({ ...item, Item_detail_desc: e.target.value })}/>
-                <input type="text" className="bg-gray-300 placeholder-gray-500 p-[9px] rounded" placeholder="Short Item Description" value={item.Item_short_desc} onChange={(e) => setItem({ ...item, Item_short_desc: e.target.value })}/>
-            </div>
-            <div className="flex flex-row items-center justify-center gap-4 pb-6">
-                <button className="bottom-0 bg-blue-500 p-[5px] rounded-full w-[20%]" onClick={() => submitEdit(item)}>submit</button>
-            </div>
+    <div className="flex flex-col gap-12">
+      <div className="w-full flex flex-col gap-6 lg:flex-row">
+        {/* upload image component */}
+        <div className="flex flex-col gap-6 lg:w-2/5 w-full  items-center">
+          <div className="w-full h-[60vh] border border-solid border-gray-500 p-[5px] flex items-center justify-center overflow-hidden shadow-md">
+            <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
+              <Input
+                type="file"
+                variant="static"
+                accept="image/*"
+                onChange={UploadImage}
+                className="hidden"
+              />
+              {item.Item_img ? (
+                <img
+                  src={item.Item_img}
+                  alt="Preview"
+                  className="top-0 left-0 max-w-full max-h-full "
+                />
+              ) : (
+                <span className="text-gray-500  ">Upload Image</span>
+              )}
+            </label>
+          </div>
+          <Button onClick={()=>setOpenDialogDeleteImage(true)} className="bg-red-600 flex gap-5 w-3/5"><FaRegTrashAlt/> Delete Image</Button>
         </div>
-        </div>
-    ):(
-    <div className="flex flex-row w-full h-full gap-10">
-            <div className="w-[50%] h-[72vh] flex flex-col gap-4">
-                <div className="w-full h-[70%] border border-solid border-black p-[5px] flex items-center justify-center overflow-hidden">
-                    <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
-                        <input type="file" accept="image/*" onChange={UploadImage} className="hidden"/>
-                        {item.Item_img ? (
-                        <img src={item.Item_img} alt="Preview" className="top-0 left-0 max-w-full max-h-full object-cover"/>
-                        ) : (
-                            <span className="text-gray-500  ">Upload Image</span>
-                        )}
-                    </label>
-                </div>    
-                <input type="text" className="bg-gray-300 placeholder-gray-500 p-[9px] rounded" placeholder="Item Name" value={item.Item_name} onChange={(e) => setItem({ ...item, Item_name: e.target.value })}/>
+        {/* input item info component */}
+        <div className="h-full flex flex-col lg:w-3/5 w-full gap-4">
+          <div className="flex lg:flex-row flex-col w-full gap-5">
+            <div className="lg:w-1/2">
+              <h1>Item Name</h1>
+              <Input
+                type="text"
+                className="bg-gray-200"
+                label={false}
+                value={item.Item_name}
+                onChange={(e) => setItem({ ...item, Item_name: e.target.value })}
+              />
             </div>
-            <div className="w-[50%] h-[70vh] flex flex-col gap-4 ">
-                <input type="text" className="bg-gray-300 placeholder-gray-500 p-[9px] rounded" placeholder="Item Category" value={item.Item_category} onChange={(e) => setItem({ ...item, Item_category: e.target.value })}/>
-                <input type="text" className="bg-gray-300 placeholder-gray-500 p-[9px] rounded" placeholder="Location Found" value={item.location_found} onChange={(e) => setItem({ ...item, location_found: e.target.value })}/>
-                <input type="text" className="bg-gray-300 placeholder-gray-500 p-[9px] rounded" placeholder="Location Store" value={item.location_store} onChange={(e) => setItem({ ...item, location_store: e.target.value })}/>
-
-                <textarea type="text" className="bg-gray-300 placeholder-gray-500 p-[9px] rounded" placeholder="Complete Item Description" value={item.Item_detail_desc} onChange={(e) => setItem({ ...item, Item_detail_desc: e.target.value })}/>
-                <input type="text" className="bg-gray-300 placeholder-gray-500 p-[9px] rounded" placeholder="Short Item Description" value={item.Item_short_desc} onChange={(e) => setItem({ ...item, Item_short_desc: e.target.value })}/>
+            <div className="lg:w-1/2">
+                <h1>Item Category</h1>
+                <Input
+                type="text"
+                className="bg-gray-200 "
+                value={item.Item_category}
+                onChange={(e) =>
+                  setItem({ ...item, Item_category: e.target.value })
+                }
+              />
+              
             </div>
-            <button className="absolute bottom-4 right-4 bg-blue-500 text-white p-[5px] w-[60px] rounded-full" onClick={() => submitEdit(item)}>submit</button>
+          </div>
+          <div>
+            <h1>Date Found</h1>
+            <Datepicker
+              asSingle={true}
+              value={value}
+              useRange={false}
+              readOnly={true}
+              onChange={(date) => {
+                setValue(date);
+                setItem({
+                  ...item,
+                  date_reported: date?.startDate
+                    ? dayjs(date.startDate).format("DD-MM-YYYY")
+                    : null,
+                });
+              }}
+              primaryColor="blue"
+            />
+          </div>
+          <div>
+            <h1>Short Item Description</h1>
+            <Input
+              type="text"
+              className="bg-gray-200"
+              value={item.Item_short_desc}
+              onChange={(e) =>
+                setItem({ ...item, Item_short_desc: e.target.value })
+              }
+            />
+          </div>
+          <div>
+            <h1>Complete Item Description</h1>
+            <Textarea
+            className="bg-gray-200 placeholder-gray-500 rounded"
+            value={item.Item_detail_desc}
+            onChange={(e) =>
+              setItem({ ...item, Item_detail_desc: e.target.value })
+            }/>
+          </div>
+          <div className="flex lg:flex-row flex-col w-full gap-5">
             
+            <div className="lg:w-1/2">
+              <h1>Location Found</h1>
+              <Input
+              type="text"
+              className="bg-gray-200 "
+              value={item.location_found}
+              onChange={(e) =>
+                setItem({ ...item, location_found: e.target.value })
+              }
+            />
+            </div>
+            <div className="lg:w-1/2">
+              <h1>Located Stored</h1>
+              <Input
+              type="text"
+              className="bg-gray-200 "
+              value={item.location_store}
+              onChange={(e) =>
+                setItem({ ...item, location_store: e.target.value })
+              }
+            />
+            </div>
+          </div>
         </div>
-    )}
-    </>
-        
+      </div>
+
+        <div className="flex flex-row w-full justify-between items-center mb-8">
+            <Button size="lg" className="bg-indigo-600 rounded-full px-6 py-2 capitalize flex justify-center items-center gap-2" onClick={()=>setOpenDialogEdit(true)}>Update</Button>
+        </div>
+           <Dialog open={openDialogEdit} handler={toggleOpenDialogEdit} size="sm" className="absolute w-[200px]">
+            <DialogHeader>Are you sure you want submit</DialogHeader>
+            <DialogFooter>
+            <Button
+                variant="text"
+                color="red"
+                onClick={toggleOpenDialogEdit}
+                className="mr-1"
+            >
+                <span>Cancel</span>
+            </Button>
+            <Button variant="text" color="green" onClick={handleDelete}>
+                <span>Submit</span>
+            </Button>
+            </DialogFooter>
+        </Dialog>
+
+        <Dialog open={openDialogDeleteImage} handler={toggleOpenDialogDeleteImage} size="sm" className="absolute w-[200px]">
+            <DialogHeader>Are you sure you want delete this record?</DialogHeader>
+            <DialogFooter>
+            <Button
+                variant="text"
+                color="red"
+                onClick={toggleOpenDialogDeleteImage}
+                className="mr-1"
+            >
+                <span>Cancel</span>
+            </Button>
+            <Button variant="text" color="green" onClick={()=>{handleDeleteImage()}}>
+                <span>Delete</span>
+            </Button>
+            </DialogFooter>
+        </Dialog>
+    </div>
     )
   };
   

@@ -22,7 +22,7 @@ const Profile = () => {
     return (
         <div className="w-full flex flex-col gap-5 ">
             <h1 className="text-2xl">Welcome, {user.username}</h1>
-            <div className=" lg:w-4/5 xs:w-full h-4/5 p-5 border border-gray-400 rounded shadow shadow-xl ">
+            <div className=" lg:w-full xs:w-full h-full p-5 border border-gray-400 rounded shadow shadow-xl ">
                 <div>
                     <div className="flex items-center justify-between">
                         <h1 className="text-xl">Profile Information</h1>
@@ -32,48 +32,57 @@ const Profile = () => {
                             <Button className={`bg-blue-600 hover:bg-blue-800 border border-gray-400 flex gap-3 items-center ${toggleEdit? '':'hidden'}`} onClick={()=>setToggleEdit(true)}><FaRegSave size={20}/> Save </Button>
                         </div>
                     </div>
-                    <div className="flex flex-row items-center gap-2 pt-4">
-                        <div>
-                            <img className="rounded-full w-[80px] h-[80px] border border-solid border-black hover:bg-gray-400/50"></img>
+                </div>
+                <div className="flex flex-row gap-5">
+                    <div className="w-2/5 justify-center">
+                        <span className="group relative inline-block w-[240px] h-[240px]">
+                            <img
+                                className="rounded-full w-full h-full border border-solid border-black hover:bg-gray-400 object-cover"
+                                src=""
+                                alt="profile"
+                            />
+                            <h1 className="absolute inset-0 flex items-center underline justify-center text-xl font-bold invisible group-hover:visible">
+                                upload image
+                            </h1>
+                        </span>
+                        <h1 className="text-2xl">{user.username}</h1>
+                        <h1>{user.email}</h1>
+                    </div>
+                    <div className="lg:flex w-full pt-5 gap-4">
+                        <div className="lg:w-1/3 w-full">
+                            <div className="pb-5">
+                                <h1>Full Name</h1>
+                                <Input className="" disabled={!toggleEdit} value={user.username} onChange={(e) => setUser({ ...user, username: e.target.value })}/>
+                            </div>
+                            <div className="pb-5">
+                                <h1>Phone Number</h1>
+                                <Input className="" disabled={!toggleEdit} value={user.phone} onChange={(e) => setUser({ ...user, phone: e.target.value })} />
+                            </div>
                         </div>
-                        <div>
-                            <h1>{user.username}</h1>
-                            <h2>member since:</h2>
+                        <div className="lg:w-1/3 w-full">
+                            <div className="pb-5">
+                                <h1>Email Address</h1>
+                                <Input className="" disabled={!toggleEdit} value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} />
+                            </div>
+                            <div className="pb-5">
+                                <h1>address</h1>
+                                <Input className="" disabled={!toggleEdit} value={user.address} onChange={(e) => setUser({ ...user, address: e.target.value })} />
+                            </div>
+                        </div>
+                        <div className="lg:w-1/3 w-full">
+                            <div className="pb-5">
+                                <h1>Member Since</h1>
+                                <Input className="" disabled={true} value={"today"} />
+                            </div>
+                            <div className="flex ">
+                                <FaInstagramSquare size={40} color="#DD2A7B"/>
+                                <FaSquareXTwitter size={40}/>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className="lg:flex w-full pt-5 gap-4">
-                    <div className="lg:w-1/3 w-full">
-                        <div className="pb-5">
-                            <h1>Full Name</h1>
-                            <Input className="" disabled={!toggleEdit} value={user.username} onChange={(e) => setUser({ ...user, username: e.target.value })}/>
-                        </div>
-                        <div className="pb-5">
-                            <h1>Phone Number</h1>
-                            <Input className="" disabled={!toggleEdit} value={user.phone} onChange={(e) => setUser({ ...user, phone: e.target.value })} />
-                        </div>
-                    </div>
-                    <div className="lg:w-1/3 w-full">
-                        <div className="pb-5">
-                            <h1>Email Address</h1>
-                            <Input className="" disabled={!toggleEdit} value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} />
-                        </div>
-                        <div className="pb-5">
-                            <h1>address</h1>
-                            <Input className="" disabled={!toggleEdit} value={user.address} onChange={(e) => setUser({ ...user, address: e.target.value })} />
-                        </div>
-                    </div>
-                    <div className="lg:w-1/3 w-full">
-                        <div className="pb-5">
-                            <h1>Member Since</h1>
-                            <Input className="" disabled={true} value={"today"} />
-                        </div>
-                        <div className="flex ">
-                            <FaInstagramSquare size={40} color="#DD2A7B"/>
-                            <FaSquareXTwitter size={40}/>
-                        </div>
-                    </div>
-                </div>
+                
+                
             </div>
         </div>
     );

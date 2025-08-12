@@ -1,9 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {useNavigate} from "react-router-dom"
-import Datepicker  from "react-tailwindcss-datepicker"; 
-import dayjs  from "dayjs";
-import { Select, Option, Popover, PopoverHandler, PopoverContent, Input, Button, Textarea, Dialog,DialogHeader,DialogFooter, DialogBody} from "@material-tailwind/react"; 
-import Item from "./Item";
+import { useEffect, useState } from "react";
+import {Progress } from "@material-tailwind/react"; 
 import { AddItemInfo } from "../../components/admin/AddItemInfo";
 import { AddFounderInfo } from "../../components/admin/AddFounderInfo";
 import { SubmitLostItem } from "../../components/admin/SubmitLostItem";
@@ -36,29 +32,27 @@ const AddItem = () => {
         address:"fx",
     });
 
-    const navigate =useNavigate()
     const [status, setStatus] = useState("AddItem");
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
+    const [progress,setProgress]=useState(10)
 
     useEffect(() => {
-    }, []);
-
-    useEffect(() => {
-        const handleResize = () => {
-        setIsMobile(window.innerWidth < 700); 
-        };
-
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-        window.removeEventListener('resize', handleResize);
-        };
-    }, []);
+        switch(status){
+            case "AddFounder":
+                setProgress(50)
+                return
+            case "SubmitItem":
+                setProgress(100)
+                return
+            default:
+                setProgress(10)
+                return
+        }
+    }, [status]);
     
     const renderContent = () => {
         switch (status) {
         case "AddFounder":
-            return <AddFounderInfo binusian={binusian} setBinusian={setBinusian} setStatus={setStatus}/>
+            return <AddFounderInfo binusian={binusian} setBinusian={setBinusian} setStatus={setStatus} />
         case "SubmitItem":
             return <SubmitLostItem binusian={binusian} setBinusian={setBinusian} item={item} setStatus={setStatus} />
         default:
@@ -68,9 +62,26 @@ const AddItem = () => {
 
     return (
     <div className="h-[90%] overflow:auto">
-        <p className="text-2xl">Add New Item</p>
-        <p className="w-full inline-block text-sm md:text-xl flex items-center"><span className={`font-bold ${status==="AddFounder"|| status=="SubmitItem"? "text-green-500":"text-blue-600"}`} >Add Lost Item Info</span> <span className={`${status==="AddFounder"? "font-bold text-blue-600":""} ${status=="SubmitItem"? "font-bold text-green-500":""}`}> Add Founder Info</span> <span className={status=="SubmitItem"? "font-bold text-blue-600":""}> -------- Submit Lost Item</span></p>
-        <hr className="border border-gray-400 mb-3"/>
+        {/* <p className="text-2xl">Add New Item</p> */}
+        <p className="w-full inline-block text-sm md:text-xl flex items-center justify-between">
+            <span className={`font-bold ${status==="AddFounder"|| status=="SubmitItem"? "text-green-500":"text-blue-600"}`} >
+                <h1>
+                    Add Lost Item Info
+                </h1>
+            </span> 
+            <span className={`${status==="AddFounder"? "font-bold text-blue-600":""} ${status=="SubmitItem"? "font-bold text-green-500":""}`}> 
+                <h1>
+                    Add Founder Info
+                </h1>
+            </span> 
+            <span className={status=="SubmitItem"? "font-bold text-blue-600":""}>
+                <h1>
+                    Submit Lost Item
+                </h1>
+            </span>
+        </p>
+        <Progress value={progress} className="mb-3" color="blue"></Progress>
+        {/* <hr className="border border-gray-400 mb-3"/> */}
         {renderContent()}
         </div>
     )

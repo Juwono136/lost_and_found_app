@@ -50,19 +50,17 @@ const MeetingTable= ({meetings})=>{
         //retrieve items
       }, []);
 
-      return(
-
-                               
+      return(                
               <div>
                 <Card className="h-[425px] flex flex-col">
                   <div className="overflow-auto flex-grow">
-                    <table className="w-full table-fixed">
+                  <table className="w-full table-fixed">
                   <thead className="sticky top-0 bg-white z-10">
                     <tr>
                         {meetingHead.map((col) => (
                         <th
                             key={col}
-                            className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+                            className="border-b border-blue-gray-100 bg-blue-gray-50 p-4 w-full"
                         >
                             <Typography
                             variant="small"
@@ -119,17 +117,6 @@ const MeetingTable= ({meetings})=>{
                                     "bg-red-500 text-white"
                                 } />
                             </td>
-                             {/* <td className="p-2 text-right">
-                                  <div className="flex justify-end">
-                                    <div
-                                      className={`w-3 h-3 rounded-full ${
-                                        meeting_status === "Store" ? "bg-blue-500" :
-                                        meeting_status === "Approved" ? "bg-green-500" :
-                                        "bg-red-500"
-                                      }`}
-                                    />
-                                  </div>
-                                </td> */}
                             </tr>
                         );
                         }

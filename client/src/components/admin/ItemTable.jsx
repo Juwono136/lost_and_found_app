@@ -3,232 +3,248 @@ import {useNavigate, useLocation} from "react-router-dom"
 
 import {allItems, users, getDashboardRows} from "./RetrieveData.js"
 
-import { Card, Typography ,Chip, CardHeader,CardBody,CardFooter, Button, Select, Option} from "@material-tailwind/react";
+import { Card, Typography ,Chip, CardFooter, Button, Select, Option} from "@material-tailwind/react";
 import { FaCaretSquareLeft, FaCaretSquareRight, FaCheck, FaStopwatch, FaHourglass, FaExclamationCircle, FaStopCircle} from "react-icons/fa";
 
 
 
-const ItemTable= ({searchItem, category, status, date})=>{
+const ItemTable= ({searchItem, category, status, date, allFields, visibleFields, setVisibleFields})=>{
 
-    const [items, setItems] = useState([{
-        _id:1,
-        user_info:"1",
-        staff_id:"1",
-        item_name:"Phone",
-        item_img:"-",
-        item_detail_desc:"smartphone blue casing",
-        item_short_desc:"i phone",
-        item_category:"electronics",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"20/03/2025",
-        date_claimed:"21/03/2025",
-        item_status:"Claimed",
-        createdAt:"",
-        updatedAt:"",
-      },{
-        _id:2,
-        user_info:"2",
-        staff_id:"1",
-        item_name:"water bottle",
-        item_img:"",
-        item_detail_desc:"named",
-        item_short_desc:"blue",
-        item_category:"daily appliance",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"10/02/2025",
-        date_claimed:"",
-        item_status:"Cancel",
-        createdAt:"",
-        updatedAt:"",
-      },{
-        _id:3,
-        user_info:"1",
-        staff_id:"1",
-        item_name:"Phone",
-        item_img:"-",
-        item_detail_desc:"smartphone blue casing",
-        item_short_desc:"i phone",
-        item_category:"electronics",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"20/03/2025",
-        date_claimed:"",
-        item_status:"On Hold",
-        createdAt:"",
-        updatedAt:"",
-      },{
-        _id:4,
-        user_info:"2",
-        staff_id:"1",
-        item_name:"water bottle",
-        item_img:"",
-        item_detail_desc:"named",
-        item_short_desc:"blue",
-        item_category:"daily appliance",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"10/02/2025",
-        date_claimed:"",
-        item_status:"Pending",
-        createdAt:"",
-        updatedAt:"",
-      },{
-        _id:5,
-        user_info:"1",
-        staff_id:"1",
-        item_name:"Phone",
-        item_img:"-",
-        item_detail_desc:"smartphone blue casing",
-        item_short_desc:"i phone",
-        item_category:"electronics",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"20/03/2025",
-        date_claimed:"",
-        item_status:"Active",
-        createdAt:"",
-        updatedAt:"",
-      },{
-        _id:6,
-        user_info:"2",
-        staff_id:"1",
-        item_name:"water bottle",
-        item_img:"",
-        item_detail_desc:"named",
-        item_short_desc:"blue",
-        item_category:"daily appliance",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"10/02/2025",
-        date_claimed:"",
-        item_status:"On Hold",
-        createdAt:"",
-        updatedAt:"",
-      },{_id:7,
-        user_info:"1",
-        staff_id:"1",
-        item_name:"Phone",
-        item_img:"-",
-        item_detail_desc:"smartphone blue casing",
-        item_short_desc:"i phone",
-        item_category:"electronics",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"20/03/2025",
-        date_claimed:"21/03/2025",
-        item_status:"Claimed",
-        createdAt:"",
-        updatedAt:"",
-      },{
-        _id:8,
-        user_info:"2",
-        staff_id:"1",
-        item_name:"water bottle",
-        item_img:"",
-        item_detail_desc:"named",
-        item_short_desc:"blue",
-        item_category:"daily appliance",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"10/02/2025",
-        date_claimed:"",
-        item_status:"On Hold",
-        createdAt:"",
-        updatedAt:"",
-      },{
-        _id:9,
-        user_info:"1",
-        staff_id:"1",
-        item_name:"Phone",
-        item_img:"-",
-        item_detail_desc:"smartphone blue casing",
-        item_short_desc:"i phone",
-        item_category:"electronics",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"20/03/2025",
-        date_claimed:"",
-        item_status:"Claimed",
-        createdAt:"",
-        updatedAt:"",
-      },{
-        _id:10,
-        user_info:"2",
-        staff_id:"1",
-        item_name:"water bottle",
-        item_img:"",
-        item_detail_desc:"named",
-        item_short_desc:"blue",
-        item_category:"daily appliance",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"10/02/2025",
-        date_claimed:"",
-        item_status:"On Hold",
-        createdAt:"",
-        updatedAt:"",
-      },{
-        _id:11,
-        user_info:"1",
-        staff_id:"1",
-        item_name:"Phone",
-        item_img:"-",
-        item_detail_desc:"smartphone blue casing",
-        item_short_desc:"i phone",
-        item_category:"electronics",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"20/03/2025",
-        date_claimed:"",
-        item_status:"Claimed",
-        createdAt:"",
-        updatedAt:"",
-      },{
-        _id:12,
-        user_info:"2",
-        staff_id:"1",
-        item_name:"water bottle",
-        item_img:"",
-        item_detail_desc:"named",
-        item_short_desc:"blue",
-        item_category:"daily appliance",
-        location_found:"fx",
-        location_store:"fx",
-        draft:"",
-        date_reported:"10/02/2025",
-        date_claimed:"",
-        item_status:"Cancel",
-        createdAt:"",
-        updatedAt:"",
-      },]);
+    // const [items, setItems] = useState([{
+    //     _id:1,
+    //     user_info:"1",
+    //     staff_id:"1",
+    //     item_name:"Phone",
+    //     item_img:"-",
+    //     item_detail_desc:"smartphone blue casing",
+    //     item_short_desc:"i phone",
+    //     item_category:"electronics",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"20/03/2025",
+    //     date_claimed:"21/03/2025",
+    //     item_status:"Claimed",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },{
+    //     _id:2,
+    //     user_info:"2",
+    //     staff_id:"1",
+    //     item_name:"water bottle",
+    //     item_img:"",
+    //     item_detail_desc:"named",
+    //     item_short_desc:"blue",
+    //     item_category:"daily appliance",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"10/02/2025",
+    //     date_claimed:"",
+    //     item_status:"Cancel",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },{
+    //     _id:3,
+    //     user_info:"1",
+    //     staff_id:"1",
+    //     item_name:"Phone",
+    //     item_img:"-",
+    //     item_detail_desc:"smartphone blue casing",
+    //     item_short_desc:"i phone",
+    //     item_category:"electronics",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"20/03/2025",
+    //     date_claimed:"",
+    //     item_status:"On Hold",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },{
+    //     _id:4,
+    //     user_info:"2",
+    //     staff_id:"1",
+    //     item_name:"water bottle",
+    //     item_img:"",
+    //     item_detail_desc:"named",
+    //     item_short_desc:"blue",
+    //     item_category:"daily appliance",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"10/02/2025",
+    //     date_claimed:"",
+    //     item_status:"Pending",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },{
+    //     _id:5,
+    //     user_info:"1",
+    //     staff_id:"1",
+    //     item_name:"Phone",
+    //     item_img:"-",
+    //     item_detail_desc:"smartphone blue casing",
+    //     item_short_desc:"i phone",
+    //     item_category:"electronics",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"20/03/2025",
+    //     date_claimed:"",
+    //     item_status:"Active",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },{
+    //     _id:6,
+    //     user_info:"2",
+    //     staff_id:"1",
+    //     item_name:"water bottle",
+    //     item_img:"",
+    //     item_detail_desc:"named",
+    //     item_short_desc:"blue",
+    //     item_category:"daily appliance",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"10/02/2025",
+    //     date_claimed:"",
+    //     item_status:"On Hold",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },{_id:7,
+    //     user_info:"1",
+    //     staff_id:"1",
+    //     item_name:"Phone",
+    //     item_img:"-",
+    //     item_detail_desc:"smartphone blue casing",
+    //     item_short_desc:"i phone",
+    //     item_category:"electronics",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"20/03/2025",
+    //     date_claimed:"21/03/2025",
+    //     item_status:"Claimed",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },{
+    //     _id:8,
+    //     user_info:"2",
+    //     staff_id:"1",
+    //     item_name:"water bottle",
+    //     item_img:"",
+    //     item_detail_desc:"named",
+    //     item_short_desc:"blue",
+    //     item_category:"daily appliance",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"10/02/2025",
+    //     date_claimed:"",
+    //     item_status:"On Hold",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },{
+    //     _id:9,
+    //     user_info:"1",
+    //     staff_id:"1",
+    //     item_name:"Phone",
+    //     item_img:"-",
+    //     item_detail_desc:"smartphone blue casing",
+    //     item_short_desc:"i phone",
+    //     item_category:"electronics",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"20/03/2025",
+    //     date_claimed:"",
+    //     item_status:"Claimed",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },{
+    //     _id:10,
+    //     user_info:"2",
+    //     staff_id:"1",
+    //     item_name:"water bottle",
+    //     item_img:"",
+    //     item_detail_desc:"named",
+    //     item_short_desc:"blue",
+    //     item_category:"daily appliance",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"10/02/2025",
+    //     date_claimed:"",
+    //     item_status:"On Hold",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },{
+    //     _id:11,
+    //     user_info:"1",
+    //     staff_id:"1",
+    //     item_name:"Phone",
+    //     item_img:"-",
+    //     item_detail_desc:"smartphone blue casing",
+    //     item_short_desc:"i phone",
+    //     item_category:"electronics",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"20/03/2025",
+    //     date_claimed:"",
+    //     item_status:"Claimed",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },{
+    //     _id:12,
+    //     user_info:"2",
+    //     staff_id:"1",
+    //     item_name:"water bottle",
+    //     item_img:"",
+    //     item_detail_desc:"named",
+    //     item_short_desc:"blue",
+    //     item_category:"daily appliance",
+    //     location_found:"fx",
+    //     location_store:"fx",
+    //     draft:"",
+    //     date_reported:"10/02/2025",
+    //     date_claimed:"",
+    //     item_status:"Cancel",
+    //     createdAt:"",
+    //     updatedAt:"",
+    //   },]);
+
+    const [items, setItems] = useState([])
+    const [users , setUsers] =useState([])
     
     const [active,setActive] = useState(1)
     const navigate =useNavigate()
-    const PageName= useLocation().pathname
-    
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
 
-    //for items page
-    const itemHead=["ID","Item Name","Short Description","Category","Stored Location","Date Reported","Status"]
+    let itemHead=["ID","Item Name","Short Description","Category","Stored Location","Date Reported","Status"]
     const [itemPerPage,setItemPerPage]=useState(10)
 
     const parseDate = (str) => {
       const [day, month, year] = str.split("/");
       return new Date(`${year}-${month}-${day}`);
     };
+    
+    useEffect(() => {
+      const itemsData = allItems;
+      const usersData = users; 
+      
+      const mergedData = itemsData.map(item => {
+        const user = usersData.find(u => u._id === item.user_info); 
+        return {
+          ...item,
+          user_name: user?.name || "Unknown",
+          user_phone: user?.phone || "N/A",
+          user_email: user?.email || "N/A"
+        };
+      });
+
+      setItems(mergedData);
+    }, []);
 
     const filteredItems = items.filter((item) => {
        const matchesSearch = searchItem
@@ -283,22 +299,9 @@ const ItemTable= ({searchItem, category, status, date})=>{
     }
 
 
-    const dashboardHead=["No.","Name","Founder","Location","Store","Status","Reported","Staff"]
-    const dashboardRows = getDashboardRows(allItems,users);
-
     const deleteRow = () => {}
 
-    useEffect(() => {
-          const handleResize = () => {
-            setIsMobile(window.innerWidth < 700); 
-          };
-        
-          window.addEventListener('resize', handleResize);
-        
-          return () => {
-            window.removeEventListener('resize', handleResize);
-          };
-        }, []);
+    
 
     const getStatusIcon = (status) => {
       switch (status) {
@@ -316,123 +319,6 @@ const ItemTable= ({searchItem, category, status, date})=>{
     };
 
     return(
-    //renders page for items page
-    // <>{
-    //   isMobile?((<>
-    //   <div className="h-[500px]"> 
-    //     <Card className="h-[95%] flex flex-col">
-    //       <div className="overflow-x-auto flex-grow">
-    //         <table className="w-[600px] table-fixed">
-    //           <thead className="sticky top-0 bg-white z-10">
-    //             <tr>
-    //               {itemHead.map((col) => (
-    //                 <th
-    //                   key={col}
-    //                   className="border-b border-blue-gray-100 bg-blue-gray-50 p-2 text-center"
-    //                 >
-    //                   <Typography
-    //                     variant="small"
-    //                     color="blue-gray"
-    //                     className="font-normal leading-none opacity-70"
-    //                   >
-    //                     {col}
-    //                   </Typography>
-    //                 </th>
-    //               ))}
-    //             </tr>
-    //           </thead>
-    //           <tbody>
-    //             {itemDisplayed.map(
-    //               (
-    //                 {
-    //                   _id,
-    //                   item_name,
-    //                   item_short_desc,
-    //                   item_category,
-    //                   location_store,
-    //                   date_reported,
-    //                   item_status,
-    //                 },
-    //                 index
-    //               ) => {
-    //                 return (
-    //                   <tr key={_id} onClick={() => navigate(`/admin/items/edit?id=${_id}`)} className=" cursor-pointer even:bg-gray-100">
-    //                     <td className="p-2 text-center">
-    //                       <Typography>{_id}</Typography>
-    //                     </td>
-    //                     <td className="p-2 text-center">
-    //                       <Typography>{item_name}</Typography>
-    //                     </td>
-    //                     <td className="p-2 text-center">
-    //                       <Typography>{item_short_desc}</Typography>
-    //                     </td>
-    //                     <td className="p-2 text-center">
-    //                       <Typography>{item_category}</Typography>
-    //                     </td>
-    //                     <td className="p-2 text-center">
-    //                       <Typography>{location_store}</Typography>
-    //                     </td>
-    //                     <td className="p-2 text-center">
-    //                       <Typography>{date_reported}</Typography>
-    //                     </td>
-                        
-    //                   </tr>
-    //                 );
-    //               }
-    //             )}
-    //           </tbody>
-    //         </table>
-    //       </div>
-
-    //       <CardFooter className="mt-auto border-t px-4 py-2">
-    //         <div className="flex justify-between items-center w-full">
-    //           <div className="flex justify-center items-center gap-4">
-    //             <Button
-    //               variant="text"
-    //               disabled={active === 1}
-    //               onClick={prev}
-    //               className="w-10 h-10 p-0 flex items-center justify-center"
-    //             >
-    //               <FaCaretSquareLeft size={30} />
-    //             </Button>
-    //             <Typography color="gray" className="font-normal">
-    //               <strong className="text-gray-900">{active}</strong> of{" "}
-    //               <strong className="text-gray-900">{totalPages}</strong>
-    //             </Typography>
-    //             <Button
-    //               variant="text"
-    //               disabled={active === totalPages}
-    //               onClick={next}
-    //               className="w-10 h-10 p-0 flex items-center justify-center"
-    //             >
-    //               <FaCaretSquareRight size={30} />
-    //             </Button>
-    //           </div>
-
-    //           <div className="w-[30%] flex justify-end">
-    //             <Select
-    //             className="text-xs"
-    //             containerProps={{className:"min-w-0"}}
-    //             menuProps={{className:"text-lg max-w-[90px]"}}
-    //               onChange={(value) => {
-    //                 setItemPerPage(Number(value));
-    //                 setActive(1);
-    //               }}
-    //               value={itemPerPage.toString()}
-    //             >
-    //               <Option value="10" className="mb-2">10</Option>
-    //               <Option value="25" className="mb-2">25</Option>
-    //               <Option value="50" className="mb-2">50</Option>
-    //               <Option value="100">100</Option>
-    //             </Select>
-    //           </div>
-
-    //         </div>
-    //       </CardFooter>
-    //     </Card>
-    //   </div>
-
-    //   </>)):(
         <>
       <div>
         <Card className="h-[425px] flex flex-col">
@@ -440,20 +326,22 @@ const ItemTable= ({searchItem, category, status, date})=>{
             <table className="w-full table-fixed">
               <thead className="sticky top-0 bg-white z-10">
                 <tr className="z-10">
-                  {itemHead.map((col) => (
-                    <th
-                      key={col}
-                      className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-                    >
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal leading-none opacity-70"
+                  {allFields.map((col) =>
+                    visibleFields.includes(col) && (
+                      <th
+                        key={col}
+                        className="border-b border-blue-gray-100 bg-blue-gray-50 p-4 md:w-full w-[110px]"
                       >
-                        {col}
-                      </Typography>
-                    </th>
-                  ))}
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal leading-none opacity-70"
+                        >
+                          {col}
+                        </Typography>
+                      </th>
+                    )
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -467,30 +355,33 @@ const ItemTable= ({searchItem, category, status, date})=>{
                       location_store,
                       date_reported,
                       item_status,
+                      user_name,
+                      user_phone,
+                      user_email
                     },
                     index
                   ) => {
                     return (
                       <tr key={_id} onClick={() => navigate(`/admin/items/edit?id=${_id}`)} className=" cursor-pointer even:bg-gray-100">
-                        <td className="p-2">
+                        <td className="p-2" hidden={!visibleFields.includes("_id")}>
                           <Typography>{_id}</Typography>
                         </td>
-                        <td className="p-2">
+                        <td className="p-2" hidden={!visibleFields.includes("item_name")}>
                           <Typography>{item_name}</Typography>
                         </td>
-                        <td className="p-2">
+                        <td className="p-2" hidden={!visibleFields.includes("item_short_desc")}>
                           <Typography>{item_short_desc}</Typography>
                         </td>
-                        <td className="p-2">
+                        <td className="p-2" hidden={!visibleFields.includes("item_category")}>
                           <Typography>{item_category}</Typography>
                         </td>
-                        <td className="p-2">
+                        <td className="p-2" hidden={!visibleFields.includes("location_store")}>
                           <Typography>{location_store}</Typography>
                         </td>
-                        <td className="p-2">
+                        <td className="p-2" hidden={!visibleFields.includes("date_reported")}>
                           <Typography>{date_reported}</Typography>
                         </td>
-                        <td className="p-2">
+                        <td className="p-2" hidden={!visibleFields.includes("item_status")}>
                           
                           <div className=" md:block hidden">
                             <Chip 
@@ -508,6 +399,15 @@ const ItemTable= ({searchItem, category, status, date})=>{
                           <div className="flex justify-end md:hidden">
                             {getStatusIcon(item_status)}
                           </div>
+                        </td>
+                        <td className="p-2" hidden={!visibleFields.includes("user_name")}>
+                          <Typography>{user_name}</Typography>
+                        </td>
+                        <td className="p-2" hidden={!visibleFields.includes("user_phone")}>
+                          <Typography>{user_phone}</Typography>
+                        </td>
+                        <td className="p-2" hidden={!visibleFields.includes("user_email")}>
+                          <Typography>{user_email}</Typography>
                         </td>
                       </tr>
                     );

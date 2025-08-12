@@ -41,19 +41,19 @@ const Dashboard = () => {
           <div className="flex flex-row gap-6">
             <div className="flex flex-col w-full gap-5">
               <div className="flex md:flex-row flex-col justify-between gap-5">
-                <div className="border border-solid border-gray-400 shadow shadow-xl rounded p-3 md:w-1/3 w-full">
-                  <p className="flex font-bold items-left gap-1  text-[12px] lg:text-[18px]">
+                <div className="border border-solid border-gray-200 shadow shadow-xl rounded p-3 md:w-1/3 w-full">
+                  <p className="flex font-bold items-left gap-1 text-[12px] lg:text-[18px]">
                   <FaBriefcase size={20} color=""/> Total Lost Item</p>
                   <h1 className={` font-bold text-[18px] lg:text-[25px]`}>{data.totalItems}</h1>
                   <p className="text-sm text-gray-700">+5 past week</p>
                 </div>
-                <div className="border border-solid border-gray-400 shadow shadow-xl rounded p-3 md:w-1/3 w-full">
+                <div className="border border-solid border-gray-200 shadow shadow-xl rounded p-3 md:w-1/3 w-full">
                   <p className="flex font-bold items-left gap-1 text-[12px] lg:text-[18px]">
                   <FaCheckCircle size={20} color=""/> Total Claimed Items</p>
                   <h1 className={` font-bold text-[18px] lg:text-[25px]`} >{data.claimsProcessed}</h1>
                   <p className="text-sm text-gray-700">+5 past week</p>
                 </div>
-                <div className="border border-solid border-gray-400 shadow shadow-xl rounded p-3 md:w-1/3 w-full">
+                <div className="border border-solid border-gray-200 shadow shadow-xl rounded p-3 md:w-1/3 w-full">
                   <p className="flex font-bold items-left gap-1 text-[12px] lg:text-[18px]">
                   <FaClock size={20} color=""/> Pending Items</p>
                   <h1 className={` font-bold text-[18px] lg:text-[25px]`} >{data.totalMeetings}</h1>
