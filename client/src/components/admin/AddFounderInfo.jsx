@@ -47,9 +47,6 @@ export const AddFounderInfo =({ binusian, setBinusian, setStatus})=>{
                 <div className=" h-full md:w-1/2 w-full gap-5">
                     <div className="pt-[20px] pb-[100px]">
                         <Input type="text" variant="static" value={binusian.binusian_id} onChange={(e) => setBinusian({ ...binusian, binusian_id: e.target.value })} label="Search user here"/>
-                        <div>
-                            
-                        </div>
                     </div>
                     <div className="shadow-md  p-5 pb-[34px]">
                         Founder Information:

@@ -10,7 +10,8 @@ const Profile = () => {
         username: "Juwono",
         phone:"+62 812-3456-7890",
         email:"juwono@student.binus.ac.id",
-        address:"fx"
+        address:"fx",
+        role:"admin"
     })
 
     const [toggleEdit, setToggleEdit]=useState(false)
@@ -21,9 +22,9 @@ const Profile = () => {
 
     return (
         <div className="w-full flex flex-col gap-5 ">
-            <h1 className="text-2xl">Welcome, {user.username}</h1>
-            <div className=" lg:w-full xs:w-full h-full p-5 border border-gray-400 rounded shadow shadow-xl ">
-                <div>
+            <h1 className="text-2xl ">Welcome, {user.username}</h1>
+            <div className="lg:w-full xs:w-full h-full p-5 border border-gray-400 rounded shadow shadow-xl ">
+                <div className="mb-4">
                     <div className="flex items-center justify-between">
                         <h1 className="text-xl">Profile Information</h1>
                         <div className="flex gap-2">
@@ -33,56 +34,61 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-row gap-5">
-                    <div className="w-2/5 justify-center">
+                <div className="flex md:flex-row flex-col items-center gap-5">
+                    <div className="justify-center">
                         <span className="group relative inline-block w-[240px] h-[240px]">
                             <img
-                                className="rounded-full w-full h-full border border-solid border-black hover:bg-gray-400 object-cover"
+                                className={`rounded-full w-full h-full border border-solid border-black object-cover ${toggleEdit?'bg-gray-400':''}`}
                                 src=""
                                 alt="profile"
                             />
-                            <h1 className="absolute inset-0 flex items-center underline justify-center text-xl font-bold invisible group-hover:visible">
+                            <h1 className={`absolute inset-0 flex items-center underline justify-center text-xl font-bold ${toggleEdit?'visible':'invisible'}` }>
                                 upload image
                             </h1>
                         </span>
                         <h1 className="text-2xl">{user.username}</h1>
                         <h1>{user.email}</h1>
                     </div>
-                    <div className="lg:flex w-full pt-5 gap-4">
-                        <div className="lg:w-1/3 w-full">
-                            <div className="pb-5">
-                                <h1>Full Name</h1>
-                                <Input className="" disabled={!toggleEdit} value={user.username} onChange={(e) => setUser({ ...user, username: e.target.value })}/>
+                    <div className="w-full">
+                        <div className="lg:flex w-full pt-5 gap-4">
+                            <div className="lg:w-1/3 1/5 w-full">
+                                <div className="pb-5">
+                                    <h1>Full Name</h1>
+                                    <Input className="" disabled={!toggleEdit} value={user.username} onChange={(e) => setUser({ ...user, username: e.target.value })}/>
+                                </div>
+                                <div className="pb-5">
+                                    <h1>Phone Number</h1>
+                                    <Input className="" disabled={!toggleEdit} value={user.phone} onChange={(e) => setUser({ ...user, phone: e.target.value })} />
+                                </div>
                             </div>
-                            <div className="pb-5">
-                                <h1>Phone Number</h1>
-                                <Input className="" disabled={!toggleEdit} value={user.phone} onChange={(e) => setUser({ ...user, phone: e.target.value })} />
+                            <div className="lg:w-1/3 w-full">
+                                <div className="pb-5">
+                                    <h1>Email Address</h1>
+                                    <Input className="" disabled={!toggleEdit} value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} />
+                                </div>
+                                <div className="pb-5">
+                                    <h1>address</h1>
+                                    <Input className="" disabled={!toggleEdit} value={user.address} onChange={(e) => setUser({ ...user, address: e.target.value })} />
+                                </div>
+                            </div>
+                            <div className="lg:w-1/3 w-full">
+                                <div className="pb-5">
+                                    <h1>Role</h1>
+                                    <Input className="" disabled={true} value={user.role} />
+                                </div>
+                                <div className="pb-5">
+                                    <h1>Member Since</h1>
+                                    <Input className="" disabled={true} value={"today"} />
+                                </div>
+                                
                             </div>
                         </div>
-                        <div className="lg:w-1/3 w-full">
-                            <div className="pb-5">
-                                <h1>Email Address</h1>
-                                <Input className="" disabled={!toggleEdit} value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} />
-                            </div>
-                            <div className="pb-5">
-                                <h1>address</h1>
-                                <Input className="" disabled={!toggleEdit} value={user.address} onChange={(e) => setUser({ ...user, address: e.target.value })} />
-                            </div>
-                        </div>
-                        <div className="lg:w-1/3 w-full">
-                            <div className="pb-5">
-                                <h1>Member Since</h1>
-                                <Input className="" disabled={true} value={"today"} />
-                            </div>
-                            <div className="flex ">
-                                <FaInstagramSquare size={40} color="#DD2A7B"/>
-                                <FaSquareXTwitter size={40}/>
-                            </div>
+                        <div className="flex justify-right">
+                            <FaInstagramSquare size={40} color="#DD2A7B"/>
+                            <FaSquareXTwitter size={40}/>
                         </div>
                     </div>
                 </div>
-                
-                
             </div>
         </div>
     );

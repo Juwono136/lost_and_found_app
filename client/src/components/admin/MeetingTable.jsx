@@ -1,22 +1,15 @@
-import React, { useEffect, useState } from "react";
-import {useNavigate} from "react-router-dom"
+import { useEffect, useState } from "react";
 import { Card, Typography ,Chip, CardHeader,CardBody,CardFooter, Button, Select, Option} from "@material-tailwind/react";
 import { FaCaretSquareLeft, FaCaretSquareRight} from "react-icons/fa";
 
-const MeetingTable= ({meetings})=>{
-    const navigate =useNavigate()
-
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
-
+const MeetingTable= ({meetings, searchItem, date})=>{
     const meetingHead=["ID","Item ID","User ID","Meeting Date","Meeting time","Meeting Location","Meeting Status"]
+    // const meetingHead=["Meeting Number","Meeting ID","Username","Meeting Date","Meeting time","Meeting Location","Meeting Status"]
     const [active,setActive] = useState(1)
     const [meetingPerPage,setMeetingPerPage]=useState(10)
     const totalPages=Math.ceil(meetings.length/meetingPerPage)
 
-    const meetingDisplayed=meetings.slice(
-      (active - 1) * meetingPerPage,
-      active * meetingPerPage
-    );
+    
     
     const next = () => {
       if(active<totalPages){
@@ -30,20 +23,45 @@ const MeetingTable= ({meetings})=>{
       }
     }
 
-    const deleteRow=(id)=>{
+    const parseDate = (str) => {
+      const [day, month, year] = str.split("/");
+      return new Date(`${year}-${month}-${day}`);
+    };
 
-    }
+    const filteredMeetings = meetings.filter((meeting) => {
+      const matchesSearch = searchItem
+        ? Object.values(meeting).some((val) =>
+            String(val).toLowerCase().includes(searchItem.toLowerCase())
+          )
+        : true;
+
+      const matchesDate = (() => {
+        if (!date?.startDate && !date?.endDate) return true;
+
+        const meetingDate = parseDate(meeting.meeting_date);
+
+        const startDate = date?.startDate ? new Date(date.startDate) : null;
+        const endDate = date?.endDate ? new Date(date.endDate) : null;
+
+        if (startDate && endDate) {
+          return meetingDate >= startDate && meetingDate <= endDate;
+        } else if (startDate) {
+          return meetingDate >= startDate;
+        } else if (endDate) {
+          return meetingDate <= endDate;
+        }
+        return true;
+      })();
+
+      return matchesSearch && matchesDate ;
+    });
+    
+    const meetingDisplayed=filteredMeetings.slice(
+      (active - 1) * meetingPerPage,
+      active * meetingPerPage
+    );
 
     useEffect(() => {
-        const handleResize = () => {
-        setIsMobile(window.innerWidth < 700); 
-        };
-
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-        window.removeEventListener('resize', handleResize);
-        };
     }, []);
 
     useEffect(() => {
@@ -136,7 +154,7 @@ const MeetingTable= ({meetings})=>{
                         >
                           <FaCaretSquareLeft size={30} />
                         </Button>
-                        <Typography color="gray" className="font-normal">
+                        <Typography color="gray" className="font-normal md:text-xl text-sm">
                           Page <strong className="text-gray-900">{active}</strong> of{" "}
                           <strong className="text-gray-900">{totalPages}</strong>
                         </Typography>
@@ -151,15 +169,13 @@ const MeetingTable= ({meetings})=>{
                       </div>
         
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-700">Display Per Page:</span>
-        
                           <Select
                             onChange={(value) => {
                               setMeetingPerPage(Number(value));
                               setActive(1);
                             }}
                             value={meetingPerPage.toString()}
-                            menuProps={"w-[5px]"}
+                            label="Display Per Page:"
                           >
                             <Option value="10">10</Option>
                             <Option value="25">25</Option>

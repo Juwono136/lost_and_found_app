@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
-import {useNavigate} from "react-router-dom"
+import { useEffect, useState } from "react";
 import MeetingTable from "../../components/admin/MeetingTable";
-import { FaPlus, FaSearch} from "react-icons/fa";
-import { Button, Input, Select,Option, Popover,PopoverHandler,PopoverContent } from "@material-tailwind/react";
+import { FaSearch} from "react-icons/fa";
+import { Input, Popover,PopoverHandler,PopoverContent } from "@material-tailwind/react";
 import Datepicker from "react-tailwindcss-datepicker";
+import dayjs from 'dayjs'
 
 const Meetings = () => {
+  const [searchItem, setSearchItem]=useState("")
   const [meetings, setMeetings] = useState([{
     _id:1,
     item_id:"1",
@@ -17,8 +18,28 @@ const Meetings = () => {
     createdAt:"",
     updatedAt:"",
   }]);
+  const [value, setValue] = useState({ 
+        startDate: null, 
+        endDate: null
+    });
+  const [openPopover, setOpenPopover] = useState(false);
 
-  const navigate =useNavigate()
+  const handleChange = (newValue) => {
+    setValue(newValue);
+    if (newValue.startDate && newValue.endDate) {
+      setOpenPopover(false); 
+    }
+  };
+  
+  const formatDateRange = ({ startDate, endDate }) => {
+        if (!startDate && !endDate) return "";
+        if (startDate && !endDate) return dayjs(startDate).format("DD/MM/YYYY");
+        if (startDate && endDate) {
+          return `${dayjs(startDate).format("DD/MM/YYYY")} - ${dayjs(endDate).format("DD/MM/YYYY")}`;
+        }
+        return "";
+      }
+      
 
   useEffect(() => {
   }, []);
@@ -28,11 +49,7 @@ const Meetings = () => {
         <div>
           <div className="flex flex-row justify-between items-center">
           List of Meetings
-          {/* <Button className="flex items-center gap-1 bg-fuchsia text-white p-1 text-xs border border-black rounded" onClick={()=>navigate("/admin/items/add")}>
-            <FaPlus/>Add item
-          </Button>
-        </div>
-        <div className="pt-3 pb-3 flex flex-row flex-wrap gap-4 items-center ">
+          <div className="pt-3 pb-3 flex flex-row flex-wrap gap-4 items-center ">
           <div className="flex items-center gap-2 flex-1 relative">
             <FaSearch className="absolute left-3 transform-translate-y-1/2 text-gray-400"/>
             <Input
@@ -43,46 +60,14 @@ const Meetings = () => {
               onChange={(e) => setSearchItem(e.target.value)}
             />
           </div>
-          <div className="flex gap-5 md:w-auto w-full">
-            <div className="flex items-center gap-2 flex-1 relative ">
-              <Select 
-                className="w-full pl-10"
-                label="Filter By Category" 
-                value={category} 
-                onChange={(val) => setCategory(val || "")}
-                inputProps={{ className: "p-5" }}
-                >
-                  <Option value="">all</Option>
-                  <Option value="electronics">electronics</Option>
-                  <Option value="daily appliance">daily appliance</Option>
-              </Select>
-            </div>
-
-            <div className="flex items-center gap-2 flex-1 relative ">
-              <Select 
-                className="w-full pl-10"
-                label="Filter By Status" 
-                value={status} 
-                onChange={(val) => setStatus(val || "")}
-                inputProps={{ className: "p-5" }}
-                >
-                  <Option value="">all</Option>
-                  <Option value="Claimed">Claimed</Option>
-                  <Option value="Active">Active</Option>
-                  <Option value="Pending">Pending</Option>
-                  <Option value="On Hold">On Hold</Option>
-                  <Option value="Cancel">Cancel</Option>
-              </Select>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 flex-1 relative">
+                    <div className="flex items-center gap-2 flex-1 relative">
             <Popover open={openPopover} handler={setOpenPopover}>
               <PopoverHandler>
                 <Input
                   label="Select a Date"
                   value={formatDateRange(value)}
                   readOnly
-                  onClick={(e) => e.preventDefault()} // prevent manual input
+                  onClick={(e) => e.preventDefault()} 
                 />
               </PopoverHandler>
               <PopoverContent className="right-3">
@@ -90,14 +75,14 @@ const Meetings = () => {
                   value={value}
                   onChange={handleChange}
                   primaryColor="blue"
-                  toggleClassName="hidden" // optional: hides default toggle button if any
+                  toggleClassName="hidden" 
                 />
               </PopoverContent>
             </Popover>
           </div>
-         */}
         </div>
-            <MeetingTable meetings={meetings}/>
+        </div>
+            <MeetingTable meetings={meetings} searchItem={searchItem} date={value}/>
         </div>
     </div>
   );

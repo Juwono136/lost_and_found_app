@@ -37,7 +37,7 @@ export const AddItemInfo = ({ item, setItem, setStatus}) => {
     <div className="flex flex-col gap-12">
       <div className="w-full flex flex-col gap-6 lg:flex-row">
         {/* upload image component */}
-        <div className="flex flex-col gap-6 lg:w-2/5 w-full  items-center">
+        <div className="flex flex-col gap-9 lg:w-2/5 w-full  items-center">
           <div className="w-full h-[60vh] border border-solid border-gray-500 p-[5px] flex items-center justify-center overflow-hidden shadow-md">
             <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
               <Input
@@ -58,7 +58,7 @@ export const AddItemInfo = ({ item, setItem, setStatus}) => {
               )}
             </label>
           </div>
-          <Button onClick={()=>setOpenDialogDeleteImage(true)} className="bg-red-600 flex gap-5 w-3/5"><FaRegTrashAlt/> Delete Image</Button>
+          <Button onClick={()=>setOpenDialogDeleteImage(true)} size={"sm"} className="bg-red-600 flex gap-3"><FaRegTrashAlt/> Delete Image</Button>
         </div>
         {/* input item info component */}
         <div className="h-full flex flex-col lg:w-3/5 w-full gap-6">

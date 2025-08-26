@@ -16,13 +16,11 @@ const Item = () => {
   const allFields = [
     "_id",
     "item_name",
-    "item_short_desc",
     "item_category",
     "location_store",
     "date_reported",
     "item_status",
     "user_name",
-    "user_email",
     "user_phone"
   ];
 
@@ -39,7 +37,7 @@ const Item = () => {
   const handleChange = (newValue) => {
     setValue(newValue);
     if (newValue.startDate && newValue.endDate) {
-      setOpenPopover(false); // Close the popover when both dates are selected
+      setOpenPopover(false); 
     }
   };
 
@@ -118,7 +116,7 @@ const Item = () => {
                   label="Select a Date"
                   value={formatDateRange(value)}
                   readOnly
-                  onClick={(e) => e.preventDefault()} // prevent manual input
+                  onClick={(e) => e.preventDefault()} 
                 />
               </PopoverHandler>
               <PopoverContent className="right-3">
@@ -126,7 +124,7 @@ const Item = () => {
                   value={value}
                   onChange={handleChange}
                   primaryColor="blue"
-                  toggleClassName="hidden" // optional: hides default toggle button if any
+                  toggleClassName="hidden" 
                 />
               </PopoverContent>
             </Popover>
