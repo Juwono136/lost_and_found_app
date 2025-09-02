@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import {useNavigate, useLocation} from "react-router-dom"
+import { useEffect, useState } from "react";
+import {useNavigate} from "react-router-dom"
 
 import {allItems, users, getDashboardRows} from "./RetrieveData.js"
 
@@ -11,12 +11,10 @@ import { FaCaretSquareLeft, FaCaretSquareRight, FaCheck, FaStopwatch, FaHourglas
 const ItemTable= ({searchItem, category, status, date, allFields, visibleFields, setVisibleFields})=>{
   
     const [items, setItems] = useState([])
-    const [users , setUsers] =useState([])
     
     const [active,setActive] = useState(1)
     const navigate =useNavigate()
 
-    let itemHead=["ID","Item Name","Short Description","Category","Stored Location","Date Reported","Status"]
     const [itemPerPage,setItemPerPage]=useState(10)
 
     const parseDate = (str) => {
@@ -94,11 +92,6 @@ const ItemTable= ({searchItem, category, status, date, allFields, visibleFields,
         setActive(active-1);
       }
     }
-
-
-    const deleteRow = () => {}
-
-    
 
     const getStatusIcon = (status) => {
       switch (status) {

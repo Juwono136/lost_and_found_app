@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FaBars, FaBell, FaPowerOff, FaRegUserCircle } from "react-icons/fa";
 import {Button, Dialog, DialogHeader, DialogBody,DialogFooter } from "@material-tailwind/react";
 
 
 const Header = ({toggleSidebar, showSidebar}) => {
     const [PageName,setPageName]= useState("")
-    const [showSidebarIcon, setShowSidebarIcon] = useState(window.innerWidth > 1086);
     const [showProfile, setShowProfile] = useState(false);
     const [showNotification, setShowNotification] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
@@ -16,15 +14,30 @@ const Header = ({toggleSidebar, showSidebar}) => {
     const toggleOpen = (value) => setOpenDialog(!openDialog);
 
     //dummy data
-    const users={
-        _id:"1",
-        name:"kevin",
-        email:"mail@mail.com",
-        role:"student"
-    }
 
-    const notificationAmount = 0
+    
 
+    const [notifications, setNotifications] = useState([{
+        _id:1,
+        user_id:1,
+        item_info:1,
+        meeting_info:1,
+        message:"message 1",
+        is_read:false,
+      },{
+        _id:2,
+        user_id:1,
+        item_info:2,
+        meeting_info:2,
+        message:"message 2",
+        is_read:false,
+      }]);
+
+    const recentNotifications = [...notifications]
+        .sort((lastRecent, moreRecent) => moreRecent._id - lastRecent._id) 
+        .slice(0, 5);
+
+      const notificationAmount = notifications.length
     
     const navigate =useNavigate()
 
@@ -53,18 +66,7 @@ const Header = ({toggleSidebar, showSidebar}) => {
                 setPageName("Add Item")
                 break
         }
-
     },[path])
-
-    // used to toggle the sidebar
-    useEffect(() => {
-        const handleResize = () => {
-          setShowSidebarIcon(window.innerWidth > 1086);
-        };
-    
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-      }, []);
 
       //fetching data if needed
       useEffect(() => {
@@ -82,7 +84,15 @@ const Header = ({toggleSidebar, showSidebar}) => {
           className="fixed inset-0 z-30"
           onClick={()=>setShowProfile(!showProfile)}
         ></div>
-      )}
+      )||
+      showNotification && (
+        <div
+          className="fixed inset-0 z-30"
+          onClick={()=>setShowNotification(!showNotification)}
+        ></div>
+      )
+      }
+      
         <header className="bg-blue-800 h-[40px] flex items-center px-4 py-6">
             {!showSidebar && (
             <button onClick={toggleSidebar} >
@@ -93,14 +103,31 @@ const Header = ({toggleSidebar, showSidebar}) => {
             <div className="flex items-center ml-auto gap-3">
                 <button className="text-[10px] bg-white rounded-full h-[20px] px-2" onClick={()=>navigate("/admin")}>Home Page</button>
                 <div
-                    className={`absolute right-7 top-12 bg-white shadow-lg rounded-md p-2 transition-transform duration-300 ease-out z-40 p-3 w-[13rem] text-[12px] justify-between shadow-xl
+                    className={`absolute right-7 top-12 bg-white shadow-lg rounded-md transition-transform duration-300 ease-out z-40 p-3 w-[13rem] text-[12px] justify-between shadow-xl
                         ${showNotification ? "scale-100 opacity-100" : "scale-0 opacity-0"}
-                    `}>
-                    {notificationAmount>0?(<>
-                    </>):
+                    `}
+                    >
+                    {notifications.length > 0 ? (
+                        <div className="flex flex-col gap-2">
+                        {recentNotifications.map((notif) => (
+                            <div
+                            key={notif._id}
+                            className="border-b last:border-none pb-1 mb-1 last:pb-0 last:mb-0"
+                            >
+                            <p className="text-gray-700">{notif.message}</p>
+                            </div>
+                        ))}
+                            <h1
+                            onClick={() => {navigate("/admin/notification");setShowNotification(false)}}
+                            className="text-xs text-blue-500 hover:underline self-end"
+                            >
+                            View all
+                            </h1>
+                        </div>
+                    ) : (
                         <p>You have no Notifications</p>
-                    }
-                </div>
+                    )}
+                    </div>
                 <div className="relative cursor-pointer" onClick={() => {setShowNotification(!showNotification);setShowProfile(false)}}>
                     <FaBell size={20} className="text-white" />
                     {notificationAmount > 0 && (
@@ -108,13 +135,12 @@ const Header = ({toggleSidebar, showSidebar}) => {
                     )}
                 </div>
                 <div
-                className={`absolute right-2 top-12 bg-white shadow-lg rounded-md p-2 transition-transform duration-300 ease-out z-40 gap-2 w-[15rem] shadow-xl
-                    ${showProfile ? "scale-100 opacity-100" : "scale-0 opacity-0"}
+                className={`absolute right-2 top-12 bg-white shadow-lg rounded-md p-2 transition-transform duration-300 ease-out z-40 gap-2 w-[12rem] shadow-xl
+                    ${showProfile ? "" : "scale-0 opacity-0"}
                 `}>
-                    <div className="space-y-3">
-                        <p onClick={()=>{navigate("/admin/profile");setShowProfile(false)}} className="inline-flex gap-3 hover:bg-gray-200 p-3 w-full"><FaRegUserCircle size={20} />Profile settings</p>
-                        <p onClick={()=>setOpenDialog(true)} className="inline-flex gap-3 text-red-600 font-bold hover:bg-gray-200 p-3 w-full"> <FaPowerOff size={20} />Logout</p>
-                    
+                    <div className="gap-1">
+                        <p onClick={()=>{navigate("/admin/profile");setShowProfile(false)}} className="inline-flex gap-3 hover:bg-gray-200 p-2 w-full text-sm"><FaRegUserCircle size={15} />Profile settings</p>
+                        <p onClick={()=>setOpenDialog(true)} className="inline-flex gap-3 text-red-600 font-bold hover:bg-gray-200 p-2 w-full text-sm"> <FaPowerOff size={15} />Logout</p>
                     </div>
                 </div>
                 <img className="w-[30px] h-[30px] rounded-full " onClick={()=>{setShowProfile(!showProfile);setShowNotification(false)}}/>

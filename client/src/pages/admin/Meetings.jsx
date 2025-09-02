@@ -9,15 +9,25 @@ const Meetings = () => {
   const [searchItem, setSearchItem]=useState("")
   const [meetings, setMeetings] = useState([{
     _id:1,
-    item_id:"1",
-    user_id:"1",
+    meeting_id:1,
+    user_id:1,
     meeting_date:"20/03/2025",
     meeting_time:"12:00",
     meeting_location:"fx",
-    meeting_status:"Not yet",
+    meeting_status:"Completed",
     createdAt:"",
     updatedAt:"",
   }]);
+
+  const [user, setUser]=useState([{
+    _id:1,
+    profilePicture:"",
+    username: "Juwono",
+    phone:"+62 812-3456-7890",
+    email:"juwono@student.binus.ac.id",
+    address:"fx",
+    role:"admin"
+  }])
   const [value, setValue] = useState({ 
         startDate: null, 
         endDate: null
@@ -82,7 +92,7 @@ const Meetings = () => {
           </div>
         </div>
         </div>
-            <MeetingTable meetings={meetings} searchItem={searchItem} date={value}/>
+            <MeetingTable users={user} meetings={meetings} searchItem={searchItem} date={value}/>
         </div>
     </div>
   );

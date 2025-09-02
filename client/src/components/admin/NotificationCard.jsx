@@ -1,21 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AiFillExclamationCircle } from "react-icons/ai";
 
 const NotificationCard = ({user_id, item_info, meeting_info, message, is_read}) => {
   const [isRead, setIsRead] = useState(is_read);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 431);
-
-  useEffect(() => {
-      const handleResize = () => {
-        setIsMobile(window.innerWidth < 431); 
-      };
-    
-      window.addEventListener('resize', handleResize);
-    
-      return () => {
-        window.removeEventListener('resize', handleResize);
-      };
-    }, []);
 
   useEffect(() => {
     setIsRead(is_read)

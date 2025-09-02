@@ -8,7 +8,7 @@ export const SubmitLostItem =({binusian, item, setStatus})=>{
     const toggleOpen = (value) => setOpenDialog(!openDialog);
     const navigate =useNavigate()
 
-    const handleSubmit = ()=>{
+    const handleSubmit = () =>{
         navigate("/admin/items")
     }
 

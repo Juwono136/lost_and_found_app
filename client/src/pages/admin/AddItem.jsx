@@ -62,7 +62,6 @@ const AddItem = () => {
 
     return (
     <div className="h-[90%] overflow:auto">
-        {/* <p className="text-2xl">Add New Item</p> */}
         <p className="w-full inline-block text-sm md:text-xl flex items-center justify-between">
             <span className={`font-bold ${status==="AddFounder"|| status=="SubmitItem"? "text-green-500":"text-blue-600"}`} >
                 <h1>

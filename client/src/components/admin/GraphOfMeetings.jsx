@@ -23,7 +23,7 @@ const GraphOfMeetings =()=>{
     const navigate =useNavigate()
 
     return (
-    <div className="flex flex-col items-start w-full h-[350px] justify-between text-center mb-4 border-2 border-solid border-gray-200 shadow shadow-lg rounded p-3 relative">
+    <div className="flex flex-col items-start w-full h-[350px] justify-between text-center mb-4 border-2 border-solid border-gray-400 shadow shadow-lg rounded p-3 relative">
         
         <div className="w-full h-4/5 gap-4">
         <h3 className="text-left font-semibold text-gray-700 text-xl">Meetings</h3>
